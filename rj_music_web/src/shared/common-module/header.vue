@@ -4,7 +4,19 @@
             <a href="/#" hidefocus="true">网易云音乐</a>
         </h1>
         <div class="rj-login">
-            <a @click="openLoginPanel">登录</a>
+            <dropdown v-if="loginUser"  @on-click="handleDropMenuClick">
+                <a href="javascript:void(0)">
+                    <avatar src="https://i.loli.net/2017/08/21/599a521472424.jpg" />
+                    <icon type="arrow-down-b"></icon>
+                </a>
+                <dropdown-menu slot="list">
+                    <dropdown-item name="home"><Icon size="14" type="person"></Icon><span class="ava-menu-span">个人主页</span></dropdown-item>
+                    <dropdown-item name="message"><Icon size="14" type="email"></Icon><span class="ava-menu-span">我的消息</span></dropdown-item>
+                    <dropdown-item name="setting"><Icon size="14" type="ios-gear"></Icon><span class="ava-menu-span">个人设置</span></dropdown-item>
+                    <dropdown-item name="logout"><Icon size="14" type="log-out"></Icon><span class="ava-menu-span">退出</span></dropdown-item>
+                </dropdown-menu>
+            </dropdown>
+            <a v-else @click="openLoginPanel">登录</a>
         </div>
 
         <Modal v-model="modal" width="500" :maskClosable="false" @onCancel="closeModel">
@@ -14,10 +26,15 @@
             </p>
             <div style="text-align:center;padding-right: 45px;padding-top: 15px;">
                 <Form ref="formCustom" :model="formCustom" :label-width="80">
-                    <FormItem v-for="item in formColumn" :label="item.label" :prop="item.prop">
+                    <!-- 必须绑定:key -->
+                    <form-item  v-for="(item, index) in formColumn"
+                                :key="'key' + index"
+                                :label="item.label"
+                                :prop="item.prop">
                         <i-input v-if="item.type === 'password'" type="password" v-model="formCustom[item.prop]"></i-input>
                         <i-input v-else v-model="formCustom[item.prop]"></i-input>
-                    </FormItem>
+                    </form-item>
+
                     <FormItem>
                         <p class="err-tip"><Icon style="margin-right: 5px;" type="android-alert"></Icon>错误信息</p>
                         <Button type="primary" long @click="handleSubmit">{{formStatus === 'login' ? '登录' : '注册'}}</Button>
@@ -34,7 +51,16 @@
 </template>
 
 <script type="text/ecmascript-6">
+    import { CommonUtil } from '../../core/utils/common-util'
+    import DropdownItem from "../../../node_modules/iview/src/components/dropdown/dropdown-item";
+    import DropdownMenu from "../../../node_modules/iview/src/components/dropdown/dropdown-menu";
+    import Avatar from "../../../node_modules/iview/src/components/avatar/avatar";
+    import Dropdown from "../../../node_modules/iview/src/components/dropdown/dropdown";
     export default {
+        created() {
+            this.loginUser = CommonUtil.getLoginUser();
+        },
+        components: {Dropdown, Avatar, DropdownMenu, DropdownItem},
         data() {
             return {
                 modal: false,
@@ -46,7 +72,8 @@
                     userCode: '',
                     password: ''
                 },
-                formStatus: 'login'
+                formStatus: 'login',
+                loginUser: null
             }
         },
         methods: {
@@ -54,7 +81,11 @@
                 this.modal = true;
             },
             handleSubmit() {
-                console.log(this.formCustom)
+                CommonUtil.saveLoginUser(this.formCustom);
+                setTimeout(() => {
+                    this.loginUser = CommonUtil.getLoginUser();
+                    this.modal = false;
+                });
             },
             changeFormStatus(type) {
                 this.formStatus = type;
@@ -80,8 +111,20 @@
                     }
                 }
             },
+            /**
+             * 关闭模态框
+             */
             closeModel() {
                 this.formCustom = null;
+            },
+            /**
+             * 退出登录
+             */
+            handleDropMenuClick(type) {
+                if (type === 'logout') {
+                    CommonUtil.logout();
+                    this.loginUser = null;
+                }
             }
         }
     }
@@ -107,7 +150,6 @@
             float right;
             a {
                 display: block;
-                width: 28px;
                 color: #999;
                 &:hover {
                     color #bbbec4;
@@ -144,5 +186,18 @@
         top: -28px;
         left: 8px;
         color: rgb(227, 50, 50);
+    }
+    .ivu-select-dropdown {
+        background-color #242424
+        text-align left
+    }
+    .ivu-dropdown-item {
+        color #bbb6b6
+        &:hover {
+            background-color #3a3a3a
+        }
+    }
+    .ava-menu-span {
+        margin-left 5px
     }
 </style>
