@@ -27,7 +27,7 @@
             <div style="text-align:center;padding-right: 45px;padding-top: 15px;">
                 <Form ref="formCustom" :model="formCustom" :label-width="80">
                     <!-- 必须绑定:key -->
-                    <form-item  v-for="(item, index) in formColumn"
+                    <form-item v-for="(item, index) in formColumn"
                                 :key="'key' + index"
                                 :label="item.label"
                                 :prop="item.prop">

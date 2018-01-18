@@ -5,20 +5,24 @@
                 <rj-header></rj-header>
             </Header>
             <Content>
-                <router-view/>
+                <router-view></router-view>
             </Content>
-            <Footer class="rj-footer"></Footer>
+            <Footer class="rj-footer">
+                <rj-footer></rj-footer>
+            </Footer>
         </Layout>
     </div>
 </template>
 
 <script>
 import header from './shared/common-module/header.vue';
+import footer from './shared/common-module/footer.vue';
 
 export default {
     name: 'App',
     components: {
-        'rj-header': header
+        'rj-header': header,
+        'rj-footer': footer
     }
 }
 </script>
@@ -43,6 +47,7 @@ export default {
         }
         .rj-footer {
             height: 53px;
+            position relative;
             zoom: 1;
             background: url("./assets/playbar.png") repeat-x 0 0;
         }
