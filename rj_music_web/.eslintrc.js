@@ -34,6 +34,7 @@ module.exports = {
         "x-invalid-end-tag": 0,
         "no-unused-vars": 0,
         "quotes": 'off',
-        "object-property-newline": 0
+        "object-property-newline": 0,
+        "no-multiple-empty-lines": 0
     }
 }

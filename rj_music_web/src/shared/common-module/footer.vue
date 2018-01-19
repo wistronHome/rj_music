@@ -15,7 +15,7 @@
                 <a class="mv" title="MV"></a>
                 <span class="by">
                     <span title="Ruth B">
-                        <a hidefocus="true">Ruth&nbsp;B</a>
+                        <a>Ruth&nbsp;B</a>
                     </span>
                 </span>
             </div>
@@ -48,15 +48,29 @@
             </span>
             <div class="tip tip-1" style="display:none;">循环</div>
         </div>
+        <rj-player :emit="emit"></rj-player>
     </div>
 </template>
 
 <script type="text/ecmascript-6">
+    import player from "./player.vue";
+    import Vue from "vue";
+
     export default {
         data() {
             return {
-
+                emit: new Vue(),
+                playerInfo: {
+                    paused: true,
+                    voice: 60,
+                    currentTime: 0,
+                    duration: 0,
+                    circleStyle: 0
+                }
             }
+        },
+        components: {
+            'rj-player': player
         }
     }
 </script>

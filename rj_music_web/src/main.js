@@ -5,14 +5,20 @@ import App from './App'
 import router from './router'
 import iView from 'iview';
 import 'iview/dist/styles/iview.css';
+import store from "./core/store";
+import SongSheet from './shared/custom-module/songSheet.vue';
 
 Vue.use(iView);
+// 注册全局组件
+Vue.component('rj-song-sheet', SongSheet);
+
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
 new Vue({
     el: '#app',
     router,
+    store,
     components: { App },
     template: '<App/>'
 });
