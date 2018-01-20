@@ -7,10 +7,11 @@ import iView from 'iview';
 import 'iview/dist/styles/iview.css';
 import store from "./core/store";
 import SongSheet from './shared/custom-module/songSheet.vue';
-
+import CommentList from './shared/custom-module/commentList.vue';
 Vue.use(iView);
 // 注册全局组件
 Vue.component('rj-song-sheet', SongSheet);
+Vue.component('rj-comment-list', CommentList);
 
 Vue.config.productionTip = false
 

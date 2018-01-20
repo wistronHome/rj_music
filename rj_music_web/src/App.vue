@@ -40,6 +40,7 @@ export default {
         }
         .rj-lay {
             position: absolute;
+            background #ffffff
             left: 0;
             right: 0;
             top: 0;

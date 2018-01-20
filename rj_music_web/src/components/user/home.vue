@@ -1,7 +1,10 @@
 <template>
     <div>
         this is user-home
-        <!-- <rj-song-sheet></rj-song-sheet> -->
+        <rj-song-sheet></rj-song-sheet>
+        <div style="margin: 0 auto;width: 600px">
+            <rj-comment-list></rj-comment-list>
+        </div>
     </div>
 </template>
 
