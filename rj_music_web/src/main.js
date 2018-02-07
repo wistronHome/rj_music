@@ -10,12 +10,15 @@ import SongSheet from './shared/custom-module/songSheet.vue';
 import CommentList from './shared/custom-module/commentList.vue';
 import UserProifo from './shared/custom-module/userProifo.vue';
 import SongList from './shared/custom-module/songList.vue';
+import SimpleUserProifo from './shared/custom-module/simpleUserProifo.vue';
+
 Vue.use(iView);
 // 注册全局组件
 Vue.component('rj-song-sheet', SongSheet);
 Vue.component('rj-comment-list', CommentList);
 Vue.component('rj-user-proifo', UserProifo);
 Vue.component('rj-song-list', SongList);
+Vue.component('rj-simple-proifo', SimpleUserProifo);
 
 Vue.config.productionTip = false;
 
