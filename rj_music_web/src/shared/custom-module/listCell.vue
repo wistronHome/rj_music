@@ -1,4 +1,5 @@
 <template>
+<!-- songList表格单元组件 -->
     <div>
         <template v-if="renderType === 'index'">{{naturalIndex + 1}}</template>
         <template v-if="renderType === 'playIcon'">

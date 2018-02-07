@@ -35,6 +35,7 @@ module.exports = {
         "no-unused-vars": 0,
         "quotes": 'off',
         "object-property-newline": 0,
-        "no-multiple-empty-lines": 0
+        "no-multiple-empty-lines": 0,
+        "semicolon": 0
     }
 }

@@ -1,7 +1,7 @@
 <template>
     <div class="wrap">
-         <rj-user-proifo></rj-user-proifo>
-         <div style="margin-bottom: 20px" class="record-title">
+        <rj-user-proifo></rj-user-proifo>
+        <div style="margin-bottom: 20px" class="record-title">
             <h3>粉丝（4）</h3>
         </div>
         <div class="fans-wrap" style="font-size: 0;text-align: left;">

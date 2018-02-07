@@ -1,4 +1,5 @@
 <template>
+<!-- 关注/粉丝 用户简略信息组件 -->
     <div class="ff-item">
             <a class="item-photo" title="追逐萌萌的你">
                 <img src="http://p1.music.126.net/C4rCQC3Lj36zTSRxbWdqvw==/109951163114453118.jpg?param=60y60">

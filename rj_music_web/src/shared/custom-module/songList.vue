@@ -1,4 +1,5 @@
 <template>
+<!-- 通用歌曲列表组件 -->
     <table width="100%" cellspacing="0">
         <colgroup>
             <col v-for="(col, index) in column" :key="index" :width="col.width">

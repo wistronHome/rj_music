@@ -1,4 +1,5 @@
 <template>
+<!-- 单个歌单组件 -->
 <div>
     <div class="song-sheet-wrap">
         <img src="http://p1.music.126.net/Kw6F4V4UpWxL3rC48-u0PA==/19038043835239510.jpg?param=140y140" alt="">

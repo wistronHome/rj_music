@@ -1,4 +1,5 @@
 <template>
+<!-- 评论回复列表组件 -->
     <div class="list-wrap">
         <div class="itm" v-for="item in comments" :key="item">
             <div class="head">
@@ -38,7 +39,13 @@
 export default {
     data() {
         return {
-            comments: [1, 2]
+
+        }
+    },
+    props: {
+        comments: {
+            type: Array,
+            default: []
         }
     }
 }

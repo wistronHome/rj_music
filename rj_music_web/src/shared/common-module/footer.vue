@@ -11,7 +11,7 @@
         </div>
         <div class="play-area">
             <div class="words">
-                <a class="name">Lost boy</a>
+                <a class="name" @click="routerToSong('123123')">Lost boy</a>
                 <a class="mv" title="MV"></a>
                 <span class="by">
                     <span title="Ruth B">
@@ -71,6 +71,11 @@
         },
         components: {
             'rj-player': player
+        },
+        methods: {
+            routerToSong(id) {
+                this.$router.push({path: '/song', query: { id }})
+            }
         }
     }
 </script>

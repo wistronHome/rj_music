@@ -6,19 +6,29 @@ import router from './router'
 import iView from 'iview';
 import 'iview/dist/styles/iview.css';
 import store from "./core/store";
-import SongSheet from './shared/custom-module/songSheet.vue';
-import CommentList from './shared/custom-module/commentList.vue';
-import UserProifo from './shared/custom-module/userProifo.vue';
-import SongList from './shared/custom-module/songList.vue';
-import SimpleUserProifo from './shared/custom-module/simpleUserProifo.vue';
+import songSheet from './shared/custom-module/songSheet.vue';
+import commentList from './shared/custom-module/commentList.vue';
+import userProifo from './shared/custom-module/userProifo.vue';
+import songList from './shared/custom-module/songList.vue';
+import simpleUserProifo from './shared/custom-module/simpleUserProifo.vue';
+import commentArea from './shared/custom-module/commentArea.vue';
+import button from './shared/custom-module/button.vue';
 
 Vue.use(iView);
+
 // 注册全局组件
-Vue.component('rj-song-sheet', SongSheet);
-Vue.component('rj-comment-list', CommentList);
-Vue.component('rj-user-proifo', UserProifo);
-Vue.component('rj-song-list', SongList);
-Vue.component('rj-simple-proifo', SimpleUserProifo);
+const rjComponents = {
+    rjSongSheet: songSheet,
+    rjCommentList: commentList,
+    rjUserProifo: userProifo,
+    rjSongList: songList,
+    rjSimpleProifo: simpleUserProifo,
+    rjCommentArea: commentArea,
+    rjButton: button
+};
+Object.keys(rjComponents).forEach(key => {
+    Vue.component(key, rjComponents[key]);
+});
 
 Vue.config.productionTip = false;
 

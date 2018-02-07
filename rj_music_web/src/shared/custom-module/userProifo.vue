@@ -1,4 +1,5 @@
 <template>
+<!-- 用户个人信息详细展示组件 -->
 <div class="proifo-wrap">
     <div class="proifo-photo">
         <img src="http://p1.music.126.net/Z-uuiFpLamYHJJb37dIS8A==/18867619533087863.jpg?param=180y180">
