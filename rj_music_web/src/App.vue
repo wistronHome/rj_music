@@ -40,7 +40,7 @@ export default {
         }
         .rj-lay {
             position: absolute;
-            background #ffffff
+            background #f5f5f5
             left: 0;
             right: 0;
             top: 0;
@@ -54,4 +54,82 @@ export default {
         }
     }
 
+    * {
+        font-family: Arial, Helvetica, sans-serif;
+    }
+    a {
+        &:hover {
+            text-decoration underline
+        }
+    }
+    em, i {
+        font-style normal
+        text-align left
+    }
+    .song {
+        color: #333;
+        &:hover {
+            color: #333;
+            text-decoration: underline;
+        }
+    }
+    .singer {
+        color: #aeaeae;
+        &:hover {
+            color: #aeaeae;
+            text-decoration: underline;
+        }
+    }
+    .wrap {
+        width 980px
+        padding 40px;
+        margin 0 auto;
+        border 1px solid #ccc
+        background #fff
+        .record-title{
+            position: relative;
+            height: 35px;
+            border-bottom 2px solid #c20c0c
+            h3 {
+                float: left;
+                color #666
+                font-size 20px;
+                line-height: 28px;
+            }
+            h4 {
+                float left;
+                display: inline;
+                margin-top: 5px;
+                margin-left: 10px;
+                line-height: 26px;
+                font-weight: 400;
+                color: #666;
+            }
+            div {
+                position: absolute;
+                z-index: 1;
+                right: 0;
+                bottom: 5px;
+                span {
+                    color: #666;
+                    line-height 26px
+                    cursor pointer
+                    float right
+                    margin-left 8px
+                }
+                i {
+                    width: 1px;
+                    height: 12px;
+                    margin-top: 7px;
+                    margin-left 8px
+                    background-color: #999;
+                    float right
+                }
+                .z-sel {
+                    color #333;
+                    font-weight 700
+                }
+            }
+        }
+    }
 </style>

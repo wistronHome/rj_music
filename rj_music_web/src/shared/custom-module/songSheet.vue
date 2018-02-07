@@ -1,4 +1,5 @@
 <template>
+<div>
     <div class="song-sheet-wrap">
         <img src="http://p1.music.126.net/Kw6F4V4UpWxL3rC48-u0PA==/19038043835239510.jpg?param=140y140" alt="">
         <a class="msk" title="把酒言初心_喜欢的音乐"></a>
@@ -8,6 +9,12 @@
             <span class="nb">687</span>
         </div>
     </div>
+    <p class="desc">
+        <a class="title ellipsis">
+            致郁纯音｜孤独的人 宁愿孤独也不将就。
+        </a>
+    </p>
+</div>
 </template>
 
 <script type="text/ecmascript-6">
@@ -74,6 +81,26 @@ $iconall = "../../assets/iconall.png";
             float: left;
             margin: 7px 0 0 0;
         }
+    }
+}
+.desc {
+    margin 8px 0 3px;
+    font-size: 14px;
+    .title {
+        display: inline-block;
+        max-width: 140px;
+        vertical-align: middle;
+        color: #000;
+        cursor: pointer;
+        &:hover {
+            color #000;
+            text-decoration: underline;
+        }
+    }
+    .ellipsis {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
     }
 }
 </style>

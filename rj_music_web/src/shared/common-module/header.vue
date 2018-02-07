@@ -121,9 +121,15 @@
              * 退出登录
              */
             handleDropMenuClick(type) {
+                if (type === 'home') {
+                    this.$router.push({path: `/user/home`, query: { id: 123 }});
+                } else if (type === 'setting') {
+                    this.$router.push({path: '/user/setting', query: { id: 123 }})
+                }
                 if (type === 'logout') {
                     CommonUtil.logout();
                     this.loginUser = null;
+                    this.$router.push({path: '/'});
                 }
             }
         }
