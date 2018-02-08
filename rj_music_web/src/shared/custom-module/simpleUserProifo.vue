@@ -1,30 +1,30 @@
 <template>
 <!-- 关注/粉丝 用户简略信息组件 -->
     <div class="ff-item">
-            <a class="item-photo" title="追逐萌萌的你">
-                <img src="http://p1.music.126.net/C4rCQC3Lj36zTSRxbWdqvw==/109951163114453118.jpg?param=60y60">
+            <a class="item-photo" :title="user.nickName" @click="routerToUser(user.userId)">
+                <img width="60" height="60" :src="user.photo || defaultPhoto">
                 <!-- <i class="dot u-icn u-icn-68 f-alpha"></i> -->
             </a>
             <div class="info">
                 <p>
-                    <a href="/user/home?id=1308927796" class="name" title="追逐萌萌的你">追逐萌萌的你</a>
+                    <a @click="routerTo(user.userId, 'home')" class="name" title="追逐萌萌的你">{{user.nickName}}</a>
                     &nbsp;<i class="icn icn-v"></i>
-                    <i class="icn icn-female"></i>
+                    <i class="icn" :class="userSex"></i>
                 </p>
                 <p>
-                    <a href="/user/event?id=1308927796">
+                    <a @click="routerTo(user.userId, 'events')">
                         动态<em class="s-fc7">0</em>
                     </a>
                     <span class="line">|</span>
-                    <a href="/user/follows?id=1308927796">
+                    <a @click="routerTo(user.userId, 'follows')">
                         关注<em class="s-fc7">9</em>
                     </a>
                     <span class="line">|</span>
-                    <a href="/user/fans?id=1308927796">
+                    <a @click="routerTo(user.userId, 'fans')">
                         粉丝<em class="s-fc7">4</em>
                     </a>
                 </p>
-                <p class="s-fc3 f-thide">雨后江岸破晓</p>
+                <p class="s-fc3 f-thide">{{user.description}}</p>
             </div>
             <div class="oper">
                 <button>发私信</button>
@@ -36,6 +36,26 @@
 
 <script>
 
+export default {
+    data() {
+        return {
+            defaultPhoto: "http://p1.music.126.net/VnZiScyynLG7atLIZ2YPkw==/18686200114669622.jpg?param=60y60"
+        }
+    },
+    props: {
+        user: {}
+    },
+    computed: {
+        userSex() {
+            return `icn-${this.user.userSex === 1 ? 'male' : 'female'}`
+        }
+    },
+    methods: {
+        routerTo(userId, type) {
+            this.$router.push({ path: `/user/${type}`, query: { id: userId }});
+        }
+    }
+}
 </script>
 
 <style lang="stylus" scoped>

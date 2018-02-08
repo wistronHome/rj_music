@@ -1,6 +1,6 @@
 <template>
     <div class="wrap">
-        <rj-user-proifo></rj-user-proifo>
+        <rj-user-proifo :user="user"></rj-user-proifo>
         <div class="record-title">
             <h3>听歌排行</h3>
             <h4>累积听歌3697首</h4>
@@ -46,13 +46,25 @@ export default {
                 { label: '专辑', key: 'album' },
                 { label: '时间', key: 'time' }
             ],
+            user: {},
             sheets: [1,2,3,4,5,6,7]
         }
+    },
+    created() {
+        this.$http.get(`/api/user/${this.$route.query.id}`).then(result => {
+            this.user = result.body.data;
+        });
     },
     methods: {
         click(param) {
             alert(param);
         }
+    },
+    beforeRouteUpdate (to, from, next) {
+        this.$http.get(`/api/user/${to.query.id}`).then(result => {
+            this.user = result.body.data;
+        });
+        next();
     }
 }
 </script>

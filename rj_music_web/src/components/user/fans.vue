@@ -1,11 +1,11 @@
 <template>
     <div class="wrap">
-        <rj-user-proifo></rj-user-proifo>
+        <rj-user-proifo :user="user"></rj-user-proifo>
         <div style="margin-bottom: 20px" class="record-title">
-            <h3>粉丝（4）</h3>
+            <h3>粉丝（{{fans.length}}）</h3>
         </div>
         <div class="fans-wrap" style="font-size: 0;text-align: left;">
-            <rj-simple-proifo class="fan-item" v-for="(fan, index) in fans" :key="index"></rj-simple-proifo>
+            <rj-simple-proifo class="fan-item" v-for="(fan, index) in fans" :user="fan" :key="index"></rj-simple-proifo>
         </div>
     </div>
 </template>
@@ -14,8 +14,26 @@
 export default {
     data() {
         return {
-            fans: [1, 2, 3, 4]
+            user: {},
+            fans: []
         }
+    },
+    created() {
+        this.$http.get(`/api/user/${this.$route.query.id}`).then(result => {
+            this.user = result.body.data;
+        });
+        this.$http.get(`/api/user/fans/${this.$route.query.id}`).then(result => {
+            this.fans = result.body.data;
+        })
+    },
+    beforeRouteUpdate (to, from, next) {
+        this.$http.get(`/api/user/${to.query.id}`).then(result => {
+            this.user = result.body.data;
+        });
+        this.$http.get(`/api/user/fans/${to.query.id}`).then(result => {
+            this.fans = result.body.data;
+        });
+        next();
     }
 }
 </script>

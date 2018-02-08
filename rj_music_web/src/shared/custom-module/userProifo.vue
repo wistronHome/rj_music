@@ -2,9 +2,9 @@
 <!-- 用户个人信息详细展示组件 -->
 <div class="proifo-wrap">
     <div class="proifo-photo">
-        <img src="http://p1.music.126.net/Z-uuiFpLamYHJJb37dIS8A==/18867619533087863.jpg?param=180y180">
+        <img :src="user.photo || defaultPhoto">
         <div class="btm">
-            <a href="/user/update?id=323401262&amp;sub=ava" class="upload">更换头像</a>
+            <a  class="upload">更换头像</a>
         </div>
     </div>
     <div style="width: 670px;margin-left: 180px;">
@@ -14,8 +14,8 @@
                     <a href="/user/update?id=323401262" hidefocus="true" class="u-btn2 u-btn2-1"><i>编辑个人资料</i></a>
                 </div>
                 <h2 class="name-wrap">
-                    <span class="title">把酒言初心_</span>
-                    <i class="icn"></i>
+                    <span class="title">{{user.nickName}}</span>
+                    <i class="icn" :class="userSex"></i>
                 </h2>
             </div>
         </div>
@@ -23,27 +23,27 @@
     <ul class="data">
         <li class="fst">
             <a>
-                <strong>14</strong>
+                <strong>{{user.eventNum || 0}}</strong>
                 <span>动态</span>
             </a>
         </li>
         <li>
             <a @click="routerToFollows($event)">
-                <strong>14</strong>
+                <strong>{{user.followsNum || 0}}</strong>
                 <span>关注</span>
             </a>
         </li>
         <li>
             <a @click="routerToFans($event)">
-                <strong>4</strong>
+                <strong>{{user.fansNum || 0}}</strong>
                 <span>粉丝</span>
             </a>
         </li>
     </ul>
-    <div class="inf">个人介绍：一个fingerpicking&coding都非常努力的人。</div>
+    <div class="inf" v-if="user.description">个人介绍：<span v-html="user.description"></span></div>
     <div class="inf">
-        <span>所在地区：湖北省 - 荆门市 </span>
-        <span style="margin-left: 20px;">年龄：90后</span>
+        <span v-if="user.address" style="margin-right: 20px;">所在地区： {{user.address}} </span>
+        <span v-if="user.age">年龄：{{user.age}}</span>
     </div>
 </div>
 </template>
@@ -51,14 +51,27 @@
 <script>
 export default {
     data() {
-        return {}
+        return {
+            defaultPhoto: "http://p1.music.126.net/VnZiScyynLG7atLIZ2YPkw==/18686200114669622.jpg?param=180y180"
+        }
+    },
+    props: {
+        user: {
+            type: Object,
+            default: {}
+        }
+    },
+    computed: {
+        userSex() {
+            return `icn-${this.user.userSex === 1 ? 'male' : 'female'}`;
+        }
     },
     methods: {
         routerToFollows(event) {
-            this.$router.push({ path: '/user/follows', query: { id: '123123' }});
+            this.$router.push({ path: '/user/follows', query: { id: this.$route.query.id }});
         },
         routerToFans() {
-            this.$router.push({ path: '/user/fans', query: { id: '123123' }});
+            this.$router.push({ path: '/user/fans', query: { id: this.$route.query.id }});
         }
     }
 }
@@ -182,13 +195,18 @@ $icon = "../../assets/icon.png";
             width: 20px;
             height: 20px;
             background url($icon) no-repeat;
-            background-position: -41px -57px;
             display: inline-block;
             overflow: hidden;
             vertical-align: middle;
             font-style: normal;
             text-align: left;
             font-size: inherit;
+        }
+        .icn-male {
+            background-position: -41px -57px;
+        }
+        .icn-female {
+            background-position: -41px -27px;
         }
     }
     .data {

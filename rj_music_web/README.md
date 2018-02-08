@@ -3,7 +3,7 @@
 > vue全家桶
 
 ## Build Setup
-
+# i:下载nodejs --> ii:到rj_music_web目录下shift右键“在此处打开命令行” --> iii: 运行npm install(或者cnpm install) -->iv:安装完成后 运行npm start
 ``` bash
 # install dependencies
 npm install

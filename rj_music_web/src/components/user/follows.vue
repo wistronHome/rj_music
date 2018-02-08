@@ -1,11 +1,11 @@
 <template>
     <div class="wrap">
-         <rj-user-proifo></rj-user-proifo>
+         <rj-user-proifo :user="user"></rj-user-proifo>
          <div style="margin-bottom: 20px" class="record-title">
-            <h3>关注（14）</h3>
+            <h3>关注（{{follows.length}}）</h3>
         </div>
         <div class="fans-wrap" style="font-size: 0;text-align: left;">
-            <rj-simple-proifo class="fan-item" v-for="(follow, index) in follows" :key="index"></rj-simple-proifo>
+            <rj-simple-proifo class="fan-item" v-for="(follow, index) in follows" :user="follow" :key="index"></rj-simple-proifo>
         </div>
     </div>
 </template>
@@ -13,13 +13,27 @@
 <script>
 export default {
     data() {
-        let f = [];
-        for (let i = 0; i < 14; i++) {
-            f.push(i);
-        }
         return {
-            follows: f
+            follows: [],
+            user: {}
         }
+    },
+    created() {
+        this.$http.get(`/api/user/${this.$route.query.id}`).then(result => {
+            this.user = result.body.data;
+        });
+        this.$http.get(`/api/user/follows/${this.$route.query.id}`).then(result => {
+            this.follows = result.body.data;
+        });
+    },
+    beforeRouteUpdate (to, from, next) {
+        this.$http.get(`/api/user/${to.query.id}`).then(result => {
+            this.user = result.body.data;
+        });
+        this.$http.get(`/api/user/follows/${to.query.id}`).then(result => {
+            this.follows = result.body.data;
+        });
+        next();
     }
 }
 </script>

@@ -1,5 +1,5 @@
 <template>
-    <button class="rj-btn"
+    <button class="rj-btn" :title="title || $slots.default[0].text"
         :class="{ 'rj-btn-disabled': disabled }">
         <span :class="clazz"><slot></slot></span>
     </button>
@@ -15,6 +15,10 @@
             disabled: {
                 type: Boolean,
                 default: false
+            },
+            title: {
+                type: String,
+                default: ''
             }
         },
         computed: {
@@ -60,9 +64,9 @@ $btn2= "../../assets/button2.png";
     }
     span {
         float left
+        padding: 0 7px 0 36px;
         padding-right: 2px;
         padding-left: 28px;
-        padding: 0 7px 0 36px;
         height: 31px;
         line-height: 30px;
         min-width: 23px;
