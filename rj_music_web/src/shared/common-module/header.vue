@@ -62,6 +62,9 @@
     export default {
         created() {
             this.loginUser = CommonUtil.getLoginUser();
+            setTimeout(() => {
+                this.$store.commit('CURRENT_SONG', "./demo1");
+            }, 1000);
         },
         components: {Dropdown, Avatar, DropdownMenu, DropdownItem},
         data() {
@@ -144,7 +147,7 @@
                 }
             },
             changeRouter(params) {
-                this.$router.push({ path: params, query: { id: '123456' }});
+                this.$router.push({ path: params, query: { id: '123' }});
             }
         }
     }

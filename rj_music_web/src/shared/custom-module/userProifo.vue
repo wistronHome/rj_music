@@ -109,8 +109,9 @@ $icon = "../../assets/icon.png";
             position: absolute;
             background: #8e8e8e;
             opacity: 0.8;
-            left: 4px;
-            bottom: 3px;
+            left: 0px;
+            bottom: 0px;
+            user-select none
             display: block;
             width: 180px;
             height: 26px;
@@ -224,6 +225,10 @@ $icon = "../../assets/icon.png";
             padding: 0 40px 0 20px;
             border-left: 1px solid #ddd;
             list-style none
+            user-select none
+            * {
+                user-select none
+            }
             a {
                 display: inline-block;
                 position: relative;

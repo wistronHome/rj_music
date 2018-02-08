@@ -2,7 +2,7 @@
     <div class="footer-wrap">
         <div class="btns">
             <a class="prev" title="上一首(ctrl+←)">上一首</a>
-            <a class="play j-flag" title="播放/暂停(p)">播放/暂停</a>
+            <a class="j-flag" :class="playBtnClass" @click="playBtnClick()" title="播放/暂停(p)">播放/暂停</a>
             <a class="next" title="下一首(ctrl+→)">下一首</a>
         </div>
         <div class="head">
@@ -21,12 +21,12 @@
             </div>
             <div class="m-pbar">
                 <div class="barbg">
-                    <div class="rdy" style="width: 0%;"></div>
-                    <div class="cur" style="width:0%;">
+                    <div class="rdy" style="width: 0%"></div>
+                    <div class="cur" :style="{width: progress + '%'}">
                         <span class="btn"></span>
                     </div>
                 </div>
-                <span class="j-flag time"><em>00:00</em> / 00:00</span>
+                <span class="j-flag time"><em>{{currentTime}}</em> / <em>{{totalTime}}</em></span>
             </div>
         </div>
         <div class="operation">
@@ -36,9 +36,9 @@
         <div class="control">
             <div class="m-vol">
                 <div class="barbg"></div>
-                <div class="vbg">
-                    <div class="curr" style="height: 74.4px;"></div>
-                    <span class="btn" style="top: 16.2px;"></span>
+                <div @mousedown.left="changeVolumn($event)" class="vbg">
+                    <div class="curr" :style="{ 'height': volHeight + '%' }"></div>
+                    <span class="btn" :style="{ 'top': 93 * (100 - volHeight) / 100 + 'px' }"></span>
                 </div>
             </div>
             <a class="icn icn-vol"></a>
@@ -48,14 +48,20 @@
             </span>
             <div class="tip tip-1" style="display:none;">循环</div>
         </div>
-        <rj-player :emit="emit"></rj-player>
+        <audio ref="audio" controls="controls" style="position: absolute;left: 50%;top: -50px"
+            @timeupdate="handleTimeupdate"
+            @canplay="handleCanPlay">
+            <source src="./demo3.mp3" type="audio/mpeg">
+            Your browser does not support the audio tag.
+        </audio>
+        <!-- <rj-player :emit="emit"></rj-player> -->
     </div>
 </template>
 
 <script type="text/ecmascript-6">
     import player from "./player.vue";
     import Vue from "vue";
-
+    let _clientY = 0, _volumn;
     export default {
         data() {
             return {
@@ -66,15 +72,113 @@
                     currentTime: 0,
                     duration: 0,
                     circleStyle: 0
-                }
+                },
+                // musicSrc: null,
+                paused: true,
+                volume: 0,
+                duration: 0,
+                cTime: 0
             }
         },
         components: {
             'rj-player': player
         },
+        created() {
+            // this.musicSrc = "..";
+
+        },
+        mounted() {
+            // setInterval(() => {
+            //     this.volume = Math.random();
+            //     this.$refs.audio.volume = this.volume;
+            // }, 2000);
+            this.volume = 0.5;
+            this.$refs.audio.volume = this.volume;
+        },
+        computed: {
+            musicSrc() {
+                let _cs = this.$store.getters['current_song'];
+                return _cs;
+            },
+            playBtnClass() {
+                return this.paused ? 'pause' : 'play';
+            },
+            totalTime() {
+                let m = Math.trunc(this.duration / 60);
+                let s = Math.trunc(this.duration - m * 60);
+                return (m >= 10 ? m : '0' + m) + ':' + (s >= 10 ? s : '0' + s);
+            },
+            currentTime() {
+                let m = Math.floor(this.cTime / 60);
+                let s = Math.floor(this.cTime - m * 60);
+                return (m >= 10 ? m : '0' + m) + ':' + (s >= 10 ? s : '0' + s);
+            },
+            volHeight() {
+                return this.volume * 100;
+            },
+            progress() {
+                return this.cTime / this.duration * 100;
+            }
+        },
         methods: {
             routerToSong(id) {
                 this.$router.push({path: '/song', query: { id }})
+            },
+            playBtnClick() {
+                this.paused = !this.paused;
+                this.$refs.audio[this.paused ? 'pause' : 'play']();
+            },
+            /**
+             * @description 音量事件起点
+             */
+            changeVolumn(event) {
+                let clsName = event.target.className;
+                if (clsName === 'vbg') {
+                    this.volume = 1 - event.offsetY / 92;
+                } else if (clsName === 'curr') {
+                    this.volume = (event.target.clientHeight - event.offsetY) / 92;
+                } else {
+                    // keydown在圆圈上  不做处理
+                }
+                _clientY = event.clientY; // 记录初始高度
+                _volumn = this.volume;  // 记录改变后的音量
+                // 点击音量条上 鼠标不松开  也要拖拽
+                document.addEventListener('mousemove', this._handleMouseMove);
+                document.addEventListener('mouseup', this._handleMouseUp);
+            },
+            /**@description mousemove处理音量事情 */
+            _handleMouseMove(event) {
+                let _height = event.clientY - _clientY;
+                if (_height < 0) {
+                    if (Math.abs(_height) < 92 * (1 - _volumn)) {
+                        this.volume = _volumn + Math.abs(_height) / 92;
+                    } else {
+                        this.volume = 1;
+                    }
+                } else {
+                    if (_height < 92 * _volumn) {
+                        this.volume = _volumn - Math.abs(_height) / 92;
+                    } else {
+                        this.volume = 0
+                    }
+                }
+            },
+            _handleMouseUp() {
+                document.removeEventListener('mousemove', this._handleMouseMove);
+                document.removeEventListener('mouseup', this._handleMouseUp);
+            },
+            handleCanPlay(event) {
+                this.duration = Math.trunc(event.target.duration);
+                this.volume = event.target.volume;
+                console.log('canplay', event.target, event.target.volume)
+            },
+            handleTimeupdate(event) {
+                this.cTime = event.target.currentTime;
+            }
+        },
+        watch: {
+            volume(cur) {
+                this.$refs.audio.volume = cur;
             }
         }
     }
@@ -114,13 +218,21 @@ $iconall = "../../assets/iconall.png";
                 background-position: -30px -130px;
             }
         }
-        .play {
+        .play, .pause {
             width: 36px;
             height: 36px;
             margin-top: 0;
+        }
+        .pause {
             background-position: 0 -204px;
             &:hover {
                 background-position: -40px -204px;
+            }
+        }
+        .play {
+            background-position: 0 -165px;
+            &:hover {
+                background-position: -40px -165px;
             }
         }
         .next {
@@ -242,7 +354,7 @@ $iconall = "../../assets/iconall.png";
                     color #a1a1a1;
                     font-style: normal;
                     text-align: left;
-                    font-size: inherit;
+                    font-size: 12px;
                 }
             }
         }
@@ -296,15 +408,15 @@ $iconall = "../../assets/iconall.png";
             }
             .vbg {
                 position: absolute;
-                padding 4px 0
-                top: 7px;
+                padding 0
+                top: 12px;
                 left: 14px;
                 width: 4px;
                 height: 93px;
                 .curr {
                     position absolute
                     top: auto;
-                    bottom: -3px;
+                    bottom: 0px;
                     left: 0;
                     width 4px
                     background url($playbar) no-repeat 0 9999px
@@ -314,6 +426,7 @@ $iconall = "../../assets/iconall.png";
                 .btn {
                     position: absolute;
                     top: 0;
+                    margin-top -9px
                     left: -7px;
                     display: block;
                     width: 18px;

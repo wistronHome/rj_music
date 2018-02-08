@@ -86,7 +86,7 @@ $icon = "../../assets/icon.png"
                     vertical-align: middle;
                 }
                 .tit {
-                    // margin-left: 64px;
+                    user-select none
                     display inline-block
                     margin-left 5px
                     position: relative;
@@ -95,6 +95,7 @@ $icon = "../../assets/icon.png"
                 .des {
                     color #999
                     margin 10px 0
+                    user-select none
                     a {
                         color #0c73c2
                         &:hover {

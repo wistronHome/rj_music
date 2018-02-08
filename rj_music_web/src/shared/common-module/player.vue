@@ -1,7 +1,7 @@
 <template>
     <div>
         <audio ref="audio" controls="controls" style="position: absolute;left: 50%;top: -50px">
-            <!-- <source src="./demo.mp3" type="audio/mpeg"> -->
+            <source src="./demo1.mp3" type="audio/mpeg">
             Your browser does not support the audio tag.
         </audio>
     </div>

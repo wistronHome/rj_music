@@ -44,11 +44,13 @@ export default {
             left: 0;
             right: 0;
             top: 0;
-            bottom: 0;
         }
         .rj-footer {
             height: 53px;
-            position relative;
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
             zoom: 1;
             background: url("./assets/playbar.png") repeat-x 0 0;
         }

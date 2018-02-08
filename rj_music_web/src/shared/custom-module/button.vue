@@ -31,6 +31,9 @@
 
 <style lang="stylus" scoped>
 $btn2= "../../assets/button2.png";
+* {
+    user-select none
+}
 .rj-btn {
     font-family simsun,\5b8b\4f53;
     color #333
