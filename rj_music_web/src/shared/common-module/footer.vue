@@ -20,8 +20,8 @@
                 </span>
             </div>
             <div class="m-pbar">
-                <div class="barbg">
-                    <div class="rdy" style="width: 0%"></div>
+                <div id="progress" @mousedown.left="changeProgress($event)" class="barbg">
+                    <div class="rdy" style="width: 80%"></div>
                     <div class="cur" :style="{width: progress + '%'}">
                         <span class="btn"></span>
                     </div>
@@ -36,7 +36,7 @@
         <div class="control">
             <div class="m-vol">
                 <div class="barbg"></div>
-                <div @mousedown.left="changeVolumn($event)" class="vbg">
+                <div id="volume" @mousedown.left="changeVolumn($event)" class="vbg">
                     <div class="curr" :style="{ 'height': volHeight + '%' }"></div>
                     <span class="btn" :style="{ 'top': 93 * (100 - volHeight) / 100 + 'px' }"></span>
                 </div>
@@ -48,8 +48,9 @@
             </span>
             <div class="tip tip-1" style="display:none;">循环</div>
         </div>
-        <audio ref="audio" controls="controls" style="position: absolute;left: 50%;top: -50px"
+        <audio ref="audio" controls="controls" style="display: none;"
             @timeupdate="handleTimeupdate"
+            @ended="handleEnded"
             @canplay="handleCanPlay">
             <source src="./demo3.mp3" type="audio/mpeg">
             Your browser does not support the audio tag.
@@ -61,7 +62,12 @@
 <script type="text/ecmascript-6">
     import player from "./player.vue";
     import Vue from "vue";
-    let _clientY = 0, _volumn;
+    let _clientY = 0,
+        _clientX = 0,
+        _volumn,
+        _volumeHeight = 0,
+        _progress = 0,
+        _progressWidth = 0;
     export default {
         data() {
             return {
@@ -74,10 +80,12 @@
                     circleStyle: 0
                 },
                 // musicSrc: null,
+                progress: 0,
                 paused: true,
                 volume: 0,
                 duration: 0,
-                cTime: 0
+                cTime: 0,
+                currentTime: '00:00'
             }
         },
         components: {
@@ -88,10 +96,6 @@
 
         },
         mounted() {
-            // setInterval(() => {
-            //     this.volume = Math.random();
-            //     this.$refs.audio.volume = this.volume;
-            // }, 2000);
             this.volume = 0.5;
             this.$refs.audio.volume = this.volume;
         },
@@ -108,16 +112,13 @@
                 let s = Math.trunc(this.duration - m * 60);
                 return (m >= 10 ? m : '0' + m) + ':' + (s >= 10 ? s : '0' + s);
             },
-            currentTime() {
-                let m = Math.floor(this.cTime / 60);
-                let s = Math.floor(this.cTime - m * 60);
-                return (m >= 10 ? m : '0' + m) + ':' + (s >= 10 ? s : '0' + s);
-            },
+            // currentTime() {
+            //     let m = Math.floor(this.cTime / 60);
+            //     let s = Math.floor(this.cTime - m * 60);
+            //     return (m >= 10 ? m : '0' + m) + ':' + (s >= 10 ? s : '0' + s);
+            // },
             volHeight() {
                 return this.volume * 100;
-            },
-            progress() {
-                return this.cTime / this.duration * 100;
             }
         },
         methods: {
@@ -133,10 +134,11 @@
              */
             changeVolumn(event) {
                 let clsName = event.target.className;
+                _volumeHeight = document.getElementById('volume').clientHeight;
                 if (clsName === 'vbg') {
-                    this.volume = 1 - event.offsetY / 92;
+                    this.volume = 1 - event.offsetY / _volumeHeight;
                 } else if (clsName === 'curr') {
-                    this.volume = (event.target.clientHeight - event.offsetY) / 92;
+                    this.volume = (event.target.clientHeight - event.offsetY) / _volumeHeight;
                 } else {
                     // keydown在圆圈上  不做处理
                 }
@@ -150,35 +152,81 @@
             _handleMouseMove(event) {
                 let _height = event.clientY - _clientY;
                 if (_height < 0) {
-                    if (Math.abs(_height) < 92 * (1 - _volumn)) {
-                        this.volume = _volumn + Math.abs(_height) / 92;
+                    if (Math.abs(_height) < _volumeHeight * (1 - _volumn)) {
+                        this.volume = _volumn + Math.abs(_height) / _volumeHeight;
                     } else {
                         this.volume = 1;
                     }
                 } else {
-                    if (_height < 92 * _volumn) {
-                        this.volume = _volumn - Math.abs(_height) / 92;
+                    if (_height < _volumeHeight * _volumn) {
+                        this.volume = _volumn - Math.abs(_height) / _volumeHeight;
                     } else {
                         this.volume = 0
                     }
                 }
             },
             _handleMouseUp() {
+                if (_progress) {
+                    this.$refs.audio.currentTime = this.progress / 100 * this.duration;
+                }
+                _progress = 0;
                 document.removeEventListener('mousemove', this._handleMouseMove);
+                document.removeEventListener('mousemove', this._handleProgressMove);
                 document.removeEventListener('mouseup', this._handleMouseUp);
+            },
+            changeProgress(event) {
+                _progressWidth = document.getElementById('progress').clientWidth;
+                if (event.target.className !== 'btn') {
+                    this.$refs.audio.currentTime = event.offsetX / _progressWidth * this.duration;
+                } else {
+                    _clientX = event.clientX;
+                    _progress = this.progress;
+                    document.addEventListener('mousemove', this._handleProgressMove);
+                    document.addEventListener('mouseup', this._handleMouseUp);
+                }
+            },
+            _handleProgressMove(event) {
+                let _width = event.clientX - _clientX;
+                if (_width < 0) {
+                    if (Math.abs(_width) < _progress / 100 * _progressWidth) {
+                        this.progress = _progress - Math.abs(_width) / _progressWidth * 100;
+                    } else {
+                        this.progress = 0;
+                    }
+                } else {
+                    if (_width < (100 - _progress) / 100 * _progressWidth) {
+                        this.progress = _progress + _width / _progressWidth * 100;
+                    } else {
+                        this.progress = 100;
+                    }
+                }
+                let _cur = this.progress * this.duration / 100;
+                let m = Math.floor(_cur / 60);
+                let s = Math.floor(_cur - m * 60);
+                this.currentTime = (m >= 10 ? m : '0' + m) + ':' + (s >= 10 ? s : '0' + s);
             },
             handleCanPlay(event) {
                 this.duration = Math.trunc(event.target.duration);
                 this.volume = event.target.volume;
-                console.log('canplay', event.target, event.target.volume)
             },
             handleTimeupdate(event) {
                 this.cTime = event.target.currentTime;
+            },
+            handleEnded(event) {
+                this.paused = true;
             }
         },
         watch: {
             volume(cur) {
                 this.$refs.audio.volume = cur;
+            },
+            cTime(cur) {
+                if (!_progress) {
+                    this.progress = cur / this.duration * 100;
+                    let m = Math.floor(cur / 60);
+                    let s = Math.floor(cur - m * 60);
+                    this.currentTime = (m >= 10 ? m : '0' + m) + ':' + (s >= 10 ? s : '0' + s);
+                }
             }
         }
     }
@@ -263,6 +311,9 @@ $iconall = "../../assets/iconall.png";
         position: relative;
         width: 608px;
         float left
+        * {
+            user-select none
+        }
         .words {
             height: 28px;
             overflow: hidden;
@@ -316,7 +367,7 @@ $iconall = "../../assets/iconall.png";
             position relative
             .barbg {
                 height 9px
-                width 487px
+                // width 487px
                 background url($statbar) no-repeat 0 9999px
                 background-position right 0
                 .rdy {
@@ -335,7 +386,7 @@ $iconall = "../../assets/iconall.png";
                     .btn {
                         position: absolute;
                         top: -7px;
-                        right: -13px;
+                        right: -11px;
                         width: 22px;
                         height: 24px;
                         margin-left: -11px;

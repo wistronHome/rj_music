@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "supervisor -w src ./bin/www"
   },
   "dependencies": {
     "body-parser": "~1.17.1",
@@ -16,5 +16,8 @@
     "morgan": "~1.8.1",
     "serve-favicon": "~2.4.2",
     "socket.io": "^2.0.4"
+  },
+  "devDependencies": {
+    "@types/node": "^8.9.1"
   }
 }
