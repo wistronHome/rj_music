@@ -19,4 +19,7 @@ router.put('/', (req, res, next) => {
 router.post('/', (req, res, next) => {
     userService.updateItem(req.body).then(result => res.send(result), failed => res.send(failed));
 });
+router.post('/login', (req, res) => {
+    userService.login(req.body).then(result => res.send(result), failed => res.send(failed));
+});
 module.exports = router;

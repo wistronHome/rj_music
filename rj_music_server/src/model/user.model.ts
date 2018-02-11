@@ -13,6 +13,13 @@ export let User = Db.getInstance().getConnection().model('User', new mongoose.Sc
         select: true,
         required: true
     },
+    userCode: {
+        type: String,
+        unique: true
+    },
+    password: {
+        type: String
+    },
     sex: {
         type: Number, // 1: 男 2: 女 3: 未知
         default: 3

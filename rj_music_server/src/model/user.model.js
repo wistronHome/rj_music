@@ -13,6 +13,13 @@ exports.User = db_1.Db.getInstance().getConnection().model('User', new mongoose.
         select: true,
         required: true
     },
+    userCode: {
+        type: String,
+        unique: true
+    },
+    password: {
+        type: String
+    },
     sex: {
         type: Number,
         default: 3

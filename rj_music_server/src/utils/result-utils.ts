@@ -1,14 +1,17 @@
+import { ResultCode } from "./index";
+import { ResultMsg } from './result-code'
+
 export class ResultUtils {
-    static success(code: number = 0, msg: string = '', data: any = []) {
-        return new Result(code, msg, data);
+    static success(data: any = []) {
+        return new Result(ResultCode.SUCCESS, new ResultMsg(ResultCode.SUCCESS).msg, data);
     }
 
-    static error(code: number = -1, msg: string, data: any = {}) {
-        return new Result(code, msg, data);
+    static error(code: number = -1, msg: string = "") {
+        return new Result(code, msg || new ResultMsg(code).msg, "");
     }
 
     static result(code: number, msg: string, data: any) {
-        return new Result(code, msg, data);
+        return new Result(code,  msg || new ResultMsg(code).msg, data);
     }
 }
 

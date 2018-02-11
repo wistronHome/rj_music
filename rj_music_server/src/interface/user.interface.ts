@@ -9,4 +9,9 @@ export interface UserInterface extends CommonInterface<any> {
      * @param user
      */
     register(user);
+    /**
+     * 用户登录
+     * @param user
+     */
+    login(user): Promise<any>;
 }
