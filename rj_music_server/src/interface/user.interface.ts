@@ -4,5 +4,9 @@
 import { CommonInterface } from "./common.interface";
 
 export interface UserInterface extends CommonInterface<any> {
+    /**
+     * 注册用户
+     * @param user
+     */
     register(user);
 }

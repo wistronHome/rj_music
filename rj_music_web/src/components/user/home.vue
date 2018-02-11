@@ -27,6 +27,8 @@
 </template>
 
 <script type="text/ecmascript-6">
+import { UserServer, User } from '../../core/model-server/user-server';
+// let $userServer = require('../../core/model-server/user-server');
 export default {
     data() {
         return {
@@ -51,6 +53,7 @@ export default {
         }
     },
     created() {
+        // new UserServer().getUser
         this.$http.get(`/api/user/${this.$route.query.id}`).then(result => {
             this.user = result.body.data;
         });

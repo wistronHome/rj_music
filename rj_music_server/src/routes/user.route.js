@@ -11,15 +11,12 @@ router.get('/', (req, res, next) => {
     res.send('this is userItem');
 });
 router.get('/:id', (req, res, next) => {
-    userService.getItemByPrimary(req.params.id).then(result => {
-        res.send(result);
-    }, failed => res.send(failed));
+    userService.getItemByPrimary(req.params.id).then(result => res.send(result), failed => res.send(failed));
 });
 router.put('/', (req, res, next) => {
-    userService.register(req.body).then(result => {
-        res.send(result);
-    }, failed => {
-        res.send(failed);
-    });
+    userService.register(req.body).then(result => res.send(result), failed => res.send(failed));
+});
+router.post('/', (req, res, next) => {
+    userService.updateItem(req.body).then(result => res.send(result), failed => res.send(failed));
 });
 module.exports = router;

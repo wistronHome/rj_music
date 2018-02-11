@@ -2,7 +2,9 @@
  * Created by GyjLoveLh on  2018/2/9
  */
 import { UserInterface } from "../interface/user.interface";
-import * as User from "../model/user.model";
+import { User } from '../model/user.model'
+import { CommonUtil } from '../common-util'
+import { ResultUtils, ResultCode } from "../utils";
 
 export class UserService implements UserInterface {
 
@@ -13,13 +15,9 @@ export class UserService implements UserInterface {
 
     getItemByPrimary(id) {
         return new Promise((resolve, reject) => {
-            User['findOne']({userId: id}, {userId: 1, nickName: 1}, {}, (err, user) => {
-                console.log(user);
-                if (err) {
-                    reject({ code: -1 });
-                } else {
-                    resolve({ code: 0, data: user});
-                }
+            User.findOne({userId: id}).select('*').exec((err, result) => {
+                err ? reject(ResultUtils.result(ResultCode.WEAK_NET_WORK, err, '')) 
+                    : resolve(ResultUtils.result(ResultCode.SUCCESS, '', result));        
             });
         })
     }
@@ -28,6 +26,16 @@ export class UserService implements UserInterface {
     }
 
     updateItem(item) {
+        return new Promise((resolve, reject) => {
+            item.updatedtime = new Date();
+            User.update(
+                { userId: item.userId },
+                { $set: item } 
+            ).exec(err => {
+                err ? reject(ResultUtils.result(ResultCode.WEAK_NET_WORK, err, '')) 
+                    : resolve(ResultUtils.result(ResultCode.SUCCESS, '', ''));
+            });
+        });
     }
 
     insertItem(item) {
@@ -35,17 +43,16 @@ export class UserService implements UserInterface {
 
     register(user) {
         return new Promise((resolve, reject) => {
-            console.log(user);
-            if (user.nickName) {
-                User['create'](user, err => {
-                    if (err) {
-                        reject({ code: -1 })
-                    } else {
-                        resolve({ code: 0 })
-                    }
-                });
-            }
+            user.userId = CommonUtil.createUuid();
+            User.create(user, err => {
+                if (err) {
+                    reject(ResultUtils.error(ResultCode.SUCCESS, err));
+                } else {
+                    resolve(ResultUtils.success(user));
+                }
+            });
         });
     }
 
 }
+

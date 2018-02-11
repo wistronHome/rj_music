@@ -6,9 +6,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose = require("mongoose");
 const db_1 = require("../db-config/db");
 //
-module.exports = db_1.Db.getInstance().getConnection().model('User', new mongoose.Schema({
+// default/doValidate/get/getDefault/index/required/select/set/sparse/unique/validate/_idRef
+exports.User = db_1.Db.getInstance().getConnection().model('User', new mongoose.Schema({
     userId: {
         type: String,
+        select: true,
         required: true
     },
     sex: {
@@ -18,7 +20,11 @@ module.exports = db_1.Db.getInstance().getConnection().model('User', new mongoos
     nickName: {
         type: String,
         unique: true,
-        default: ''
+        select: true,
+        default: '',
+        validate: [
+            { validator: (val) => { return val !== 'abcde'; }, msg: '啦啦啦啦' }
+        ]
     },
     photo: {
         type: String
@@ -30,6 +36,17 @@ module.exports = db_1.Db.getInstance().getConnection().model('User', new mongoos
         type: String
     },
     description: {
-        type: String
+        type: String,
+        select: true
+    },
+    createdtime: {
+        type: Date,
+        select: true,
+        default: new Date()
+    },
+    updatedtime: {
+        type: Date,
+        select: true,
+        default: new Date()
     }
 }));

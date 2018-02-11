@@ -2,12 +2,27 @@
  * Created by GyjLoveLh on  2018/2/9
  */
 export interface CommonInterface<T> {
+    /**
+     * 通用查询单挑
+     * @param id
+     */
+    getItemByPrimary(id: string);
 
-    getItemByPrimary(id);
+    /**
+     * 通用删除
+     * @param id
+     */
+    deleteItemByPrimary(id: string);
 
-    deleteItemByPrimary(id);
-
+    /**
+     * 通用修改
+     * @param item
+     */
     updateItem(item: T);
 
+    /**
+     * 通用新增
+     * @param item
+     */
     insertItem(item: T);
 }
