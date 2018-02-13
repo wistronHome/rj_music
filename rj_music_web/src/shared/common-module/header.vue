@@ -6,6 +6,7 @@
         <!--<Select style="width:200px" @on-change="changeRouter($event)">-->
             <!--<Option v-for="item in routers" :value="item.value" :key="item.value">{{ item.label }}</Option>-->
         <!--</Select>-->
+
         <div class="rj-login">
             <dropdown v-if="loginUser"  @on-click="handleDropMenuClick">
                 <a href="javascript:void(0)">
@@ -21,6 +22,26 @@
             </dropdown>
             <a v-else @click="openLoginPanel">登录</a>
         </div>
+
+        <AutoComplete
+            class="c-auto-com"
+            icon="ios-search"
+            placeholder="音乐/歌单/视频/歌手/用户">
+            <p class="c-note">搜"xxx"的结果 &nwarhk;</p>
+            <div class="rap">
+                <div class="rap-item" v-for="(item, index) in data4" :key="index">
+                    <h3>
+                        <Icon type="ios-musical-notes"></Icon>
+                        <span>{{ item.title }}</span>
+                    </h3>
+                    <div class="rap-body">
+                        <Option v-for="option in item.children" :value="option.title" :key="option.title">
+                            <span class="demo-auto-complete-title">{{ option.title }}</span>
+                        </Option>
+                    </div>
+                </div>
+            </div>
+        </AutoComplete>
 
         <Modal v-model="modal" width="500" :maskClosable="false" @onCancel="closeModel">
             <p slot="header" class="model-header">
@@ -85,14 +106,15 @@
         data() {
             return {
                 modal: false,
-                // routers: [
-                //     { label: '个人主页', value: '/user/home' },
-                //     { label: '个人设置', value: '/user/setting' },
-                //     { label: '粉丝', value: '/user/fans' },
-                //     { label: '关注', value: '/user/follows' },
-                //     { label: '歌曲详情', value: '/song' },
-                //     { label: '歌单详情', value: '/playlist' }
-                // ],
+                data4: [
+                    {
+                        title: '单曲',
+                        children: [
+                            { title: 'iView', count: 10000 },
+                            { title: 'iView UI', count: 10600 }
+                        ]
+                    }
+                ],
                 registerFormColumn: [
                     { label: '账号', prop: 'userCode', type: 'input' },
                     { label: '密码', prop: 'password', type: 'password' },
@@ -222,7 +244,7 @@
     }
 </script>
 
-<style lang="stylus" rel="stylesheet/stylus">
+<style lang="stylus" scoped>
     $radius = 4px
     .rj-header {
         h1 {
@@ -291,5 +313,46 @@
     }
     .ava-menu-span {
         margin-left 5px
+    }
+    .c-auto-com {
+        width:240px;
+        float: right;
+        margin: 16px 25px 0 0;
+        text-align: left;
+        .ivu-select-dropdown {
+            margin-bottom 0 !important
+        }
+        .c-note {
+            line-height 17px;
+            padding 4px 10px 7px 10px
+            border-bottom 1px solid #e2e2e2;
+            color #666;
+            font-size 12px
+        }
+        .rap {
+            &:nth-child(odd) {
+                .rap-body {
+                    background #f9f8f8
+                }
+            }
+            .rap-item {
+                display flex
+                h3 {
+                    flex 0 1 62px
+                    font-size normal
+                    line-height 17px
+                    padding 10px 0 0 10px
+                    span {
+                        font-size 12px
+                        font-weight 400
+                    }
+                }
+                .rap-body {
+                    flex 1 1 auto
+                    border-left 1px solid #e2e2e2
+                    border-bottom 1px solid #e2e2e2
+                }
+            }
+        }
     }
 </style>
