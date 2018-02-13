@@ -96,8 +96,8 @@ export default {
             this.$refs.user.validate(valid => {
                 if (valid) {
                     console.log(this.user)
-                    let { userId, nickName, description, sex, birthday } = this.user;
-                    this.$userService.modifyUser({ userId, nickName, description, sex, birthday }).then(result => {
+                    let { _id, nickName, description, sex, birthday } = this.user;
+                    this.$userService.modifyUser({ _id, nickName, description, sex, birthday }).then(result => {
                         this.$Message.success('修改成功');
                     }, failed => { this.$Message.error(failed.msg) });
                 } else {

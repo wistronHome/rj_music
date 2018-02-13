@@ -45,9 +45,9 @@ export default {
      * @param userId
      * @returns {Promise<any>}
      */
-    getUserById(userId) {
+    getUserById(_id) {
         return new Promise((resolve, reject) => {
-            Vue.http.get(`${$prefix}/${userId}`).then(result => {
+            Vue.http.get(`${$prefix}/${_id}`).then(result => {
                 result.body.code === 0 ? resolve(result.body) : reject(result.body);
             }, error => { throw new Error(error) });
         });
@@ -58,9 +58,9 @@ export default {
      * @param nickName
      * @returns {Promise<any>}
      */
-    validateNickName(userId, nickName) {
+    validateNickName(_id, nickName) {
         return new Promise((resolve, reject) => {
-            Vue.http.post(`${$prefix}/validateNickName`, { userId, nickName }).then(result => {
+            Vue.http.post(`${$prefix}/validateNickName`, { _id, nickName }).then(result => {
                 result.body.code === 0 ? resolve(result.body) : reject(result.body);
             }, error => { throw new Error(error) });
         });
@@ -87,6 +87,30 @@ export default {
     handleFollow(loginUserId, targetUserId) {
         return new Promise((resolve, reject) => {
             Vue.http.post(`${$prefix}/follow`, { loginUserId, targetUserId }).then(result => {
+                result.body.code === 0 ? resolve(result.body) : reject(result.body);
+            }, error => { throw new Error(error) });
+        });
+    },
+    /**
+     * 查询用户关注列表
+     * @param id
+     * @returns {Promise<any>}
+     */
+    getUserFollows(id) {
+        return new Promise((resolve, reject) => {
+            Vue.http.get(`${$prefix}/follows/${id}`).then(result => {
+                result.body.code === 0 ? resolve(result.body) : reject(result.body);
+            }, error => { throw new Error(error) });
+        });
+    },
+    /**
+     * 查询用户粉丝列表
+     * @param id
+     * @returns {Promise<any>}
+     */
+    getUserFans(id) {
+        return new Promise((resolve, reject) => {
+            Vue.http.get(`${$prefix}/fans/${id}`).then(result => {
                 result.body.code === 0 ? resolve(result.body) : reject(result.body);
             }, error => { throw new Error(error) });
         });

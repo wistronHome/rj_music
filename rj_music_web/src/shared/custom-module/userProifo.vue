@@ -3,22 +3,22 @@
 <div class="proifo-wrap">
     <div class="proifo-photo">
         <img :src="user.photo || defaultPhoto">
-        <div v-if="cUserId === user.userId" class="btm">
-            <a @click="$router.push({path: '/user/photo', query: { id: user.userId }})" class="upload">更换头像</a>
+        <div v-if="cUserId === user._id" class="btm">
+            <a @click="$router.push({path: '/user/photo', query: { id: user._id }})" class="upload">更换头像</a>
         </div>
     </div>
     <div style="width: 670px;margin-left: 180px;">
         <div class="name">
             <div class="f-cb">
                 <div class="edit">
-                    <a v-if="cUserId === user.userId" @click="routerToSetting(cUserId)" hidefocus="true" class="u-btn2 u-btn2-1"><i>编辑个人资料</i></a>
+                    <a v-if="cUserId === user._id" @click="routerToSetting(cUserId)" hidefocus="true" class="u-btn2 u-btn2-1"><i>编辑个人资料</i></a>
                 </div>
                 <h2 class="name-wrap">
                     <span class="title">{{user.nickName}}</span>
                     <i v-if="user.sex !== 3" class="icn" :class="userSex"></i>
                     <rj-button class="t-btn" :icon="'chat'">发私信</rj-button>
-                    <rj-button v-if="ship && ship.isFollow && !ship.isFan" class="t-btn" :icon="'checked'" :focusContent="'取消关注'" :hideIcon="true">已关注</rj-button>
-                    <rj-button v-if="ship && ship.isFollow && ship.isFan" class="t-btn" :icon="'circle'" :focusContent="'取消关注'" :hideIcon="true">相互关注</rj-button>
+                    <rj-button @click="handleCancelFollow" v-if="ship && ship.isFollow && !ship.isFan" class="t-btn" :icon="'checked'" :focusContent="'取消关注'" :hideIcon="true">已关注</rj-button>
+                    <rj-button @click="handleCancelFollow" v-if="ship && ship.isFollow && ship.isFan" class="t-btn" :icon="'circle'" :focusContent="'取消关注'" :hideIcon="true">相互关注</rj-button>
                     <rj-button @click="handleFollow" v-if="ship && !ship.isFollow" class="t-btn" :icon="'plus'" :btnType="'primary'">关&nbsp;&nbsp;注</rj-button>
                 </h2>
             </div>
@@ -27,19 +27,19 @@
     <ul class="data">
         <li class="fst">
             <a>
-                <strong>{{user.eventNum || 0}}</strong>
+                <strong>0</strong>
                 <span>动态</span>
             </a>
         </li>
         <li>
             <a @click="routerToFollows($event)">
-                <strong>{{user.followsNum || 0}}</strong>
+                <strong v-if="user.follows">{{user.follows.length || 0}}</strong>
                 <span>关注</span>
             </a>
         </li>
         <li>
             <a @click="routerToFans($event)">
-                <strong>{{user.fansNum || 0}}</strong>
+                <strong v-if="user.fans">{{user.fans.length || 0}}</strong>
                 <span>粉丝</span>
             </a>
         </li>
@@ -76,7 +76,6 @@ export default {
             return `icn-${this.user.sex === 1 ? 'male' : 'female'}`;
         },
         ship() {
-            console.log(this.user)
             if (this.$route.query.id !== this.cUserId && this.user.follows && this.user.fans) {
                 let isFan = this.user.follows.findIndex(item => item === this.cUserId) !== -1;
                 let isFollow = this.user.fans.findIndex(item => item === this.cUserId) !== -1;
@@ -96,9 +95,16 @@ export default {
             this.$router.push({ path: '/user/setting', query: { id } });
         },
         handleFollow() {
-            this.$userService.handleFollow(this.cUserId, this.user.userId).then(result => {
-                console.log(result)
-            })
+            this.$userService.handleFollow(this.cUserId, this.user._id).then(result => {
+                this.user.fans.push(this.cUserId);
+                this.$emit('handleFollow', true);
+            });
+        },
+        handleCancelFollow() {
+            this.$userService.handleFollow(this.cUserId, this.user._id).then(result => {
+                this.user.fans.splice(this.user.fans.findIndex(item => item === this.cUserId), 1);
+                this.$emit('handleFollow', true);
+            });
         }
     },
     filters: {

@@ -170,7 +170,7 @@
                 if (this.formStatus === 'login') {
                     this.$userService.login(this.loginFormData.userCode, this.loginFormData.password).then(result => {
                         CommonUtil.saveLoginUser(result.data);
-                        this.loginUser = result.data.userId;
+                        this.loginUser = result.data._id;
                         this.closeModel();
                     }, failed => { this.errorMsg = failed.msg });
                 } else {
@@ -178,8 +178,7 @@
                         if (valid) {
                             this.$userService.register(this.registerFormData.userCode, this.registerFormData.password).then(result => {
                                 CommonUtil.saveLoginUser(result.data);
-                                this.loginUser = result.data.userId;
-                                this.registerFormData = null;
+                                this.loginUser = result.data._id;
                                 this.closeModel();
                             }, failed => { this.errorMsg = failed.msg });
                         } else {

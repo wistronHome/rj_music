@@ -1,58 +1,79 @@
 <template>
 <!-- 关注/粉丝 用户简略信息组件 -->
-    <div class="ff-item">
-            <a class="item-photo" :title="user.nickName" @click="routerToUser(user.userId)">
+    <div v-if="user" class="ff-item">
+            <a class="item-photo" :title="user.nickName" @click="routerToUser(user._id)">
                 <img width="60" height="60" :src="user.photo || defaultPhoto">
                 <!-- <i class="dot u-icn u-icn-68 f-alpha"></i> -->
             </a>
             <div class="info">
                 <p>
-                    <a @click="routerTo(user.userId, 'home')" class="name" title="追逐萌萌的你">{{user.nickName}}</a>
+                    <a @click="routerTo(user._id, 'home')" class="name" title="追逐萌萌的你">{{user.nickName}}</a>
                     &nbsp;<i class="icn icn-v"></i>
                     <i class="icn" :class="userSex"></i>
                 </p>
                 <p>
-                    <a @click="routerTo(user.userId, 'events')">
+                    <a @click="routerTo(user._id, 'events')">
                         动态<em class="s-fc7">0</em>
                     </a>
                     <span class="line">|</span>
-                    <a @click="routerTo(user.userId, 'follows')">
-                        关注<em class="s-fc7">9</em>
+                    <a @click="routerTo(user._id, 'follows')">
+                        关注<em class="s-fc7">{{user.follows.length}}</em>
                     </a>
                     <span class="line">|</span>
-                    <a @click="routerTo(user.userId, 'fans')">
-                        粉丝<em class="s-fc7">4</em>
+                    <a @click="routerTo(user._id, 'fans')">
+                        粉丝<em class="s-fc7">{{user.fans.length}}</em>
                     </a>
                 </p>
                 <p class="s-fc3 f-thide">{{user.description}}</p>
             </div>
             <div class="oper">
-                <button>发私信</button>
-                <p class="s-fc4"><i class="ygz"></i> 已关注</p>
-                <p class="s-fc4"><i class="xhgz"></i> 相互关注</p>
+                <rj-button v-if="isFollow" @click="sendChat" :icon="'chat'">发私信</rj-button>
+                <rj-button v-if="!isFollow" @click="handleFollow" :icon="'plus'" :btnType="'primary'">关&nbsp;&nbsp;注</rj-button>
+                <p v-if="isFollow && !isFan" class="s-fc4"><i class="ygz"></i> 已关注</p>
+                <p v-if="isFollow && isFan" class="s-fc4"><i class="xhgz"></i> 相互关注</p>
             </div>
         </div>
 </template>
 
 <script>
+import { CommonUtil } from '../../core/utils/common-util'
 
 export default {
     data() {
         return {
+            cUserId: CommonUtil.getLoginUser(),
             defaultPhoto: "http://p1.music.126.net/VnZiScyynLG7atLIZ2YPkw==/18686200114669622.jpg?param=60y60"
         }
     },
     props: {
-        user: {}
+        user: null
     },
     computed: {
         userSex() {
             return `icn-${this.user.userSex === 1 ? 'male' : 'female'}`
+        },
+        isFollow() {
+            return this.user.fans.findIndex(item => item === this.$route.query.id) !== -1;
+        },
+        isFan() {
+            return this.user.follows.findIndex(item => item === this.$route.query.id) !== -1;
         }
     },
     methods: {
-        routerTo(userId, type) {
-            this.$router.push({ path: `/user/${type}`, query: { id: userId }});
+        routerTo(_id, type) {
+            this.$router.push({ path: `/user/${type}`, query: { id: _id } });
+        },
+        handleFollow() {
+            this.$userService.handleFollow(this.cUserId, this.user._id).then(result => {
+                this.user.fans.push(this.cUserId);
+                this.$emit('handleFollow', this.user._id);
+            });
+        },
+        sendChat() {
+            this.$Notice.warning({
+                title: '🔨🔨🔨🔨🔨🔨',
+                desc: '该功能还在进行中'
+            });
         }
     }
 }

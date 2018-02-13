@@ -1,11 +1,11 @@
 <template>
     <div class="wrap">
-        <rj-user-proifo :user="user"></rj-user-proifo>
+        <rj-user-proifo :user="user" @handleFollow="handleFan"></rj-user-proifo>
         <div style="margin-bottom: 20px" class="record-title">
             <h3>粉丝（{{fans.length}}）</h3>
         </div>
         <div class="fans-wrap" style="font-size: 0;text-align: left;">
-            <rj-simple-proifo class="fan-item" v-for="(fan, index) in fans" :user="fan" :key="index"></rj-simple-proifo>
+            <rj-simple-proifo class="fan-item" @handleFollow="handleFollow" v-for="(fan, index) in fans" :user="fan" :key="index"></rj-simple-proifo>
         </div>
     </div>
 </template>
@@ -19,21 +19,31 @@ export default {
         }
     },
     created() {
-        this.$http.get(`/api/user/${this.$route.query.id}`).then(result => {
-            this.user = result.body.data;
-        });
-        this.$http.get(`/api/user/fans/${this.$route.query.id}`).then(result => {
-            this.fans = result.body.data;
+        this.$userService.getUserById(this.$route.query.id).then(result => {
+            this.user = result.data;
         })
+        this.$userService.getUserFans(this.$route.query.id).then(result => {
+            this.fans = result.data.fans;
+        });
+    },
+    methods: {
+        handleFan() {
+            this.$userService.getUserFans(this.$route.query.id).then(result => {
+                this.fans = result.data.fans;
+            });
+        },
+        handleFollow(id) {
+            this.user.follows.push(id);
+        }
     },
     beforeRouteUpdate (to, from, next) {
-        this.$http.get(`/api/user/${to.query.id}`).then(result => {
-            this.user = result.body.data;
+        this.$userService.getUserById(this.$route.query.id).then(result => {
+            this.user = result.data;
+            this.$userService.getUserFans(this.$route.query.id).then(result => {
+                this.fans = result.data.fans;
+                next();
+            });
         });
-        this.$http.get(`/api/user/fans/${to.query.id}`).then(result => {
-            this.fans = result.body.data;
-        });
-        next();
     }
 }
 </script>

@@ -9,7 +9,7 @@ class UserService {
     }
     getItemByPrimary(id) {
         return new Promise((resolve, reject) => {
-            user_model_1.User.findOne({ userId: id }).select('sex birthday follows fans').exec((err, result) => {
+            user_model_1.User.findOne({ _id: id }).select('sex birthday follows fans').exec((err, result) => {
                 err ? reject(utils_1.ResultUtils.error(utils_1.ResultCode.WEAK_NET_WORK, err.message))
                     : resolve(utils_1.ResultUtils.success(result));
             });
@@ -20,7 +20,7 @@ class UserService {
     updateItem(item) {
         return new Promise((resolve, reject) => {
             item.updatedtime = new Date();
-            user_model_1.User.update({ userId: item.userId }, { $set: item }).exec(err => {
+            user_model_1.User.update({ _id: item._id }, { $set: item }).exec(err => {
                 err ? reject(utils_1.ResultUtils.error(utils_1.ResultCode.WEAK_NET_WORK, err.message))
                     : resolve(utils_1.ResultUtils.success(''));
             });
@@ -30,7 +30,7 @@ class UserService {
     }
     register(user) {
         return new Promise((resolve, reject) => {
-            user.userId = common_util_1.CommonUtil.createUuid();
+            // user._id = CommonUtil.createUuid();
             if (!user.userCode || user.password.length < 6 || user.password.length > 16) {
                 reject(utils_1.ResultUtils.error(utils_1.ResultCode.PARAMETER_ERROR));
             }
@@ -38,14 +38,14 @@ class UserService {
                 let md5 = crypto.createHash('md5');
                 md5.update(user.password);
                 user.password = md5.digest('hex');
-                user.nickName = `用户${Math.floor(Math.random() * 8999 + 1000)}_${user.userId.substring(0, 6)}`;
-                let { userId, userCode, password, nickName } = user;
-                user_model_1.User.create({ userId, userCode, password, nickName }, err => {
+                user.nickName = `用户${Math.floor(Math.random() * 8999 + 1000)}_${common_util_1.CommonUtil.createUuid().substring(0, 6)}`;
+                let { userCode, password, nickName } = user;
+                user_model_1.User.create({ userCode, password, nickName }, (err, result) => {
                     if (err) {
                         reject(utils_1.ResultUtils.error(utils_1.ResultCode.WEAK_NET_WORK, err.message));
                     }
                     else {
-                        resolve(utils_1.ResultUtils.success(user));
+                        resolve(utils_1.ResultUtils.success(result));
                     }
                 });
             }
@@ -81,13 +81,13 @@ class UserService {
     }
     validateNickName(user) {
         return new Promise((resolve, reject) => {
-            user_model_1.User.find({ nickName: user.nickName }).select('userId').exec((err, result) => {
+            user_model_1.User.find({ nickName: user.nickName }).select('_id').exec((err, result) => {
                 if (err) {
                     reject(utils_1.ResultUtils.error(utils_1.ResultCode.PARAMETER_ERROR));
                 }
                 else {
                     if (result && result.length > 0) {
-                        if (result.findIndex(item => item.userId === user.userId) !== -1) {
+                        if (result.findIndex(item => item._id === user._id) !== -1) {
                             resolve(utils_1.ResultUtils.success(true));
                         }
                         else {
@@ -103,13 +103,13 @@ class UserService {
     }
     getRelationship(body) {
         return new Promise((resolve, reject) => {
-            user_model_1.User.findOne({ userId: body.loginUserId }).select('follows fans').exec((err, result) => {
+            user_model_1.User.findOne({ _id: body.login_id }).select('follows fans').exec((err, result) => {
                 if (err || !result) {
                     reject(utils_1.ResultUtils.error(utils_1.ResultCode.PARAMETER_ERROR));
                 }
                 else {
-                    let isFollow = result.follows.findIndex(item => item === body.targetUserId) !== -1;
-                    let isFan = result.fans.findIndex(item => item === body.targetUserId) !== -1;
+                    let isFollow = result.follows.findIndex(item => item === body.target_id) !== -1;
+                    let isFan = result.fans.findIndex(item => item === body.target_id) !== -1;
                     resolve(utils_1.ResultUtils.success({ isFollow, isFan }));
                 }
             });
@@ -117,43 +117,75 @@ class UserService {
     }
     handleFollow(body) {
         return new Promise((resolve, reject) => {
-            user_model_1.User.findOne({ userId: body.loginUserId }).select('follows').exec((err, result) => {
+            user_model_1.User.findOne({ _id: body.loginUserId }).select('follows').exec((err, result) => {
                 if (err || !result) {
                     reject(utils_1.ResultUtils.error(utils_1.ResultCode.PARAMETER_ERROR));
                 }
                 else {
-                    console.log(result);
-                    let isFollow = result.follows.findIndex(item => item === body.targetUserId) !== -1;
+                    let isFollow = result.follows.indexOf(body.targetUserId) !== -1;
                     // 已经关注 --> 取消关注
                     if (isFollow) {
-                    }
-                    else {
-                        // 未关注 --> 添加关注
-                        result.follows.push(body.targetUserId);
-                        result.save().exec(err => {
+                        user_model_1.User.update({ _id: body.loginUserId }, { $pull: { follows: body.targetUserId } }, err => {
                             if (err) {
                                 reject(utils_1.ResultUtils.error(utils_1.ResultCode.PARAMETER_ERROR));
                             }
                             else {
-                                user_model_1.User.findOne({ userId: body.targetUserId }).populate('fans').exec((err, tar) => {
+                                user_model_1.User.update({ _id: body.targetUserId }, { $pull: { fans: body.loginUserId } }, err => {
                                     if (err) {
                                         reject(utils_1.ResultUtils.error(utils_1.ResultCode.PARAMETER_ERROR));
                                     }
                                     else {
-                                        tar.fans.push(body.loginUserId);
-                                        tar.save().exec(err => {
-                                            if (err) {
-                                                reject(utils_1.ResultUtils.error(utils_1.ResultCode.PARAMETER_ERROR));
-                                            }
-                                            else {
-                                                resolve(utils_1.ResultUtils.success('...'));
-                                            }
-                                        });
+                                        resolve(utils_1.ResultUtils.success(''));
                                     }
                                 });
                             }
                         });
                     }
+                    else {
+                        // 未关注 --> 添加关注
+                        // result.follows.push(body.target_id);
+                        user_model_1.User.update({ _id: body.loginUserId }, { $push: { follows: body.targetUserId } }, err => {
+                            if (err) {
+                                reject(utils_1.ResultUtils.error(utils_1.ResultCode.PARAMETER_ERROR));
+                            }
+                            else {
+                                user_model_1.User.update({ _id: body.targetUserId }, { $push: { fans: body.loginUserId } }, err => {
+                                    if (err) {
+                                        reject(utils_1.ResultUtils.error(utils_1.ResultCode.PARAMETER_ERROR));
+                                    }
+                                    else {
+                                        resolve(utils_1.ResultUtils.success(''));
+                                    }
+                                });
+                            }
+                        });
+                    }
+                }
+            });
+        });
+    }
+    getUserFollows(id) {
+        return new Promise((resolve, reject) => {
+            user_model_1.User.findOne({ _id: id }).populate('follows').exec((err, result) => {
+                if (err) {
+                    reject(utils_1.ResultUtils.error(utils_1.ResultCode.PARAMETER_ERROR));
+                }
+                else {
+                    let { _id, follows } = result;
+                    resolve(utils_1.ResultUtils.success({ _id, follows }));
+                }
+            });
+        });
+    }
+    getUserFans(id) {
+        return new Promise((resolve, reject) => {
+            user_model_1.User.findOne({ _id: id }).populate('fans').exec((err, result) => {
+                if (err) {
+                    reject(utils_1.ResultUtils.error(utils_1.ResultCode.PARAMETER_ERROR));
+                }
+                else {
+                    let { _id, fans } = result;
+                    resolve(utils_1.ResultUtils.success({ _id, fans }));
                 }
             });
         });

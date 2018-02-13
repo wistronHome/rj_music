@@ -1,6 +1,6 @@
 <template>
     <div class="wrap">
-         <rj-user-proifo :user="user"></rj-user-proifo>
+         <rj-user-proifo :user="user" @handleFollow="handleFollow"></rj-user-proifo>
          <div style="margin-bottom: 20px" class="record-title">
             <h3>关注（{{follows.length}}）</h3>
         </div>
@@ -19,21 +19,28 @@ export default {
         }
     },
     created() {
-        this.$http.get(`/api/user/${this.$route.query.id}`).then(result => {
-            this.user = result.body.data;
-        });
-        this.$http.get(`/api/user/follows/${this.$route.query.id}`).then(result => {
-            this.follows = result.body.data;
-        });
+        this.$userService.getUserById(this.$route.query.id).then(result => {
+            this.user = result.data;
+        })
+        this.$userService.getUserFollows(this.$route.query.id).then(result => {
+            this.follows = result.data.follows;
+        })
+    },
+    methods: {
+        handleFollow() {
+            this.$userService.getUserFollows(this.$route.query.id).then(result => {
+                this.follows = result.data.follows;
+            });
+        }
     },
     beforeRouteUpdate (to, from, next) {
-        this.$http.get(`/api/user/${to.query.id}`).then(result => {
-            this.user = result.body.data;
+        this.$userService.getUserById(this.$route.query.id).then(result => {
+            this.user = result.data;
+            this.$userService.getUserFollows(this.$route.query.id).then(result => {
+                this.follows = result.data.follows;
+                next();
+            })
         });
-        this.$http.get(`/api/user/follows/${to.query.id}`).then(result => {
-            this.follows = result.body.data;
-        });
-        next();
     }
 }
 </script>

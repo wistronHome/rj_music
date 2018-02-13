@@ -36,4 +36,18 @@ export interface UserInterface extends CommonInterface<any> {
      * @returns {Promise<any>}
      */
     handleFollow(body): Promise<any>;
+
+    /**
+     * 获取用户关注列表
+     * @param id
+     * @returns {Promise<any>}
+     */
+    getUserFollows(id): Promise<any>;
+
+    /**
+     * 查询用户粉丝列表
+     * @param id
+     * @returns {Promise<any>}
+     */
+    getUserFans(id): Promise<any>;
 }
