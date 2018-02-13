@@ -3,19 +3,23 @@
 <div class="proifo-wrap">
     <div class="proifo-photo">
         <img :src="user.photo || defaultPhoto">
-        <div class="btm">
-            <a  class="upload">更换头像</a>
+        <div v-if="cUserId === user.userId" class="btm">
+            <a @click="$router.push({path: '/user/photo', query: { id: user.userId }})" class="upload">更换头像</a>
         </div>
     </div>
     <div style="width: 670px;margin-left: 180px;">
         <div class="name">
             <div class="f-cb">
                 <div class="edit">
-                    <a href="/user/update?id=323401262" hidefocus="true" class="u-btn2 u-btn2-1"><i>编辑个人资料</i></a>
+                    <a v-if="cUserId === user.userId" @click="routerToSetting(cUserId)" hidefocus="true" class="u-btn2 u-btn2-1"><i>编辑个人资料</i></a>
                 </div>
                 <h2 class="name-wrap">
                     <span class="title">{{user.nickName}}</span>
-                    <i class="icn" :class="userSex"></i>
+                    <i v-if="user.sex !== 3" class="icn" :class="userSex"></i>
+                    <rj-button class="t-btn" :icon="'chat'">发私信</rj-button>
+                    <rj-button v-if="ship && ship.isFollow && !ship.isFan" class="t-btn" :icon="'checked'" :focusContent="'取消关注'" :hideIcon="true">已关注</rj-button>
+                    <rj-button v-if="ship && ship.isFollow && ship.isFan" class="t-btn" :icon="'circle'" :focusContent="'取消关注'" :hideIcon="true">相互关注</rj-button>
+                    <rj-button @click="handleFollow" v-if="ship && !ship.isFollow" class="t-btn" :icon="'plus'" :btnType="'primary'">关&nbsp;&nbsp;注</rj-button>
                 </h2>
             </div>
         </div>
@@ -43,35 +47,64 @@
     <div class="inf" v-if="user.description">个人介绍：<span v-html="user.description"></span></div>
     <div class="inf">
         <span v-if="user.address" style="margin-right: 20px;">所在地区： {{user.address}} </span>
-        <span v-if="user.age">年龄：{{user.age}}</span>
+        <span v-if="user.birthday">年龄：{{user.birthday | dateFormat}}</span>
     </div>
 </div>
 </template>
 
 <script>
+import { CommonUtil } from '../../core/utils/common-util'
+
 export default {
     data() {
         return {
+            // paramId: '',
+            cUserId: CommonUtil.getLoginUser(),
             defaultPhoto: "http://p1.music.126.net/VnZiScyynLG7atLIZ2YPkw==/18686200114669622.jpg?param=180y180"
         }
     },
+    created() {
+        // this.paramId = this.$route.query.id;
+    },
     props: {
         user: {
-            type: Object,
-            default: {}
+            type: Object
         }
     },
     computed: {
         userSex() {
-            return `icn-${this.user.userSex === 1 ? 'male' : 'female'}`;
+            return `icn-${this.user.sex === 1 ? 'male' : 'female'}`;
+        },
+        ship() {
+            console.log(this.user)
+            if (this.$route.query.id !== this.cUserId && this.user.follows && this.user.fans) {
+                let isFan = this.user.follows.findIndex(item => item === this.cUserId) !== -1;
+                let isFollow = this.user.fans.findIndex(item => item === this.cUserId) !== -1;
+                return { isFan, isFollow };
+            }
+            return null;
         }
     },
     methods: {
-        routerToFollows(event) {
-            this.$router.push({ path: '/user/follows', query: { id: this.$route.query.id }});
+        routerToFollows() {
+            this.$router.push({ path: '/user/follows', query: { id: this.$route.query.id } });
         },
         routerToFans() {
-            this.$router.push({ path: '/user/fans', query: { id: this.$route.query.id }});
+            this.$router.push({ path: '/user/fans', query: { id: this.$route.query.id } });
+        },
+        routerToSetting(id) {
+            this.$router.push({ path: '/user/setting', query: { id } });
+        },
+        handleFollow() {
+            this.$userService.handleFollow(this.cUserId, this.user.userId).then(result => {
+                console.log(result)
+            })
+        }
+    },
+    filters: {
+        dateFormat(val) {
+            let date = new Date(val);
+            return Math.floor(date.getFullYear() % 100 / 10) * 10 + '后';
         }
     }
 }
@@ -179,6 +212,9 @@ $icon = "../../assets/icon.png";
             height: 0;
             visibility: hidden;
         }
+        .t-btn {
+            margin-left 10px;
+        }
         .title {
             float: left;
             margin-top: 3px;
@@ -195,6 +231,7 @@ $icon = "../../assets/icon.png";
         .icn {
             width: 20px;
             height: 20px;
+            margin -3px 0 0 7px
             background url($icon) no-repeat;
             display: inline-block;
             overflow: hidden;

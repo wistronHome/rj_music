@@ -19,6 +19,6 @@ export class CommonUtil {
     }
 
     static saveLoginUser(user) {
-        localStorage.setItem('__loginUser', user.username);
+        localStorage.setItem('__loginUser', user.userId);
     }
 }

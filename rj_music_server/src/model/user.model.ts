@@ -55,5 +55,15 @@ export let User = Db.getInstance().getConnection().model('User', new mongoose.Sc
         type: Date,
         select: true,
         default: new Date()
-    }
+    },
+    birthday: {
+        type: Date,
+        default: new Date().setFullYear(1990, 0, 1)
+    },
+    follows: [
+        { type:  mongoose.Schema.ObjectId, ref: 'User' }
+    ],
+    fans: [
+        { type:  mongoose.Schema.ObjectId, ref: 'User' }
+    ]
 }));

@@ -28,26 +28,40 @@
                 <span>{{formStatus === 'login' ? '登录' : '注册'}}</span>
             </p>
             <div style="text-align:center;padding-right: 45px;padding-top: 15px;">
-                <Form ref="formCustom" :model="formCustom" :label-width="80">
+                <Form v-show="formStatus === 'register'" ref="registerFormData" :rules="registerFormRules" :model="registerFormData" :label-width="80">
                     <!-- 必须绑定:key -->
-                    <form-item v-for="(item, index) in formColumn"
+                    <form-item v-for="(item, index) in registerFormColumn"
                                 :key="'key' + index"
                                 :label="item.label"
                                 :prop="item.prop">
-                        <i-input v-if="item.type === 'password'" type="password" v-model="formCustom[item.prop]"></i-input>
-                        <i-input v-else v-model="formCustom[item.prop]"></i-input>
+                        <i-input v-if="item.type === 'password'" type="password" v-model="registerFormData[item.prop]"></i-input>
+                        <i-input v-else v-model="registerFormData[item.prop]"></i-input>
                     </form-item>
 
                     <FormItem>
-                        <p class="err-tip"><Icon style="margin-right: 5px;" type="android-alert"></Icon>错误信息</p>
-                        <Button type="primary" long @click="handleSubmit">{{formStatus === 'login' ? '登录' : '注册'}}</Button>
+                        <p v-show="errorMsg" class="err-tip"><Icon style="margin-right: 5px;" type="android-alert"></Icon>{{errorMsg}}</p>
+                        <Button type="primary" long @click="handleSubmit">注册</Button>
+                    </FormItem>
+                </Form>
+                <Form v-show="formStatus === 'login'" ref="loginFormData" :model="loginFormData" :label-width="80">
+                    <form-item v-for="(item, index) in loginFormColumn"
+                               :key="'key' + index"
+                               :label="item.label"
+                               :prop="item.prop">
+                        <i-input v-if="item.type === 'password'" type="password" v-model="loginFormData[item.prop]"></i-input>
+                        <i-input v-else v-model="loginFormData[item.prop]"></i-input>
+                    </form-item>
+
+                    <FormItem>
+                        <p v-show="errorMsg" class="err-tip"><Icon style="margin-right: 5px;" type="android-alert"></Icon>{{errorMsg}}</p>
+                        <Button type="primary" long @click="handleSubmit">登录</Button>
                     </FormItem>
                 </Form>
             </div>
             <div slot="footer" class="model-footer"
                  :style="{textAlign: formStatus === 'register' ? 'left' : 'right'}">
-                <a v-if="formStatus === 'register'" @click="changeFormStatus('login')">返回登录</a>
-                <a v-else @click="changeFormStatus('register')">没有账号？免费注册</a>
+                <a v-if="formStatus === 'register'" @click="changeFormStatus('login', 'registerFormData')">返回登录</a>
+                <a v-else @click="changeFormStatus('register', 'loginFormData')">没有账号？免费注册</a>
             </div>
         </Modal>
     </div>
@@ -59,6 +73,7 @@
     import DropdownMenu from "../../../node_modules/iview/src/components/dropdown/dropdown-menu";
     import Avatar from "../../../node_modules/iview/src/components/avatar/avatar";
     import Dropdown from "../../../node_modules/iview/src/components/dropdown/dropdown";
+
     export default {
         created() {
             this.loginUser = CommonUtil.getLoginUser();
@@ -78,15 +93,71 @@
                     { label: '歌曲详情', value: '/song' },
                     { label: '歌单详情', value: '/playlist' }
                 ],
-                formColumn: [
+                registerFormColumn: [
+                    { label: '账号', prop: 'userCode', type: 'input' },
+                    { label: '密码', prop: 'password', type: 'password' },
+                    { label: '确认密码', prop: 'rePassword', type: 'password' }
+                ],
+                registerFormData: {
+                    userCode: '',
+                    password: '',
+                    rePassword: ''
+                },
+                registerFormRules: {
+                    userCode: [
+                        {
+                            validator: (rule, value, cb) => {
+                                if (!value) {
+                                    cb(new Error('账号不能为空'));
+                                } else if (value.length > 20) {
+                                    cb(new Error('账号长度不能超过20个字符'));
+                                } else if (!/^(?!_)[a-zA-Z0-9_\u4e00-\u9fa5]+$/.test(value)) {
+                                    cb(new Error('只能输入中文、英文、数字、下划线且不能以下划线开头'));
+                                } else {
+                                    cb();
+                                }
+                            }, trigger: 'change'
+                        }
+                    ],
+                    password: [
+                        {
+                            validator: (rule, value, cb) => {
+                                if (!value) {
+                                    cb(new Error('请输入密码'));
+                                } else if (value.length < 6 || value.length > 14) {
+                                    cb(new Error('密码长度为6-14位'))
+                                } else {
+                                    if (this.registerFormData.rePassword !== '') {
+                                        // 对第二个密码框单独验证
+                                        this.$refs.registerFormData.validateField('rePassword');
+                                    }
+                                    cb();
+                                }
+                            }, trigger: 'change'
+                        }
+                    ],
+                    rePassword: [
+                        {
+                            validator: (rule, value, cb) => {
+                                if (!value) {
+                                    cb(new Error('请输入密码'));
+                                } else if (value !== this.registerFormData.password) {
+                                    cb(new Error('两次密码输入不一致'))
+                                } else {
+                                    cb();
+                                }
+                            }, trigger: 'change'
+                        }
+                    ]
+                },
+                loginFormColumn: [
                     { label: '账号', prop: 'userCode', type: 'input' },
                     { label: '密码', prop: 'password', type: 'password' },
                 ],
-                formCustom: {
-                    userCode: '',
-                    password: ''
-                },
+                loginFormData: { userCode: '', password: '' },
+
                 formStatus: 'login',
+                errorMsg: '',
                 loginUser: null
             }
         },
@@ -95,50 +166,49 @@
                 this.modal = true;
             },
             handleSubmit() {
-                CommonUtil.saveLoginUser(this.formCustom);
-                setTimeout(() => {
-                    this.loginUser = CommonUtil.getLoginUser();
-                    this.modal = false;
-                });
-            },
-            changeFormStatus(type) {
-                this.formStatus = type;
+                this.errorMsg = '';
                 if (this.formStatus === 'login') {
-                    this.formColumn = [
-                        { label: '账号', prop: 'userCode', type: 'input' },
-                        { label: '密码', prop: 'password', type: 'password' },
-                    ];
-                    this.formCustom = {
-                        userCode: '',
-                        password: ''
-                    }
+                    this.$userService.login(this.loginFormData.userCode, this.loginFormData.password).then(result => {
+                        CommonUtil.saveLoginUser(result.data);
+                        this.loginUser = result.data.userId;
+                        this.closeModel();
+                    }, failed => { this.errorMsg = failed.msg });
                 } else {
-                    this.formColumn = [
-                        { label: '账号', prop: 'userCode', type: 'input' },
-                        { label: '密码', prop: 'password', type: 'password' },
-                        { label: '确认密码', prop: 'rePassword', type: 'password' }
-                    ];
-                    this.formCustom = {
-                        userCode: '',
-                        password: '',
-                        rePassword: ''
-                    }
+                    this.$refs.registerFormData.validate(valid => {
+                        if (valid) {
+                            this.$userService.register(this.registerFormData.userCode, this.registerFormData.password).then(result => {
+                                CommonUtil.saveLoginUser(result.data);
+                                this.loginUser = result.data.userId;
+                                this.registerFormData = null;
+                                this.closeModel();
+                            }, failed => { this.errorMsg = failed.msg });
+                        } else {
+                            this.errorMsg = '请填写正确信息';
+                        }
+                    })
                 }
+            },
+            changeFormStatus(type, name) {
+                this.$refs[name].resetFields();
+                this.errorMsg = '';
+                this.formStatus = type;
             },
             /**
              * 关闭模态框
              */
             closeModel() {
-                this.formCustom = null;
+                this.$refs.loginFormData.resetFields();
+                this.$refs.registerFormData.resetFields();
+                this.modal = false;
             },
             /**
              * 退出登录
              */
             handleDropMenuClick(type) {
                 if (type === 'home') {
-                    this.$router.push({path: `/user/home`, query: { id: 123 }});
+                    this.$router.push({path: `/user/home`, query: { id: this.loginUser }});
                 } else if (type === 'setting') {
-                    this.$router.push({path: '/user/setting', query: { id: 123 }})
+                    this.$router.push({path: '/user/setting', query: { id: this.loginUser }})
                 }
                 if (type === 'logout') {
                     CommonUtil.logout();
@@ -147,7 +217,7 @@
                 }
             },
             changeRouter(params) {
-                this.$router.push({ path: params, query: { id: '123' }});
+                this.$router.push({ path: params, query: { id: this.loginUser } });
             }
         }
     }

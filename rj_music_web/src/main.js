@@ -14,9 +14,11 @@ import songList from './shared/custom-module/songList.vue';
 import simpleUserProifo from './shared/custom-module/simpleUserProifo.vue';
 import commentArea from './shared/custom-module/commentArea.vue';
 import button from './shared/custom-module/button.vue';
+import services from './core/model-server/index'
 
 Vue.use(vueSource);
 Vue.use(iView);
+Vue.use(services);
 
 // 注册全局组件
 const rjComponents = {

@@ -22,4 +22,13 @@ router.post('/', (req, res, next) => {
 router.post('/login', (req, res) => {
     userService.login(req.body).then(result => res.send(result), failed => res.send(failed));
 });
+router.post('/validateNickName', (req, res) => {
+    userService.validateNickName(req.body).then(result => res.send(result), failed => res.send(failed));
+});
+router.post('/relationship', (req, res) => {
+    userService.getRelationship(req.body).then(result => res.send(result), failed => res.send(failed));
+});
+router.post('/follow', (req, res) => {
+    userService.handleFollow(req.body).then(result => res.send(result), failed => res.send(failed));
+});
 module.exports = router;

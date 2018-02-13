@@ -10,16 +10,16 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
 const portfinder = require('portfinder');
 
-
-const express = require('express');
-const app = express();
-var appData = require('../test/data.json');
-var users = appData.users;
-var fans = appData.fans;
-var follows = appData.follows;
-
-var apiRoutes = express.Router();
-app.use('/api', apiRoutes);
+//
+// const express = require('express');
+// const app = express();
+// var appData = require('../test/data.json');
+// var users = appData.users;
+// var fans = appData.fans;
+// var follows = appData.follows;
+//
+// var apiRoutes = express.Router();
+// app.use('/api', apiRoutes);
 
 
 const HOST = process.env.HOST
@@ -40,41 +40,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         { from: /.*/, to: path.posix.join(config.dev.assetsPublicPath, 'index.html') },
       ],
     },
-    before(app) {
-        app.get('/api/user/:id', (req, res) => {
-            let userId = req.params.id;
-            let user = users.filter(item => item.userId === userId)[0];
-            let _fTar = fans.filter(item => item.userId === userId)[0];
-            let _foTar = follows.filter(item => item.userId === userId)[0];
-            user.fansNum = _fTar.fans.length;
-            user.followsNum = _foTar.follows.length;
-            res.json({
-                data: user
-            });
-        });
-        app.get('/api/user/fans/:id', (req, res) => {
-            let userId = req.params.id;
-            let _tar = fans.filter(item => item.userId === userId)[0];
-            let _temp = [];
-            _tar.fans.forEach(item => {
-                _temp = _temp.concat(users.filter(_u => _u.userId === item));
-            });
-            res.json({
-                data: _temp
-            });
-        });
-        app.get('/api/user/follows/:id', (req, res) => {
-            let userId = req.params.id;
-            let _tar = follows.filter(item => item.userId === userId)[0];
-            let _temp = [];
-            _tar.follows.forEach(item => {
-                _temp = _temp.concat(users.filter(_u => _u.userId === item));
-            });
-            res.json({
-                data: _temp
-            });
-        });
-    },
+
     hot: true,
     contentBase: false, // since we use CopyWebpackPlugin.
     compress: true,

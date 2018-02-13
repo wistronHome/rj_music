@@ -1,13 +1,25 @@
 <template>
-    <button class="rj-btn" :title="title || $slots.default[0].text"
-        :class="{ 'rj-btn-disabled': disabled }">
-        <span :class="clazz"><slot></slot></span>
+    <button @click="handleClick" @mouseenter="mouseenter" @mouseleave="mouseleave" class="rj-btn" :title="title || $slots.default[0].text"
+        :class="{ 'rj-btn-disabled': disabled, 'rj-btn-primary': btnType === 'primary', 'rj-btn-hide-icon': hideIcon }">
+        <span :class="clazz">
+            <em v-if="isMouseEnter">{{focusContent}}</em>
+            <slot v-if="!isMouseEnter"></slot>
+        </span>
     </button>
 </template>
 
 <script>
     export default {
+        data() {
+            return {
+                isMouseEnter: false
+            }
+        },
         props: {
+            btnType: {
+                type: String,
+                default: 'default'
+            },
             icon: {
                 type: String,
                 default: 'default'
@@ -19,22 +31,65 @@
             title: {
                 type: String,
                 default: ''
+            },
+            focusContent: {
+                type: String
+            },
+            hideIcon: {
+                type: Boolean,
+                default: false
             }
         },
         computed: {
             clazz() {
                 return `icon-${this.icon}`;
             }
+        },
+        methods: {
+            mouseenter() {
+                if (this.focusContent) {
+                    this.isMouseEnter = true;
+                }
+            },
+            mouseleave() {
+                this.isMouseEnter = false;
+            },
+            handleClick(event) {
+                this.$emit('click', event);
+            }
         }
     }
 </script>
 
 <style lang="stylus" scoped>
-$btn2= "../../assets/button2.png";
+$btn = "../../assets/button.png"
+$btn2 = "../../assets/button2.png";
 * {
     user-select none
 }
 .rj-btn {
+    background url($btn2) no-repeat
+    background-position right -1020px
+    &:hover {
+        background-position right -1106px
+    }
+}
+.rj-btn-hide-icon {
+    &:hover {
+        span {
+            padding-left: 7px;
+        }
+    }
+}
+.rj-btn-primary {
+    background url($btn) no-repeat
+    background-position 0 -720px
+    width 72px
+    &:hover {
+        background-position -80px -720px
+    }
+}
+.rj-btn, .rj-btn-primary {
     font-family simsun,\5b8b\4f53;
     color #333
     border none
@@ -45,10 +100,8 @@ $btn2= "../../assets/button2.png";
     min-width: 23px;
     cursor: pointer;
     outline none
-    background url($btn2) no-repeat
-    background-position right -1020px
+
     &:hover {
-        background-position right -1106px
         .icon-store {
             background-position 0 -1063px;
         }
@@ -61,12 +114,26 @@ $btn2= "../../assets/button2.png";
         .icon-message {
             background-position: 0 -1508px;
         }
+        .icon-chat {
+            background-position 0 -845px;
+        }
+        .icon-plus {
+            background-position -80px -720px;
+        }
+        .icon-checked {
+            background-position 0 -760px;
+        }
+        .icon-circle {
+            background-position -68px -990px;
+        }
         .icon-default {
             background-position: 0 -141px;
         }
     }
     span {
         float left
+        font-size 12px
+        font-weight 500
         padding: 0 7px 0 36px;
         padding-right: 2px;
         padding-left: 28px;
@@ -87,6 +154,23 @@ $btn2= "../../assets/button2.png";
     }
     .icon-message {
         background-position: 0 -1465px;
+    }
+    .icon-chat {
+        background url($btn) no-repeat;
+        background-position 0 -810px;
+    }
+    .icon-plus {
+        background url($btn) no-repeat;
+        background-position 0 -720px;
+        color #fff
+    }
+    .icon-checked {
+        background url($btn) no-repeat;
+        background-position 0 -919px;
+    }
+    .icon-circle {
+        background url($btn) no-repeat;
+        background-position 0 -955px
     }
     .icon-default {
         padding-left: 11px;
