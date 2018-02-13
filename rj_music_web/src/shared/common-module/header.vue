@@ -3,9 +3,9 @@
         <h1>
             <a href="/#" hidefocus="true">网易云音乐</a>
         </h1>
-        <Select style="width:200px" @on-change="changeRouter($event)">
-            <Option v-for="item in routers" :value="item.value" :key="item.value">{{ item.label }}</Option>
-        </Select>
+        <!--<Select style="width:200px" @on-change="changeRouter($event)">-->
+            <!--<Option v-for="item in routers" :value="item.value" :key="item.value">{{ item.label }}</Option>-->
+        <!--</Select>-->
         <div class="rj-login">
             <dropdown v-if="loginUser"  @on-click="handleDropMenuClick">
                 <a href="javascript:void(0)">
@@ -85,14 +85,14 @@
         data() {
             return {
                 modal: false,
-                routers: [
-                    { label: '个人主页', value: '/user/home' },
-                    { label: '个人设置', value: '/user/setting' },
-                    { label: '粉丝', value: '/user/fans' },
-                    { label: '关注', value: '/user/follows' },
-                    { label: '歌曲详情', value: '/song' },
-                    { label: '歌单详情', value: '/playlist' }
-                ],
+                // routers: [
+                //     { label: '个人主页', value: '/user/home' },
+                //     { label: '个人设置', value: '/user/setting' },
+                //     { label: '粉丝', value: '/user/fans' },
+                //     { label: '关注', value: '/user/follows' },
+                //     { label: '歌曲详情', value: '/song' },
+                //     { label: '歌单详情', value: '/playlist' }
+                // ],
                 registerFormColumn: [
                     { label: '账号', prop: 'userCode', type: 'input' },
                     { label: '密码', prop: 'password', type: 'password' },
@@ -187,11 +187,11 @@
                     })
                 }
             },
-            changeFormStatus(type, name) {
-                this.$refs[name].resetFields();
-                this.errorMsg = '';
-                this.formStatus = type;
-            },
+            // changeFormStatus(type, name) {
+            //     this.$refs[name].resetFields();
+            //     this.errorMsg = '';
+            //     this.formStatus = type;
+            // },
             /**
              * 关闭模态框
              */

@@ -19,6 +19,10 @@ export default new Router({
         {
             path: '/song',
             component: resolve => import('../components/song/song.vue').then(resolve)
+        },
+        {
+            path: '/upload',
+            component: resolve => import('../components/upload/upload.vue').then(resolve)
         }
     ]
 })
