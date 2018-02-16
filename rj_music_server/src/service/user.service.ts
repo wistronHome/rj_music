@@ -6,11 +6,11 @@ import { User } from '../model/user.model'
 import { CommonUtil } from '../common-util'
 import { ResultUtils, ResultCode } from "../utils";
 import * as crypto from 'crypto';
-export class UserService implements UserInterface {
+import { CommonService } from "./common.service";
+export class UserService extends CommonService implements UserInterface {
 
-    constructor(
-    ) {
-
+    constructor() {
+        super();
     }
 
     getItemByPrimary(id) {

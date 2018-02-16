@@ -12,5 +12,13 @@ router.get('/', (req, res, next) => {
     res.send('this is userItem');
 });
 
+router.post('/upload', (req, res) => {
+    musicService.uploadMusic(req).then(s => res.send(s), r => res.send(r));
+});
+
+router.post('/search', (req, res) => {
+    musicService.commonSearch(req.body).then(s => res.send(s), r => res.send(r));
+});
+
 
 module.exports = router;

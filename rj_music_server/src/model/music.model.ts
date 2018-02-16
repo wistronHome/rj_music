@@ -4,7 +4,7 @@
 import * as mongoose from 'mongoose';
 import { Db } from "../db-config/db";
 
-export let Music = Db.getInstance().getConnection().model('Music', new mongoose.Schema({
+let MusicSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true
@@ -17,7 +17,7 @@ export let Music = Db.getInstance().getConnection().model('Music', new mongoose.
         type: String,
         required: true
     },
-    types: [String],
+    types: [ String ],
     cover: {
         type: String,
         default: ''
@@ -36,4 +36,7 @@ export let Music = Db.getInstance().getConnection().model('Music', new mongoose.
         select: true,
         default: new Date()
     },
-}));
+});
+
+
+export let Music = Db.getInstance().getConnection().model('Music', MusicSchema);

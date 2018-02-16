@@ -4,8 +4,10 @@ const user_model_1 = require("../model/user.model");
 const common_util_1 = require("../common-util");
 const utils_1 = require("../utils");
 const crypto = require("crypto");
-class UserService {
+const common_service_1 = require("./common.service");
+class UserService extends common_service_1.CommonService {
     constructor() {
+        super();
     }
     getItemByPrimary(id) {
         return new Promise((resolve, reject) => {

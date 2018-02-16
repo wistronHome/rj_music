@@ -6,14 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose = require("mongoose");
 const db_1 = require("../db-config/db");
 //
-// default/doValidate/get/getDefault/index/required/select/set/sparse/unique/validate/_idRef
 exports.User = db_1.Db.getInstance().getConnection().model('User', new mongoose.Schema({
-    // _id: false,
-    // userId: {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     select: true,
-    //     required: true
-    // },
     userCode: {
         type: String,
         unique: true

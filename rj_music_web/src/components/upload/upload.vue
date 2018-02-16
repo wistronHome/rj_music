@@ -63,7 +63,7 @@ export default {
                         validator(rule, val, cb) {
                             if (!val) {
                                 cb(new Error('此项为必填项'))
-                            } else if (val.length > 10) {
+                            } else if (val.length > 32) {
                                 cb(new Error('歌曲名不能超过10个字符'))
                             } else if (!/^(?!_)[a-zA-Z0-9_\u4e00-\u9fa5]+$/.test(val)) {
                                 cb(new Error('只能输入中文、英文、数字、下划线且不能以下划线开头'));
@@ -84,7 +84,16 @@ export default {
                     if (!this.music.src) {
                         this.$Message.error('请选择要上传的音乐');
                     }
-
+                    let formData = new FormData();
+                    formData.append('name', this.music.name);
+                    formData.append('uploader', this.cUserId);
+                    formData.append('singer', this.music.singer);
+                    formData.append('types', this.music.types);
+                    formData.append('cover', this.music.cover);
+                    formData.append('src', this.music.src);
+                    this.$musicService.upload(formData).then(result => {
+                        console.log(result);
+                    });
                 } else {
                     this.$Message.error('请填写完整信息');
                 }
@@ -106,7 +115,6 @@ export default {
                 return false;
             }
             let _name = file.name;
-            console.log(_name)
             if (_name.includes('-')) {
                 let str = _name.split('-');
                 if (str.length === 2) {

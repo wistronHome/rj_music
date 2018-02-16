@@ -26,17 +26,18 @@
         <AutoComplete
             class="c-auto-com"
             icon="ios-search"
+            @on-search="searchEvent"
             placeholder="音乐/歌单/视频/歌手/用户">
             <p class="c-note">搜"xxx"的结果 &nwarhk;</p>
             <div class="rap">
-                <div class="rap-item" v-for="(item, index) in data4" :key="index">
+                <div class="rap-item" v-if="searchList && searchList.musics.length > 0">
                     <h3>
                         <Icon type="ios-musical-notes"></Icon>
-                        <span>{{ item.title }}</span>
+                        <span>单曲</span>
                     </h3>
                     <div class="rap-body">
-                        <Option v-for="option in item.children" :value="option.title" :key="option.title">
-                            <span class="demo-auto-complete-title">{{ option.title }}</span>
+                        <Option v-for="(item, index) in searchList.musics" :value="item._id" :key="index">
+                            <span class="demo-auto-complete-title">{{ item.name }}</span>
                         </Option>
                     </div>
                 </div>
@@ -94,7 +95,8 @@
     import DropdownMenu from "../../../node_modules/iview/src/components/dropdown/dropdown-menu";
     import Avatar from "../../../node_modules/iview/src/components/avatar/avatar";
     import Dropdown from "../../../node_modules/iview/src/components/dropdown/dropdown";
-
+    import { setTimeout, clearTimeout } from 'timers';
+    let timer;
     export default {
         created() {
             this.loginUser = CommonUtil.getLoginUser();
@@ -106,15 +108,7 @@
         data() {
             return {
                 modal: false,
-                data4: [
-                    {
-                        title: '单曲',
-                        children: [
-                            { title: 'iView', count: 10000 },
-                            { title: 'iView UI', count: 10600 }
-                        ]
-                    }
-                ],
+                searchList: null,
                 registerFormColumn: [
                     { label: '账号', prop: 'userCode', type: 'input' },
                     { label: '密码', prop: 'password', type: 'password' },
@@ -208,6 +202,17 @@
                         }
                     })
                 }
+            },
+            searchEvent(param) {
+                if (timer) {
+                    clearTimeout(timer);
+                }
+                timer = setTimeout(() => {
+                    this.$musicService.commonSearch(param).then(result => {
+                        this.searchList = result.data;
+                        console.log(result)
+                    });
+                }, 500);
             },
             // changeFormStatus(type, name) {
             //     this.$refs[name].resetFields();

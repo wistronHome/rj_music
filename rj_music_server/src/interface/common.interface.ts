@@ -25,4 +25,10 @@ export interface CommonInterface<T> {
      * @param item
      */
     insertItem(item: T);
+
+    /**
+     * 通用查询
+     * @param param
+     */
+    commonSearch(param);
 }

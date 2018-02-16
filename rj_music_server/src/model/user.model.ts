@@ -5,15 +5,7 @@ import * as mongoose from 'mongoose';
 import { Db } from "../db-config/db";
 //
 
-// default/doValidate/get/getDefault/index/required/select/set/sparse/unique/validate/_idRef
-
 export let User = Db.getInstance().getConnection().model('User', new mongoose.Schema({
-    // _id: false,
-    // userId: {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     select: true,
-    //     required: true
-    // },
     userCode: {
         type: String,
         unique: true

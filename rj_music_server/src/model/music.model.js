@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 const mongoose = require("mongoose");
 const db_1 = require("../db-config/db");
-exports.Music = db_1.Db.getInstance().getConnection().model('Music', new mongoose.Schema({
+let MusicSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true
@@ -37,4 +37,5 @@ exports.Music = db_1.Db.getInstance().getConnection().model('Music', new mongoos
         select: true,
         default: new Date()
     },
-}));
+});
+exports.Music = db_1.Db.getInstance().getConnection().model('Music', MusicSchema);
