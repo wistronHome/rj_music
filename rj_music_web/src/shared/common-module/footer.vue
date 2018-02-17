@@ -11,11 +11,11 @@
         </div>
         <div class="play-area">
             <div class="words">
-                <a class="name" @click="routerToSong('123123')">Lost boy</a>
+                <a class="name" @click="routerToSong('123123')">{{music ? music.name : '-'}}</a>
                 <a class="mv" title="MV"></a>
                 <span class="by">
                     <span title="Ruth B">
-                        <a>Ruth&nbsp;B</a>
+                        <a>{{music ? music.singer : '-'}}</a>
                     </span>
                 </span>
             </div>
@@ -48,11 +48,11 @@
             </span>
             <div class="tip tip-1" style="display:none;">循环</div>
         </div>
-        <audio ref="audio" controls="controls" style="display: none;"
+        <audio v-if="musicSrc" ref="audio" controls="controls" style="display: none;"
             @timeupdate="handleTimeupdate"
             @ended="handleEnded"
             @canplay="handleCanPlay">
-            <source src="./demo3.mp3" type="audio/mpeg">
+            <source :src="musicSrc" type="audio/mpeg">
             Your browser does not support the audio tag.
         </audio>
         <!-- <rj-player :emit="emit"></rj-player> -->
@@ -62,6 +62,7 @@
 <script type="text/ecmascript-6">
     import player from "./player.vue";
     import Vue from "vue";
+import { setTimeout } from 'timers';
     let _clientY = 0,
         _clientX = 0,
         _volumn,
@@ -79,7 +80,7 @@
                     duration: 0,
                     circleStyle: 0
                 },
-                // musicSrc: null,
+                music: {},
                 progress: 0,
                 paused: true,
                 volume: 0,
@@ -97,12 +98,19 @@
         },
         mounted() {
             this.volume = 0.5;
-            this.$refs.audio.volume = this.volume;
+            if (this.$refs.audio) {
+                this.$refs.audio.volume = this.volume;
+            }
         },
         computed: {
             musicSrc() {
-                let _cs = this.$store.getters['current_song'];
-                return _cs;
+                let _cs = this.$store.getters.currentSong;
+                this.music = _cs;
+                setTimeout(() => {
+                    this.$refs.audio.load();
+                    this.playBtnClick();
+                }, 100);
+                return _cs ? 'http://localhost:3000/' + _cs.src.replace('public/', '') : null;
             },
             playBtnClass() {
                 return this.paused ? 'pause' : 'play';
@@ -218,7 +226,9 @@
         },
         watch: {
             volume(cur) {
-                this.$refs.audio.volume = cur;
+                if (this.$refs.audio) {
+                    this.$refs.audio.volume = cur;
+                }
             },
             cTime(cur) {
                 if (!_progress) {

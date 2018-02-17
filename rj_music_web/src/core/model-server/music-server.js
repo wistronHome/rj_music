@@ -24,5 +24,16 @@ export default {
                 result.body.code === 0 ? resolve(result.body) : reject(result.body);
             }, error => { throw new Error(error) });
         });
+    },
+    /**
+     * 根据id查询音乐
+     * @param {string} id
+     */
+    getMusicById(id) {
+        return new Promise((resolve, reject) => {
+            Vue.http.get(`${$prefix}/${id}`).then(result => {
+                result.body.code === 0 ? resolve(result.body) : reject(result.body);
+            }, error => { throw new Error(error) });
+        });
     }
 }

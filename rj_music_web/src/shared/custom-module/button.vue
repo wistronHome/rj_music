@@ -126,6 +126,7 @@ $btn2 = "../../assets/button2.png";
         .icon-circle {
             background-position -68px -990px;
         }
+
         .icon-default {
             background-position: 0 -141px;
         }
@@ -172,10 +173,12 @@ $btn2 = "../../assets/button2.png";
         background url($btn) no-repeat;
         background-position 0 -955px
     }
+
     .icon-default {
         padding-left: 11px;
         background-position: 0 -59px;
     }
+
 }
 .rj-btn-disabled {
     cursor: default;

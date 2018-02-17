@@ -17,6 +17,15 @@ export class MusicService extends CommonService implements MusicInterface {
     }
 
     getItemByPrimary(id: string) {
+        return new Promise((resolve, reject) => {
+            Music.findOne({ _id: id }).exec((err, result) => {
+                if (err) {
+                    reject(ResultUtils.error(ResultCode.PARAMETER_ERROR));
+                } else {
+                    resolve(ResultUtils.success(result));
+                }
+            });
+        });
     }
 
     deleteItemByPrimary(id: string) {

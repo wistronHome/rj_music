@@ -26,7 +26,7 @@
 </template>
 
 <script>
-    
+
     export default {
         data() {
             return {
@@ -57,7 +57,7 @@ $coverall = "../../assets/coverall.png";
 .pl-wrap {
     padding 0
     .left-wrap {
-        width 640px
+        width 709px
         padding 47px 30px 40px 39px
         border-right 1px solid #d5d5d5
         .pl-main {

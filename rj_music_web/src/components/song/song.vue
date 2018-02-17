@@ -1,5 +1,5 @@
 <template>
-<div class="wrap song-wrap">
+<div class="wrap song-wrap" v-if="song">
     <div class="left-wrap">
         <div class="song-title">
             <div class="song-cover">
@@ -10,12 +10,13 @@
                 <div>
                     <i class="s-dq"></i>
                     <div class="tit">
-                        <em class="f-ff2">虚拟</em>
+                        <em class="f-ff2">{{song.name}}</em>
                     </div>
-                    <p class="des">歌手：<a>陈粒</a></p>
+                    <p class="des">歌手：<a>{{song.singer}}</a></p>
                     <p class="des">所属专辑：<a>小梦大半</a></p>
                     <div class="s-btns">
-                        <rj-button class="s-btn" :icon="'store'" :disabled="true">收藏</rj-button>
+                        <rj-button class="s-btn" @click="selectSong(song)" :btnType="'primary'" :icon="'plus'">播放</rj-button>
+                        <rj-button class="s-btn" :icon="'store'">收藏</rj-button>
                         <rj-button class="s-btn" :icon="'share'">分享</rj-button>
                         <rj-button class="s-btn" :icon="'load'">下载</rj-button>
                         <rj-button class="s-btn" :icon="'message'" :title="'评论'">(4567)</rj-button>
@@ -37,8 +38,24 @@
 export default {
     data() {
         return {
-            comments: [1, 2 ,3, 4]
+            comments: [1, 2 ,3, 4],
+            song: null
         }
+    },
+    created() {
+        this.$musicService.getMusicById(this.$route.query.id).then(result => {
+            this.song = result.data;
+        });
+    },
+    methods: {
+        selectSong(m) {
+            this.$store.commit('CURRENT_SONG', m);
+        }
+    },
+    beforeRouteUpdate (to, from, next) {
+        this.$musicService.getMusicById(this.$route.query.id).then(result => {
+            this.song = result.data;
+        });
     }
 }
 </script>
@@ -50,7 +67,7 @@ $icon = "../../assets/icon.png"
 .song-wrap {
     padding 0
     .left-wrap {
-        width 640px
+        width 709px
         padding 47px 30px 40px 39px
         border-right 1px solid #d5d5d5
         .song-title {

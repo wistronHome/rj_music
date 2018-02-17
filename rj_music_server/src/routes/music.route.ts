@@ -12,6 +12,10 @@ router.get('/', (req, res, next) => {
     res.send('this is userItem');
 });
 
+router.get('/:id', (req, res) => {
+    musicService.getItemByPrimary(req.params.id) .then(s => res.send(s), r => res.send(r));
+});
+
 router.post('/upload', (req, res) => {
     musicService.uploadMusic(req).then(s => res.send(s), r => res.send(r));
 });

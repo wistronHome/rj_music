@@ -14,6 +14,16 @@ class MusicService extends common_service_1.CommonService {
         super();
     }
     getItemByPrimary(id) {
+        return new Promise((resolve, reject) => {
+            music_model_1.Music.findOne({ _id: id }).exec((err, result) => {
+                if (err) {
+                    reject(utils_1.ResultUtils.error(utils_1.ResultCode.PARAMETER_ERROR));
+                }
+                else {
+                    resolve(utils_1.ResultUtils.success(result));
+                }
+            });
+        });
     }
     deleteItemByPrimary(id) {
     }

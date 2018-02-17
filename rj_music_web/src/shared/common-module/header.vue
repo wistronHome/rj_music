@@ -26,6 +26,8 @@
         <AutoComplete
             class="c-auto-com"
             icon="ios-search"
+            v-model="searchModel"
+            @on-select="selectEvent"
             @on-search="searchEvent"
             placeholder="音乐/歌单/视频/歌手/用户">
             <p class="c-note">搜"xxx"的结果 &nwarhk;</p>
@@ -101,13 +103,14 @@
         created() {
             this.loginUser = CommonUtil.getLoginUser();
             setTimeout(() => {
-                this.$store.commit('CURRENT_SONG', "./demo1");
+                this.$store.commit('CURRENT_SONG', null);
             }, 1000);
         },
         components: {Dropdown, Avatar, DropdownMenu, DropdownItem},
         data() {
             return {
                 modal: false,
+                searchModel: '',
                 searchList: null,
                 registerFormColumn: [
                     { label: '账号', prop: 'userCode', type: 'input' },
@@ -213,6 +216,11 @@
                         console.log(result)
                     });
                 }, 500);
+            },
+
+            selectEvent(param) {
+                this.searchModel = null;
+                this.$router.push({ path: '/song', query: { id: param }});
             },
             // changeFormStatus(type, name) {
             //     this.$refs[name].resetFields();
