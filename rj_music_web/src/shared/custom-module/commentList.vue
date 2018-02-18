@@ -98,18 +98,15 @@ export default {
                 this.$Message.error('输入不能超过140个字符');
             } else {
                 this.$emit('replyEvent', { commentId: param._id, content: this.content });
+                this.replyOpen = false;
+                this.content = '';
+                this.replyOpenItem = '';
             }
         }
     },
     filters: {
         formatTime(val) {
-            let date = new Date(val);
-            return date.getFullYear() + '年'
-                + date.getMonth() + '月'
-                + (date.getDay() + 1) + '日'
-                + date.getHours() + ':'
-                + date.getMinutes() + ':'
-                + date.getSeconds();
+            return CommonUtil.DateFormat(val, 'yyyy年MM月dd日 hh:mm:ss');
         }
     }
 }

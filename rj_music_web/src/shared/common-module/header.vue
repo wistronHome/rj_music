@@ -30,8 +30,8 @@
             @on-select="selectEvent"
             @on-search="searchEvent"
             placeholder="音乐/歌单/视频/歌手/用户">
-            <p class="c-note">搜"xxx"的结果 &nwarhk;</p>
-            <div class="rap">
+            <p v-if="searchModel" class="c-note">搜"{{searchModel}}"的结果 &nwarhk;</p>
+            <div v-if="searchModel" class="rap">
                 <div class="rap-item" v-if="searchList && searchList.musics.length > 0">
                     <h3>
                         <Icon type="ios-musical-notes"></Icon>
@@ -211,10 +211,13 @@
                     clearTimeout(timer);
                 }
                 timer = setTimeout(() => {
-                    this.$musicService.commonSearch(param).then(result => {
-                        this.searchList = result.data;
-                        console.log(result)
-                    });
+                    if (!param) {
+                        this.searchList = null;
+                    } else {
+                        this.$musicService.commonSearch(param).then(result => {
+                            this.searchList = result.data;
+                        });
+                    }
                 }, 500);
             },
 

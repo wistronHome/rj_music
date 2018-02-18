@@ -46,17 +46,12 @@
 import { CommonUtil } from '../../core/utils/common-util'
 
 export default {
-    created() {
-        this.music = {
-            name: ''
-        };
-    },
     data() {
         return {
             cUserId: CommonUtil.getLoginUser(),
             user: null,
             music: null,
-            singers: ['周杰伦', '周星驰', '周润发'],
+            singers: [],
             formRules: {
                 name: [
                     {
@@ -76,6 +71,14 @@ export default {
             },
             defaultPhoto: "http://p1.music.126.net/VnZiScyynLG7atLIZ2YPkw==/18686200114669622.jpg?param=180y180",
         }
+    },
+    created() {
+        this.music = {
+            name: ''
+        };
+        this.$musicService.findSingers().then(result => {
+            this.singers = result.data;
+        });
     },
     methods: {
         handleSubmit(event) {

@@ -48,5 +48,15 @@ export default {
                 result.body.code === 0 ? resolve(result.body) : reject(result.body);
             }, error => { throw new Error(error) });
         });
+    },
+    /**
+     * 查询所有在库歌手
+     */
+    findSingers() {
+        return new Promise((resolve, reject) => {
+            Vue.http.get(`${$prefix}/singers`).then(result => {
+                result.body.code === 0 ? resolve(result.body) : reject(result.body);
+            }, error => { throw new Error(error) });
+        });
     }
 }

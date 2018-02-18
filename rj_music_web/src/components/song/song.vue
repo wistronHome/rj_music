@@ -19,14 +19,14 @@
                         <rj-button class="s-btn" :icon="'store'">收藏</rj-button>
                         <rj-button class="s-btn" :icon="'share'">分享</rj-button>
                         <rj-button class="s-btn" :icon="'load'">下载</rj-button>
-                        <rj-button class="s-btn" :icon="'message'" :title="'评论'">(4567)</rj-button>
+                        <rj-button class="s-btn" :icon="'message'" :title="'评论'">({{comments.length}})</rj-button>
                     </div>
                 </div>
             </div>
         </div>
 
         <div style="margin-bottom: 20px" class="record-title">
-            <h3><span class="c-h3">评论</span> <span class="c-num" style="">共17460条评论</span></h3>
+            <h3><span class="c-h3">评论</span> <span class="c-num" style="">共{{comments.length}}条评论</span></h3>
         </div>
         <rj-comment-area @commentEvent="commentEvent"></rj-comment-area>
         <rj-comment-list @replyEvent="replyEvent" :comments="comments"></rj-comment-list>

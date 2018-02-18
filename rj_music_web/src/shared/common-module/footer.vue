@@ -11,7 +11,7 @@
         </div>
         <div class="play-area">
             <div class="words">
-                <a class="name" @click="routerToSong('123123')">{{music ? music.name : '-'}}</a>
+                <a class="name" @click="routerToSong(music._id)">{{music ? music.name : '-'}}</a>
                 <a class="mv" title="MV"></a>
                 <span class="by">
                     <span title="Ruth B">
@@ -34,19 +34,19 @@
             <a href="javascript:;" class="icn icn-share" title="分享">分享</a>
         </div>
         <div class="control">
-            <div class="m-vol">
+            <div v-show="isVolShow" class="m-vol">
                 <div class="barbg"></div>
                 <div id="volume" @mousedown.left="changeVolumn($event)" class="vbg">
                     <div class="curr" :style="{ 'height': volHeight + '%' }"></div>
                     <span class="btn" :style="{ 'top': 93 * (100 - volHeight) / 100 + 'px' }"></span>
                 </div>
             </div>
-            <a class="icn icn-vol"></a>
-            <a class="icn icn-loop" title="循环"></a>
+            <a @click="isVolShow = !isVolShow" class="icn icn-vol"></a>
+            <a @click="changeCircleType" class="icn" :class="circleCls" :title="circleTitle"></a>
             <span class="add">
                 <a title="播放列表" class="icn-list">1</a>
             </span>
-            <div class="tip tip-1" style="display:none;">循环</div>
+            <div class="tip" style="display: none" >循环</div>
         </div>
         <audio v-if="musicSrc" ref="audio" controls="controls" style="display: none;"
             @timeupdate="handleTimeupdate"
@@ -60,186 +60,198 @@
 </template>
 
 <script type="text/ecmascript-6">
-    import player from "./player.vue";
-    import Vue from "vue";
+import player from "./player.vue";
+import Vue from "vue";
 import { setTimeout } from 'timers';
-    let _clientY = 0,
-        _clientX = 0,
-        _volumn,
-        _volumeHeight = 0,
-        _progress = 0,
-        _progressWidth = 0;
-    export default {
-        data() {
-            return {
-                emit: new Vue(),
-                playerInfo: {
-                    paused: true,
-                    voice: 60,
-                    currentTime: 0,
-                    duration: 0,
-                    circleStyle: 0
-                },
-                music: {},
-                progress: 0,
+let _clientY = 0,
+    _clientX = 0,
+    _volumn,
+    _volumeHeight = 0,
+    _progress = 0,
+    _progressWidth = 0;
+export default {
+    data() {
+        return {
+            emit: new Vue(),
+            playerInfo: {
                 paused: true,
-                volume: 0,
+                voice: 60,
+                currentTime: 0,
                 duration: 0,
-                cTime: 0,
-                currentTime: '00:00'
-            }
-        },
-        components: {
-            'rj-player': player
-        },
-        created() {
-            // this.musicSrc = "..";
+                circleStyle: 0
+            },
+            music: {},
+            progress: 0,
+            paused: true,
+            volume: parseFloat(localStorage.getItem('__volume') || 0.5),
+            duration: 0,
+            isVolShow: false, // 控制音乐显示隐藏
+            circleType: parseFloat(localStorage.getItem('__circleType') || 0),  // 0，列表循环 1,单曲循环 2,随机播放
+            cTime: 0,
+            currentTime: '00:00'
+        }
+    },
+    components: {
+        'rj-player': player
+    },
+    created() {
+        // this.musicSrc = "..";
 
+    },
+    mounted() {
+        if (this.$refs.audio) {
+            this.$refs.audio.volume = this.volume;
+        }
+    },
+    computed: {
+        musicSrc() {
+            let _cs = this.$store.getters.currentSong;
+            this.music = _cs;
+            setTimeout(() => {
+                this.$refs.audio.load();
+                this.playBtnClick();
+            }, 100);
+            return _cs ? 'http://localhost:3000/' + _cs.src.replace('public/', '') : null;
         },
-        mounted() {
-            this.volume = 0.5;
-            if (this.$refs.audio) {
-                this.$refs.audio.volume = this.volume;
+        playBtnClass() {
+            return this.paused ? 'pause' : 'play';
+        },
+        totalTime() {
+            let m = Math.trunc(this.duration / 60);
+            let s = Math.trunc(this.duration - m * 60);
+            return (m >= 10 ? m : '0' + m) + ':' + (s >= 10 ? s : '0' + s);
+        },
+        // currentTime() {
+        //     let m = Math.floor(this.cTime / 60);
+        //     let s = Math.floor(this.cTime - m * 60);
+        //     return (m >= 10 ? m : '0' + m) + ':' + (s >= 10 ? s : '0' + s);
+        // },
+        volHeight() {
+            return this.volume * 100;
+        },
+        circleCls() {
+            return 'icn-' + (this.circleType === 0 ? 'loop' : this.circleType === 1 ? 'shuffle' : 'one');
+        },
+        circleTitle() {
+            return this.circleType === 0 ? '列表循环' : this.circleType === 1 ? '随机播放' : '单曲循环';
+        }
+    },
+    methods: {
+        routerToSong(id) {
+            this.$router.push({path: '/song', query: { id }})
+        },
+        playBtnClick() {
+            this.paused = !this.paused;
+            this.$refs.audio[this.paused ? 'pause' : 'play']();
+        },
+        /**
+         * @description 音量事件起点
+         */
+        changeVolumn(event) {
+            let clsName = event.target.className;
+            _volumeHeight = document.getElementById('volume').clientHeight;
+            if (clsName === 'vbg') {
+                this.volume = 1 - event.offsetY / _volumeHeight;
+            } else if (clsName === 'curr') {
+                this.volume = (event.target.clientHeight - event.offsetY) / _volumeHeight;
+            } else {
+                // keydown在圆圈上  不做处理
             }
+            _clientY = event.clientY; // 记录初始高度
+            _volumn = this.volume;  // 记录改变后的音量
+            // 点击音量条上 鼠标不松开  也要拖拽
+            document.addEventListener('mousemove', this._handleMouseMove);
+            document.addEventListener('mouseup', this._handleMouseUp);
         },
-        computed: {
-            musicSrc() {
-                let _cs = this.$store.getters.currentSong;
-                this.music = _cs;
-                setTimeout(() => {
-                    this.$refs.audio.load();
-                    this.playBtnClick();
-                }, 100);
-                return _cs ? 'http://localhost:3000/' + _cs.src.replace('public/', '') : null;
-            },
-            playBtnClass() {
-                return this.paused ? 'pause' : 'play';
-            },
-            totalTime() {
-                let m = Math.trunc(this.duration / 60);
-                let s = Math.trunc(this.duration - m * 60);
-                return (m >= 10 ? m : '0' + m) + ':' + (s >= 10 ? s : '0' + s);
-            },
-            // currentTime() {
-            //     let m = Math.floor(this.cTime / 60);
-            //     let s = Math.floor(this.cTime - m * 60);
-            //     return (m >= 10 ? m : '0' + m) + ':' + (s >= 10 ? s : '0' + s);
-            // },
-            volHeight() {
-                return this.volume * 100;
-            }
-        },
-        methods: {
-            routerToSong(id) {
-                this.$router.push({path: '/song', query: { id }})
-            },
-            playBtnClick() {
-                this.paused = !this.paused;
-                this.$refs.audio[this.paused ? 'pause' : 'play']();
-            },
-            /**
-             * @description 音量事件起点
-             */
-            changeVolumn(event) {
-                let clsName = event.target.className;
-                _volumeHeight = document.getElementById('volume').clientHeight;
-                if (clsName === 'vbg') {
-                    this.volume = 1 - event.offsetY / _volumeHeight;
-                } else if (clsName === 'curr') {
-                    this.volume = (event.target.clientHeight - event.offsetY) / _volumeHeight;
+        /**@description mousemove处理音量事情 */
+        _handleMouseMove(event) {
+            let _height = event.clientY - _clientY;
+            if (_height < 0) {
+                if (Math.abs(_height) < _volumeHeight * (1 - _volumn)) {
+                    this.volume = _volumn + Math.abs(_height) / _volumeHeight;
                 } else {
-                    // keydown在圆圈上  不做处理
+                    this.volume = 1;
                 }
-                _clientY = event.clientY; // 记录初始高度
-                _volumn = this.volume;  // 记录改变后的音量
-                // 点击音量条上 鼠标不松开  也要拖拽
-                document.addEventListener('mousemove', this._handleMouseMove);
+            } else {
+                if (_height < _volumeHeight * _volumn) {
+                    this.volume = _volumn - Math.abs(_height) / _volumeHeight;
+                } else {
+                    this.volume = 0
+                }
+            }
+            localStorage.setItem('__volume', this.volume);
+        },
+        _handleMouseUp() {
+            if (_progress) {
+                this.$refs.audio.currentTime = this.progress / 100 * this.duration;
+            }
+            _progress = 0;
+            document.removeEventListener('mousemove', this._handleMouseMove);
+            document.removeEventListener('mousemove', this._handleProgressMove);
+            document.removeEventListener('mouseup', this._handleMouseUp);
+        },
+        changeProgress(event) {
+            _progressWidth = document.getElementById('progress').clientWidth;
+            if (event.target.className !== 'btn') {
+                this.$refs.audio.currentTime = event.offsetX / _progressWidth * this.duration;
+            } else {
+                _clientX = event.clientX;
+                _progress = this.progress;
+                document.addEventListener('mousemove', this._handleProgressMove);
                 document.addEventListener('mouseup', this._handleMouseUp);
-            },
-            /**@description mousemove处理音量事情 */
-            _handleMouseMove(event) {
-                let _height = event.clientY - _clientY;
-                if (_height < 0) {
-                    if (Math.abs(_height) < _volumeHeight * (1 - _volumn)) {
-                        this.volume = _volumn + Math.abs(_height) / _volumeHeight;
-                    } else {
-                        this.volume = 1;
-                    }
-                } else {
-                    if (_height < _volumeHeight * _volumn) {
-                        this.volume = _volumn - Math.abs(_height) / _volumeHeight;
-                    } else {
-                        this.volume = 0
-                    }
-                }
-            },
-            _handleMouseUp() {
-                if (_progress) {
-                    this.$refs.audio.currentTime = this.progress / 100 * this.duration;
-                }
-                _progress = 0;
-                document.removeEventListener('mousemove', this._handleMouseMove);
-                document.removeEventListener('mousemove', this._handleProgressMove);
-                document.removeEventListener('mouseup', this._handleMouseUp);
-            },
-            changeProgress(event) {
-                _progressWidth = document.getElementById('progress').clientWidth;
-                if (event.target.className !== 'btn') {
-                    this.$refs.audio.currentTime = event.offsetX / _progressWidth * this.duration;
-                } else {
-                    _clientX = event.clientX;
-                    _progress = this.progress;
-                    document.addEventListener('mousemove', this._handleProgressMove);
-                    document.addEventListener('mouseup', this._handleMouseUp);
-                }
-            },
-            _handleProgressMove(event) {
-                let _width = event.clientX - _clientX;
-                if (_width < 0) {
-                    if (Math.abs(_width) < _progress / 100 * _progressWidth) {
-                        this.progress = _progress - Math.abs(_width) / _progressWidth * 100;
-                    } else {
-                        this.progress = 0;
-                    }
-                } else {
-                    if (_width < (100 - _progress) / 100 * _progressWidth) {
-                        this.progress = _progress + _width / _progressWidth * 100;
-                    } else {
-                        this.progress = 100;
-                    }
-                }
-                let _cur = this.progress * this.duration / 100;
-                let m = Math.floor(_cur / 60);
-                let s = Math.floor(_cur - m * 60);
-                this.currentTime = (m >= 10 ? m : '0' + m) + ':' + (s >= 10 ? s : '0' + s);
-            },
-            handleCanPlay(event) {
-                this.duration = Math.trunc(event.target.duration);
-                this.volume = event.target.volume;
-            },
-            handleTimeupdate(event) {
-                this.cTime = event.target.currentTime;
-            },
-            handleEnded(event) {
-                this.paused = true;
             }
         },
-        watch: {
-            volume(cur) {
-                if (this.$refs.audio) {
-                    this.$refs.audio.volume = cur;
+        _handleProgressMove(event) {
+            let _width = event.clientX - _clientX;
+            if (_width < 0) {
+                if (Math.abs(_width) < _progress / 100 * _progressWidth) {
+                    this.progress = _progress - Math.abs(_width) / _progressWidth * 100;
+                } else {
+                    this.progress = 0;
                 }
-            },
-            cTime(cur) {
-                if (!_progress) {
-                    this.progress = cur / this.duration * 100;
-                    let m = Math.floor(cur / 60);
-                    let s = Math.floor(cur - m * 60);
-                    this.currentTime = (m >= 10 ? m : '0' + m) + ':' + (s >= 10 ? s : '0' + s);
+            } else {
+                if (_width < (100 - _progress) / 100 * _progressWidth) {
+                    this.progress = _progress + _width / _progressWidth * 100;
+                } else {
+                    this.progress = 100;
                 }
+            }
+            let _cur = this.progress * this.duration / 100;
+            let m = Math.floor(_cur / 60);
+            let s = Math.floor(_cur - m * 60);
+            this.currentTime = (m >= 10 ? m : '0' + m) + ':' + (s >= 10 ? s : '0' + s);
+        },
+        handleCanPlay(event) {
+            this.duration = Math.trunc(event.target.duration);
+            this.$refs.audio.volume = this.volume;
+        },
+        handleTimeupdate(event) {
+            this.cTime = event.target.currentTime;
+        },
+        handleEnded(event) {
+            this.paused = true;
+        },
+        changeCircleType() {
+            this.circleType = ++this.circleType % 3;
+            localStorage.setItem('__circleType', this.circleType);
+        }
+    },
+    watch: {
+        volume(cur) {
+            if (this.$refs.audio) {
+                this.$refs.audio.volume = cur;
+            }
+        },
+        cTime(cur) {
+            if (!_progress) {
+                this.progress = cur / this.duration * 100;
+                let m = Math.floor(cur / 60);
+                let s = Math.floor(cur - m * 60);
+                this.currentTime = (m >= 10 ? m : '0' + m) + ':' + (s >= 10 ? s : '0' + s);
             }
         }
     }
+}
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus">
@@ -516,6 +528,18 @@ $iconall = "../../assets/iconall.png";
             background-position: -3px -344px;
             &:hover {
                 background-position: -33px -344px;
+            }
+        }
+        .icn-shuffle {
+            background-position: -66px -248px;
+            &:hover {
+                background-position: -93px -248px;
+            }
+        }
+        .icn-one {
+            background-position -66px -344px
+            &:hover {
+                background-position: -93px -344px;
             }
         }
         .add {

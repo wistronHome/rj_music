@@ -48,7 +48,7 @@ export default {
                 { label: '时间', key: 'time' }
             ],
             user: {},
-            sheets: [1,2,3,4,5,6,7]
+            sheets: [1, 2]
         }
     },
     created() {

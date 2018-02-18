@@ -153,5 +153,17 @@ class MusicService extends common_service_1.CommonService {
             });
         });
     }
+    findSingers() {
+        return new Promise((resolve, reject) => {
+            music_model_1.Music.distinct('singer').exec((err, result) => {
+                if (err) {
+                    reject(utils_1.ResultUtils.error(utils_1.ResultCode.PARAMETER_ERROR));
+                }
+                else {
+                    resolve(utils_1.ResultUtils.success(result));
+                }
+            });
+        });
+    }
 }
 exports.MusicService = MusicService;

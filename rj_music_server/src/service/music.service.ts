@@ -12,7 +12,6 @@ import { Comment } from "../model/comment.model";
 
 export class MusicService extends CommonService implements MusicInterface {
 
-
     constructor() {
         super();
     }
@@ -161,5 +160,18 @@ export class MusicService extends CommonService implements MusicInterface {
             });
         });
     }
+
+    findSingers(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            Music.distinct('singer').exec((err, result) => {
+                if (err) {
+                    reject(ResultUtils.error(ResultCode.PARAMETER_ERROR));
+                } else {
+                    resolve(ResultUtils.success(result));
+                }
+            });
+        });
+    }
+
 }
 

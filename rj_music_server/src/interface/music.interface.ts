@@ -16,4 +16,10 @@ export interface MusicInterface extends CommonInterface<any> {
      * @returns {Promise<any>}
      */
     commitComment(body): Promise<any>;
+
+    /**
+     * 查询歌手
+     * @returns {Promise<any>}
+     */
+    findSingers(): Promise<any>;
 }
