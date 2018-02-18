@@ -6,13 +6,13 @@
         </div>
         <div class="c-body">
             <div class="u-txtwrap">
-                <textarea class="u-txt" placeholder="评论"></textarea>
+                <textarea class="u-txt" v-model="content" placeholder="评论"></textarea>
             </div>
             <div class="btns">
                 <i class="icn icn-bq"></i>
                 <i class="icn icn-at"></i>
-                <button style="float: right;">评论</button>
-                <span class="b-num">140</span>
+                <rj-button @click="commentEvent" :btnType="'primary'" :icon="'plus'" style="float: right;">评论</rj-button>
+                <span class="b-num" :class="{'over-len': contentLen < 0}">{{contentLen}}</span>
             </div>
             <div class="corr">
                 <em class="arrline">◆</em>
@@ -24,7 +24,28 @@
 
 <script>
 export default {
-
+    data() {
+        return {
+            content: ''
+        }
+    },
+    computed: {
+        contentLen() {
+            return 140 - this.content.length;
+        }
+    },
+    methods: {
+        commentEvent(event) {
+            if (this.contentLen === 0 || !this.content.trim()) {
+                this.$Message.error('输入点内容再提交吧');
+            } else if (this.contentLen < 0) {
+                this.$Message.error('输入不能超过140个字符');
+            } else {
+                this.$emit('commentEvent', this.content);
+                this.content = '';
+            }
+        }
+    }
 }
 </script>
 
@@ -80,6 +101,9 @@ $icon = "../../assets/icon.png";
                 margin-right 10px
                 line-height 25px
                 color #999
+            }
+            .over-len {
+                color #c20c02
             }
         }
         .corr {

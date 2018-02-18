@@ -28,28 +28,45 @@
         <div style="margin-bottom: 20px" class="record-title">
             <h3><span class="c-h3">评论</span> <span class="c-num" style="">共17460条评论</span></h3>
         </div>
-        <rj-comment-area></rj-comment-area>
-        <rj-comment-list :comments="comments"></rj-comment-list>
+        <rj-comment-area @commentEvent="commentEvent"></rj-comment-area>
+        <rj-comment-list @replyEvent="replyEvent" :comments="comments"></rj-comment-list>
     </div>
 </div>
 </template>
 
 <script>
+import { CommonUtil } from '../../core/utils/common-util';
 export default {
     data() {
         return {
-            comments: [1, 2 ,3, 4],
+            comments: [],
             song: null
         }
     },
     created() {
         this.$musicService.getMusicById(this.$route.query.id).then(result => {
             this.song = result.data;
+            this.comments = this.song.comments;
         });
     },
     methods: {
         selectSong(m) {
             this.$store.commit('CURRENT_SONG', m);
+        },
+        commentEvent(content) {
+            this.$musicService.commitComment(this.song._id, CommonUtil.getLoginUser(), content).then(result => {
+                this.$musicService.getMusicById(this.$route.query.id).then(result => {
+                    this.comments = result.data.comments;
+                });
+            });
+        },
+        replyEvent(params) {
+            this.$commentService.commitReply(CommonUtil.getLoginUser(), params.commentId, params.content, this.song._id).then(result => {
+                console.log(result);
+                this.$musicService.getMusicById(this.$route.query.id).then(result => {
+                    this.comments = result.data.comments;
+                });
+            });
         }
     },
     beforeRouteUpdate (to, from, next) {

@@ -2,15 +2,16 @@
  * Created by GyjLoveLh on  2018/2/13
  */
 import { Music } from '../model/music.model'
-import { CommonUtil } from '../common-util'
 import { ResultUtils, ResultCode } from "../utils";
 import * as fs from 'fs';
 import * as path from 'path';
 import * as formidable from 'formidable'
 import { MusicInterface } from "../interface/music.interface";
 import { CommonService } from "./common.service";
+import { Comment } from "../model/comment.model";
 
 export class MusicService extends CommonService implements MusicInterface {
+
 
     constructor() {
         super();
@@ -18,9 +19,29 @@ export class MusicService extends CommonService implements MusicInterface {
 
     getItemByPrimary(id: string) {
         return new Promise((resolve, reject) => {
-            Music.findOne({ _id: id }).exec((err, result) => {
+            Music.findOne({ _id: id })
+                .populate({
+                    path: 'comments',
+                    options: {
+                        sort: { createdtime: -1 }
+                    },
+                    populate: [
+                        {
+                            path: 'commenter',
+                            select: 'nickName '
+                        },
+                        {
+                            path: 'beCommenter',
+                            populate: {
+                                path: 'commenter',
+                                select: 'nickName '
+                            }
+                        }
+                    ],
+                })
+                .exec((err, result) => {
                 if (err) {
-                    reject(ResultUtils.error(ResultCode.PARAMETER_ERROR));
+                    reject(ResultUtils.error(err));
                 } else {
                     resolve(ResultUtils.success(result));
                 }
@@ -109,6 +130,34 @@ export class MusicService extends CommonService implements MusicInterface {
                 //         resolve(ResultUtils.success(''))
                 //     }
                 // });
+            });
+        });
+    }
+
+    commitComment(body): Promise<any> {
+        return new Promise((resolve, reject) => {
+            Comment.create({
+                commenter: body.userId,
+                content: body.content,
+                createdtime: new Date()
+            }, (err, result) => {
+                if (err) {
+                    reject(ResultUtils.error(ResultCode.PARAMETER_ERROR));
+                } else {
+                    if (result) {
+                        Music.update(
+                            { _id: body.musicId },
+                            { $push: { comments: result._id } },
+                            err => {
+                                if (err) {
+                                    reject(ResultUtils.error(ResultCode.PARAMETER_ERROR));
+                                } else {
+                                    resolve(ResultUtils.success(''));
+                                }
+                            }
+                        )
+                    }
+                }
             });
         });
     }

@@ -9,15 +9,36 @@ const fs = require("fs");
 const path = require("path");
 const formidable = require("formidable");
 const common_service_1 = require("./common.service");
+const comment_model_1 = require("../model/comment.model");
 class MusicService extends common_service_1.CommonService {
     constructor() {
         super();
     }
     getItemByPrimary(id) {
         return new Promise((resolve, reject) => {
-            music_model_1.Music.findOne({ _id: id }).exec((err, result) => {
+            music_model_1.Music.findOne({ _id: id })
+                .populate({
+                path: 'comments',
+                options: {
+                    sort: { createdtime: -1 }
+                },
+                populate: [
+                    {
+                        path: 'commenter',
+                        select: 'nickName '
+                    },
+                    {
+                        path: 'beCommenter',
+                        populate: {
+                            path: 'commenter',
+                            select: 'nickName '
+                        }
+                    }
+                ],
+            })
+                .exec((err, result) => {
                 if (err) {
-                    reject(utils_1.ResultUtils.error(utils_1.ResultCode.PARAMETER_ERROR));
+                    reject(utils_1.ResultUtils.error(err));
                 }
                 else {
                     resolve(utils_1.ResultUtils.success(result));
@@ -104,6 +125,31 @@ class MusicService extends common_service_1.CommonService {
                 //         resolve(ResultUtils.success(''))
                 //     }
                 // });
+            });
+        });
+    }
+    commitComment(body) {
+        return new Promise((resolve, reject) => {
+            comment_model_1.Comment.create({
+                commenter: body.userId,
+                content: body.content,
+                createdtime: new Date()
+            }, (err, result) => {
+                if (err) {
+                    reject(utils_1.ResultUtils.error(utils_1.ResultCode.PARAMETER_ERROR));
+                }
+                else {
+                    if (result) {
+                        music_model_1.Music.update({ _id: body.musicId }, { $push: { comments: result._id } }, err => {
+                            if (err) {
+                                reject(utils_1.ResultUtils.error(utils_1.ResultCode.PARAMETER_ERROR));
+                            }
+                            else {
+                                resolve(utils_1.ResultUtils.success(''));
+                            }
+                        });
+                    }
+                }
             });
         });
     }

@@ -27,6 +27,9 @@ let MusicSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    comments: [
+        { type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }
+    ],
     createdtime: {
         type: Date,
         select: true,

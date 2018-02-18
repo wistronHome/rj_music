@@ -9,4 +9,11 @@ export interface MusicInterface extends CommonInterface<any> {
      * @param body
      */
     uploadMusic(body): Promise<any>;
+
+    /**
+     * 提交评论
+     * @param body
+     * @returns {Promise<any>}
+     */
+    commitComment(body): Promise<any>;
 }

@@ -35,5 +35,18 @@ export default {
                 result.body.code === 0 ? resolve(result.body) : reject(result.body);
             }, error => { throw new Error(error) });
         });
+    },
+    /**
+     * 提交评论
+     * @param { String } musicId
+     * @param { String } userId
+     * @param { String } content
+     */
+    commitComment(musicId, userId, content) {
+        return new Promise((resolve, reject) => {
+            Vue.http.post(`${$prefix}/comment`, { musicId, userId, content }).then(result => {
+                result.body.code === 0 ? resolve(result.body) : reject(result.body);
+            }, error => { throw new Error(error) });
+        });
     }
 }

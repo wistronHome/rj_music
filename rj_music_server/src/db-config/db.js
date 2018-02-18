@@ -6,6 +6,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose = require("mongoose");
 const mongoConfig = "mongodb://localhost/rj_music";
 class Db {
+    constructor() {
+        this._conn = null;
+    }
     static getInstance() {
         if (!Db._instance) {
             Db._instance = new Db();
@@ -13,13 +16,16 @@ class Db {
         return Db._instance;
     }
     getConnection() {
-        let promise = mongoose.createConnection(mongoConfig, {
+        if (this._conn) {
+            return this._conn;
+        }
+        this._conn = mongoose.createConnection(mongoConfig, {
             useMongoClient: true
         });
-        promise.then(result => {
+        this._conn.then(result => {
             console.log('>>>>>>>>  ' + mongoConfig + '  <<<<<<<<< connect suceess');
         });
-        return promise;
+        return this._conn;
     }
 }
 Db._instance = null;

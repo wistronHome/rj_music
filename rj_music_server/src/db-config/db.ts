@@ -7,7 +7,7 @@ const mongoConfig = "mongodb://localhost/rj_music";
 
 export class Db {
     private static _instance: Db = null;
-
+    private _conn = null;
     public static getInstance(): Db {
         if (!Db._instance) {
             Db._instance = new Db();
@@ -16,13 +16,16 @@ export class Db {
     }
 
     public getConnection() {
-        let promise = mongoose.createConnection(mongoConfig, {
+        if (this._conn) {
+            return this._conn;
+        }
+        this._conn = mongoose.createConnection(mongoConfig, {
             useMongoClient: true
         });
-        promise.then(result => {
+        this._conn.then(result => {
             console.log('>>>>>>>>  ' + mongoConfig + '  <<<<<<<<< connect suceess');
         });
 
-        return promise;
+        return this._conn;
     }
 }

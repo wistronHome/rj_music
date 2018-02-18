@@ -1,7 +1,7 @@
 <template>
 <!-- 评论回复列表组件 -->
     <div class="list-wrap">
-        <div class="itm" v-for="item in comments" :key="item">
+        <div class="itm" v-for="(item, index) in comments" :key="index">
             <div class="head">
                 <a>
                     <img width="50" height="50" src="http://p1.music.126.net/P_BCFKCNwyjM1rd_hyECkA==/19102915021516948.jpg?param=50y50">
@@ -10,25 +10,46 @@
             <div class="cntwrap">
                 <div>
                     <div class="cnt f-brk">
-                        <a class="s-fc7">DiamondGolden</a>
-                        <span>：嘛也网易云爸爸现在就会搞事情</span>
+                        <a class="s-fc7">{{item.commenter.nickName}}</a>
+                        <span>：{{item.content}}</span>
                     </div>
                 </div>
-                <div class="que">
+                <div class="que" v-if="item.beCommenter">
                     <span class="darr">
                         <i class="bd">◆</i>
                         <i class="bg">◆</i>
                     </span>
-                    <a class="s-fc7">PurionPurion</a>
-                    <span> ：哪一首下架了吗？</span>
+                    <a class="s-fc7">{{item.beCommenter.commenter.nickName}}</a>
+                    <span> ：{{item.beCommenter.content}}</span>
                 </div>
                 <div class="rp">
-                    <div class="time">1月16日 04:24</div>
+                    <div class="time">{{item.createdtime | formatTime}}</div>
                     <a>
                         <i class="zan"></i>
                     </a>
                     <span class="sep">|</span>
-                    <a class="s-fc3">回复</a>
+                    <a class="s-fc3" @click="toggleReply(item)">回复</a>
+                </div>
+            </div>
+            <div v-if="replyOpen && replyOpenItem === item._id" class="reply-wrap">
+                <div class="reply">
+                    <div class="r-inner">
+                        <div class="corr">
+                            <em class="arrline">◆</em>
+                            <span class="arrclr">◆</span>
+                        </div>
+                        <div class="m-cmmtipt">
+                            <div class="txt-area">
+                                <Input v-model="content" type="textarea" :rows="1" :autosize="{minRows: 1,maxRows: 4}"></Input>
+                            </div>
+                            <div class="btns">
+                                <i class="icn icn-bq"></i>
+                                <i class="icn icn-at"></i>
+                                <rj-button @click="commentEvent(item)" :btnType="'primary'" :icon="'plus'" style="float: right;">评论</rj-button>
+                                <span class="b-num" :class="{'over-len': contentLen < 0}">{{contentLen}}</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -36,10 +57,13 @@
 </template>
 
 <script>
+import { CommonUtil } from '../../core/utils/common-util';
 export default {
     data() {
         return {
-
+            content: '',
+            replyOpen: false,
+            replyOpenItem: ''
         }
     },
     props: {
@@ -47,15 +71,57 @@ export default {
             type: Array,
             default: []
         }
+    },
+    computed: {
+        contentLen() {
+            return 140 - this.content.length;
+        }
+    },
+    mounted() {
+    },
+    methods: {
+        toggleReply(item) {
+            if (!this.replyOpenItem) {
+                this.replyOpen = !this.replyOpen;
+                this.replyOpenItem = item._id;
+                // this.content = `回复${item.commenter.nickName}：`;
+            } else if (this.replyOpenItem === item._id) {
+                this.replyOpen = !this.replyOpen;
+            } else {
+                this.replyOpenItem = item._id;
+            }
+        },
+        commentEvent(param) {
+            if (!this.content.trim()) {
+                this.$Message.error('输入点内容再提交吧');
+            } else if (this.contentLen < 0) {
+                this.$Message.error('输入不能超过140个字符');
+            } else {
+                this.$emit('replyEvent', { commentId: param._id, content: this.content });
+            }
+        }
+    },
+    filters: {
+        formatTime(val) {
+            let date = new Date(val);
+            return date.getFullYear() + '年'
+                + date.getMonth() + '月'
+                + (date.getDay() + 1) + '日'
+                + date.getHours() + ':'
+                + date.getMinutes() + ':'
+                + date.getSeconds();
+        }
     }
 }
 </script>
 
 <style lang="stylus" scoped>
 $icon2 = "../../assets/icon2.png";
+$icon = "../../assets/icon.png";
 .list-wrap {
     .itm {
         display flex
+        flex-wrap wrap
         padding: 15px 0;
         border-top: 1px dotted #ccc;
         .head {
@@ -148,6 +214,75 @@ $icon2 = "../../assets/icon2.png";
                     color #333333
                     &:hover {
                         text-decoration underline
+                    }
+                }
+            }
+        }
+        .reply-wrap {
+            flex 1 1 100%
+            padding-left 60px
+            .reply {
+                border 1px solid #d9d9d9
+                border-radius 2px
+                margin-top 10px
+                .r-inner {
+                    position relative
+                    padding: 15px;
+                    background: #f8f8f8;
+                    border: 1px solid #fcfcfc;
+                    border-radius: 2px;
+                    .corr {
+                        position absolute
+                        right 5px
+                        top -12px
+                        overflow hidden
+                        width 14px
+                        height 14px
+                        .arrline, .arrclr {
+                            display: block;
+                            font-family: "SimSun";
+                            font-size: 15px;
+                            font-style: normal;
+                            font-weight: normal;
+                            height: 10px;
+                            line-height: normal;
+                        }
+                        .arrline {
+                            color #d9d9d9
+                        }
+                        .arrclr {
+                            margin: -9px 0 0;
+                            color: #f8f8f8;
+                        }
+                    }
+                    .m-cmmtipt {
+                        .btns {
+                            margin 10px 0
+                            text-align left
+                            position relative
+                            .icn {
+                                width 18px;
+                                margin 0 10px 0 0
+                                display inline-block
+                                height 18px
+                                background url($icon) no-repeat
+                            }
+                            .icn-bq {
+                                background-position -40px -490px
+                            }
+                            .icn-at {
+                                background-position -60px -490px
+                            }
+                            .b-num {
+                                float right
+                                margin-right 10px
+                                line-height 25px
+                                color #999
+                            }
+                            .over-len {
+                                color #c20c02
+                            }
+                        }
                     }
                 }
             }

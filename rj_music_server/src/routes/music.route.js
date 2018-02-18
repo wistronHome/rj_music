@@ -19,4 +19,7 @@ router.post('/upload', (req, res) => {
 router.post('/search', (req, res) => {
     musicService.commonSearch(req.body).then(s => res.send(s), r => res.send(r));
 });
+router.post('/comment', (req, res) => {
+    musicService.commitComment(req.body).then(s => res.send(s), r => res.send(r));
+});
 module.exports = router;
