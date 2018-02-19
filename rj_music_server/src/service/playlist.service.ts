@@ -15,6 +15,20 @@ export class PlaylistService extends CommonService implements PlaylistInterface 
         super();
     }
 
+    getItemByPrimary(id): Promise<any> {
+        return new Promise((resolve, reject) => {
+            Playlist.findOne({ _id: id })
+                .populate('creator songs')
+                .exec((err, result) => {
+                    if (err) {
+                        reject(ResultUtils.error(ResultCode.PARAMETER_ERROR));
+                    } else {
+                        resolve(ResultUtils.success(result));
+                    }
+                });
+        });
+    }
+
     insertPl(param): Promise<any> {
         return new Promise((resolve, reject) => {
             Playlist.create(

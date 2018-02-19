@@ -103,11 +103,6 @@ export default {
                 this.replyOpenItem = '';
             }
         }
-    },
-    filters: {
-        formatTime(val) {
-            return CommonUtil.DateFormat(val, 'yyyy年MM月dd日 hh:mm:ss');
-        }
     }
 }
 </script>

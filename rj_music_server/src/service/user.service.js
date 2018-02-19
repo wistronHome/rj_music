@@ -51,6 +51,7 @@ class UserService extends common_service_1.CommonService {
                         playlist_model_1.Playlist.create({
                             name: '我喜欢的音乐',
                             creator: user._id,
+                            favorite: true,
                             createdtime: new Date()
                         }, (err, pl) => {
                             if (err) {

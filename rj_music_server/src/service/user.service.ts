@@ -61,6 +61,7 @@ export class UserService extends CommonService implements UserInterface {
                         Playlist.create({
                             name: '我喜欢的音乐',
                             creator: user._id,
+                            favorite: true,
                             createdtime: new Date()
                         }, (err, pl) => {
                             if (err) {

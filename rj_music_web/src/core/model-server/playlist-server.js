@@ -13,5 +13,16 @@ export default {
                 result.body.code === 0 ? resolve(result.body) : reject(result.body);
             }, error => { throw new Error(error) });
         });
+    },
+    /**
+     * 查询歌单详情
+     * @param {String} id
+     */
+    getPlaylistDetail(id) {
+        return new Promise((resolve, reject) => {
+            Vue.http.get(`${$prefix}/${id}`).then(result => {
+                result.body.code === 0 ? resolve(result.body) : reject(result.body);
+            }, error => { throw new Error(error) });
+        });
     }
 }

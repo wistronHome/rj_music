@@ -1,6 +1,6 @@
 <template>
     <div>
-        <rj-playlist></rj-playlist>
+        <rj-playlist :data="data"></rj-playlist>
     </div>
 </template>
 
@@ -10,16 +10,22 @@ import pl from '../playlist/playlist.vue';
 export default {
     data() {
         return {
-            user: {}
+            data: null
         }
     },
     components: {
         'rj-playlist': pl
     },
     created() {
-        this.$userService.getUserById(CommonUtil.getLoginUser()).then(result => {
-            this.user = result.data;
+        this.$playlistService.getPlaylistDetail(this.$route.query.id).then(result => {
+            this.data = result.data;
         });
+    },
+    beforeRouteUpdate (to, from, next) {
+        this.$playlistService.getPlaylistDetail(to.query.id).then(result => {
+            this.data = result.data;
+        });
+        next();
     }
 }
 </script>

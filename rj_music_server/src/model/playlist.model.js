@@ -14,6 +14,10 @@ let PlaylistSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     },
+    favorite: {
+        type: Boolean,
+        default: false
+    },
     types: [String],
     cover: {
         type: String,

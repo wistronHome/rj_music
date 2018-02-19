@@ -106,12 +106,6 @@ export default {
                 this.$emit('handleFollow', true);
             });
         }
-    },
-    filters: {
-        dateFormat(val) {
-            let date = new Date(val);
-            return Math.floor(date.getFullYear() % 100 / 10) * 10 + '后';
-        }
     }
 }
 </script>

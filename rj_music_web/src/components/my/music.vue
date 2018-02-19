@@ -20,16 +20,18 @@
                         </span>
                     </template>
                     <MenuItem v-for="(pl, index) in createdPls" :key="index" :name="'pl-' + pl._id">
-                        <div>
-                            <div class="g-item">
-                                <div class="left">
-                                    <a><img width="40" height="40" src="http://p1.music.126.net/tGHU62DTszbFQ37W9qPHcg==/2002210674180197.jpg?param=40y40" alt=""></a>
-                                </div>
-                                <div class="right">
-                                    <p class="name">{{pl.name}}</p>
-                                    <p class="num">{{pl.songs.length}}首</p>
-                                </div>
+                        <div class="g-item">
+                            <div class="left">
+                                <a><img width="40" height="40" src="http://p1.music.126.net/tGHU62DTszbFQ37W9qPHcg==/2002210674180197.jpg?param=40y40" alt=""></a>
                             </div>
+                            <div class="right">
+                                <p class="name">{{pl.name}}</p>
+                                <p class="num">{{pl.songs.length}}首</p>
+                            </div>
+                            <span v-if="!pl.favorite" class="oper">
+                                <a style="margin-right: 6px;" class="rj-icn rj-icn-modify"></a>
+                                <a class="rj-icn rj-icn-delete"></a>
+                            </span>
                         </div>
                     </MenuItem>
                 </Submenu>
@@ -47,6 +49,10 @@
                                     <p class="name">{{pl.name}}</p>
                                     <p class="num">{{pl.songs.length}}首</p>
                                 </div>
+                                <span class="oper">
+                                    <!-- <a class="rj-icn rj-icn-modify"></a> -->
+                                    <a class="rj-icn rj-icn-delete"></a>
+                                </span>
                             </div>
                         </div>
                     </MenuItem>
@@ -154,6 +160,12 @@ export default {
 
 .g-item {
     display flex
+    position relative
+    &:hover {
+        .oper {
+            display block
+        }
+    }
     .left {
         flex 0 1 40px
     }
@@ -176,7 +188,12 @@ export default {
             color #999
         }
     }
-
+    .oper {
+        position: absolute;
+        display none;
+        bottom: 6px;
+        right: 10px;
+    }
 }
 
 </style>

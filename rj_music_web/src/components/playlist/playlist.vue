@@ -1,5 +1,5 @@
 <template>
-    <div class="pl-wrap">
+    <div v-if="data" class="pl-wrap">
         <div class="left-wrap">
             <div class="pl-main">
                 <div class="pl-photo">
@@ -9,61 +9,67 @@
                 <div class="pl-detail">
                     <div class="hd">
                         <i class="type"></i>
-                        <h2 class="f-thide">【&nbsp;最霸气的人在爆炸后从不会回头看&nbsp;】</h2>
+                        <h2 class="f-thide">{{data.name}}</h2>
                     </div>
                     <div class="user">
-                        <a class="face"><img width="35" height="35" src="http://p1.music.126.net/SFdYH6rrTmDgBGAQqQ8n7g==/1365593447636194.jpg?param=200y200" alt=""></a>
-                        <a class="name">冷山集</a>
-                        <span class="time">2017-3-3 创建</span>
+                        <a @click="routerToUserDetail(data.creator._id)" class="face"><img width="35" height="35" src="http://p1.music.126.net/SFdYH6rrTmDgBGAQqQ8n7g==/1365593447636194.jpg?param=200y200" alt=""></a>
+                        <a @click="routerToUserDetail(data.creator._id)" class="name">{{data.creator.nickName}}</a>
+                        <span class="time">{{data.createdtime | formatTime}} 创建</span>
                     </div>
                     <div class="btns">
                         <rj-button :btnType="'primary'" :icon="'plus'">播放</rj-button>
-                        <rj-button :icon="'store'" :disabled="true">(45678)</rj-button>
-                        <rj-button :icon="'share'">(123)</rj-button>
+                        <rj-button :icon="'store'" :disabled="true">({{data.stores.length}})</rj-button>
+                        <rj-button @click="sharePl" :icon="'share'">(-)</rj-button>
                         <rj-button :icon="'load'">下载</rj-button>
-                        <rj-button :icon="'message'">(123)</rj-button>
+                        <rj-button :icon="'message'">({{data.comments.length}})</rj-button>
                     </div>
-                    <div class="tags">
+                    <div class="tags" v-if="data.types.length > 0">
                         <b>标签：</b>
-                        <rj-tag>欧美</rj-tag>
-                        <rj-tag>感动</rj-tag>
-                        <rj-tag>兴奋</rj-tag>
+                        <rj-tag v-for="(tag, index) in data.types" :key="index">{{tag}}</rj-tag>
                     </div>
-                    <div class="intro">
+                    <div class="intro" v-if="data.description">
                         <b>介绍：</b>
-                        <span>其实一开始只是给自己做了个私人歌单，没想到这么多收藏，感谢大家的喜欢♡不定期更新，欢迎安利，不过还是以我个人喜好为参考标准，可能不会全部采纳，抱歉（封面是邪恶力量里的Dean）</span>
+                        <span>{{data.description}}</span>
                     </div>
                 </div>
             </div>
 
-            <div class="record-title">
-                <h3><span class="c-h3">歌曲列表</span> <span class="c-num" style="">100首歌</span></h3>
+            <div style="margin-top: 30px;" class="record-title">
+                <h3><span class="c-h3">歌曲列表</span> <span class="c-num" style="">{{data.songs.length}}首歌</span></h3>
             </div>
-            <rj-song-list style="margin-bottom: 40px" :data="songs" :column="songList"></rj-song-list>
+            <rj-song-list v-if="data.songs.length > 0" style="margin-bottom: 40px" :data="data.songs" :column="songList"></rj-song-list>
+
+            <div v-if="data.songs.length === 0" class="n-nmusic">
+                <h3>
+                    <i style="margin-right: 15px" class="rj-icn rj-icn-music"></i>暂无音乐！
+                </h3>
+                <p class="txt">
+                    点击<i style="margin: 0 7px" class="rj-icn rj-icn-store"></i>
+                    即可将你喜欢的音乐收藏到“我的音乐”&nbsp;&nbsp;&nbsp;&nbsp;马上去
+                    <a>发现音乐</a>
+                </p>
+            </div>
 
             <div style="margin-bottom: 20px" class="record-title">
-                <h3><span class="c-h3">评论</span> <span class="c-num" style="">共17460条评论</span></h3>
+                <h3><span class="c-h3">评论</span> <span class="c-num" style="">共{{data.comments.length}}条评论</span></h3>
             </div>
             <rj-comment-area @commentEvent="commentEvent"></rj-comment-area>
-            <rj-comment-list @replyEvent="replyEvent" :comments="comments"></rj-comment-list>
+            <rj-comment-list @replyEvent="replyEvent" :comments="data.comments"></rj-comment-list>
         </div>
     </div>
 </template>
 
 <script>
-
+    import { CommonUtil } from '../../core/utils/common-util';
     export default {
+        props: {
+            data: {
+                Type: Object
+            }
+        },
         data() {
             return {
-                comments: [],
-                songs: [
-                    { name: `<a class="song">张三</a>&nbsp;&nbsp;-&nbsp;&nbsp;<a class="singer">陈粒</a>`, singer: '刘德华', album: '假装', time: Date.now() },
-                    { name: '<a class="song">张三</a>&nbsp;&nbsp;-&nbsp;&nbsp;<a class="singer">陈粒</a>', singer: '刘德华', album: '假装', time: Date.now() },
-                    { name: '<a class="song">张三</a>&nbsp;&nbsp;-&nbsp;&nbsp;<a class="singer">陈粒</a>', singer: '刘德华', album: '假装', time: Date.now() },
-                    { name: '<a class="song">张三</a>&nbsp;&nbsp;-&nbsp;&nbsp;<a class="singer">陈粒</a>', singer: '刘德华', album: '假装', time: Date.now() },
-                    { name: '<a class="song">张三</a>&nbsp;&nbsp;-&nbsp;&nbsp;<a class="singer">陈粒</a>', singer: '刘德华', album: '假装', time: Date.now() },
-                    { name: '<a class="song">张三</a>&nbsp;&nbsp;-&nbsp;&nbsp;<a class="singer">陈粒</a>', singer: '刘德华', album: '假装', time: Date.now() }
-                ],
+                cUserId: CommonUtil.getLoginUser(),
                 songList: [
                     { label: '序号', key: 'index', type: 'index', width: 50, align: 'center' },
                     { type: 'playIcon', width: 60, align: 'center' },
@@ -80,6 +86,15 @@
             },
             replyEvent() {
 
+            },
+            routerToUserDetail(id) {
+                this.$router.push({path: '/user/home', query: { id }});
+            },
+            sharePl() {
+                this.$Notice.warning({
+                    title: '😞😞😞😞',
+                    desc: '正在火速进行中(๑•̀ㅂ•́)و✧加油'
+                });
             }
         }
     }
@@ -122,6 +137,7 @@ $icon = "../../assets/icon.png";
                     .type {
                         position: relative;
                         margin-top 3px
+                        margin-right 10px
                         flex 0 1 54px
                         height 24px
                         overflow: hidden;
@@ -191,6 +207,21 @@ $icon = "../../assets/icon.png";
             margin-left 20px
             font-weight normal
         }
+    }
+}
+
+.n-nmusic {
+    padding: 105px 0 105px 0;
+    text-align: center;
+    h3 {
+        padding-bottom: 38px;
+        font-size: 18px;
+        font-family: "Microsoft Yahei", Arial, Helvetica, sans-serif;
+
+    }
+    .txt {
+        color #999
+        font-weight 500
     }
 }
 </style>

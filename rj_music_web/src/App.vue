@@ -28,6 +28,7 @@ export default {
 </script>
 
 <style lang="stylus">
+    $icon = "./assets/icon.png";
     $radius = 4px
     #app {
         font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -142,7 +143,7 @@ export default {
 
     .ivu-menu-vertical, .ivu-menu-vertical  {
         .ivu-menu-item,.ivu-menu-submenu-title {
-            padding 8px 24px;
+            padding 8px 0 0 24px;
         }
     }
     .ivu-menu-vertical {
@@ -176,5 +177,36 @@ export default {
     }
     .ivu-modal-close {
         top 3px
+    }
+
+    .rj-icn {
+        display: inline-block;
+        overflow: hidden;
+        vertical-align: middle;
+        width 13px
+        height 13px
+        background url($icon) no-repeat
+    }
+    .rj-icn-modify {
+        background-position: 0 -270px;
+        &:hover {
+            background-position: -20px -270px;
+        }
+    }
+    .rj-icn-delete {
+        background-position: 0 -284px;
+        &:hover {
+            background-position -20px -284px
+        }
+    }
+    .rj-icn-music {
+        width: 64px;
+        height: 50px;
+        background-position: 0 -347px;
+    }
+    .rj-icn-store {
+        width: 16px;
+        height: 14px;
+        background-position: 0 -400px;
     }
 </style>

@@ -14,12 +14,15 @@ import songList from './shared/custom-module/songList.vue';
 import simpleUserProifo from './shared/custom-module/simpleUserProifo.vue';
 import commentArea from './shared/custom-module/commentArea.vue';
 import button from './shared/custom-module/button.vue';
-import services from './core/model-server/index';
 import tag from './shared/custom-module/tag.vue';
+
+import services from './core/model-server/index';
+import filters from './core/filters/index';
 
 Vue.use(vueSource);
 Vue.use(iView);
 Vue.use(services);
+Vue.use(filters);
 
 // 注册全局组件
 const rjComponents = {
