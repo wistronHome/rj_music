@@ -50,4 +50,11 @@ export interface UserInterface extends CommonInterface<any> {
      * @returns {Promise<any>}
      */
     getUserFans(id): Promise<any>;
+
+    /**
+     * 获取用户创建和收藏的歌单
+     * @param {string} id
+     * @returns {Promise<any>}
+     */
+    getUserPls(id: string): Promise<any>;
 }

@@ -19,6 +19,9 @@ router.get('/follows/:id', (req, res) => {
 router.get('/fans/:id', (req, res) => {
     userService.getUserFans(req.params.id).then(result => res.send(result), failed => res.send(failed));
 });
+router.get('/pls/:id', (req, res) => {
+    userService.getUserPls(req.params.id).then(s => res.send(s), r => res.send(r));
+});
 router.put('/', (req, res, next) => {
     userService.register(req.body).then(result => res.send(result), failed => res.send(failed));
 });

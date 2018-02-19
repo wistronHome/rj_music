@@ -7,6 +7,8 @@ import { CommonUtil } from '../common-util'
 import { ResultUtils, ResultCode } from "../utils";
 import * as crypto from 'crypto';
 import { CommonService } from "./common.service";
+import { Playlist } from "../model/playlist.model";
+
 export class UserService extends CommonService implements UserInterface {
 
     constructor() {
@@ -52,11 +54,31 @@ export class UserService extends CommonService implements UserInterface {
                 user.password = md5.digest('hex');
                 user.nickName = `用户${Math.floor(Math.random() * 8999 + 1000)}_${CommonUtil.createUuid().substring(0, 6)}`;
                 let { userCode, password, nickName } = user;
-                User.create({ userCode, password, nickName }, (err, result) => {
+                User.create({ userCode, password, nickName }, (err, user) => {
                     if (err) {
                         reject(ResultUtils.error(ResultCode.WEAK_NET_WORK, err.message));
                     } else {
-                        resolve(ResultUtils.success(result));
+                        Playlist.create({
+                            name: '我喜欢的音乐',
+                            creator: user._id,
+                            createdtime: new Date()
+                        }, (err, pl) => {
+                            if (err) {
+                                reject(ResultUtils.error(ResultCode.WEAK_NET_WORK, err.message));
+                            } else {
+                                User.update(
+                                    { _id: user._id },
+                                    { $push: { createdPls: pl._id } },
+                                    err => {
+                                        if (err) {
+                                            reject(ResultUtils.error(ResultCode.WEAK_NET_WORK, err.message));
+                                        } else {
+                                            resolve(ResultUtils.success(user));
+                                        }
+                                    }
+                                )
+                            }
+                        });
                     }
                 });
             }
@@ -207,6 +229,18 @@ export class UserService extends CommonService implements UserInterface {
                     resolve(ResultUtils.success({ _id, fans }));
                 }
             })
+        });
+    }
+
+    getUserPls(id: string): Promise<any> {
+        return new Promise((resolve, reject) => {
+            User.findOne({ _id: id }).populate('createdPls storePls').exec((err, user) => {
+                if (err) {
+                    reject(ResultUtils.error(ResultCode.PARAMETER_ERROR));
+                } else {
+                    resolve(ResultUtils.success(user));
+                }
+            });
         });
     }
 

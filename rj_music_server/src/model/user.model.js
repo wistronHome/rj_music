@@ -59,5 +59,11 @@ exports.User = db_1.Db.getInstance().getConnection().model('User', new mongoose.
     ],
     fans: [
         { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+    ],
+    createdPls: [
+        { type: mongoose.Schema.Types.ObjectId, ref: 'Playlist' }
+    ],
+    storePls: [
+        { type: mongoose.Schema.Types.ObjectId, ref: 'Playlist' }
     ]
 }));

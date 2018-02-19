@@ -114,5 +114,16 @@ export default {
                 result.body.code === 0 ? resolve(result.body) : reject(result.body);
             }, error => { throw new Error(error) });
         });
+    },
+    /**
+     * 获取用户创建和收藏的歌单
+     * @param {String} userId
+     */
+    getUserPls(userId) {
+        return new Promise((resolve, reject) => {
+            Vue.http.get(`${$prefix}/pls/${userId}`).then(result => {
+                result.body.code === 0 ? resolve(result.body) : reject(result.body);
+            }, error => { throw new Error(error) });
+        });
     }
 }

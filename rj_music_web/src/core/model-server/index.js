@@ -1,11 +1,19 @@
 import userService from './user-server';
 import musicService from './music-server';
 import commentService from './comment-server';
+import playlistService from './playlist-server';
+
+const servers = {
+    userService,
+    musicService,
+    commentService,
+    playlistService
+}
 
 export default {
     install(Vue) {
-        Vue.prototype.$userService = userService;
-        Vue.prototype.$musicService = musicService;
-        Vue.prototype.$commentService = commentService;
+        Object.keys(servers).forEach(key => {
+            Vue.prototype[`$${key}`] = servers[key];
+        });
     }
 }

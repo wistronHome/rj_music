@@ -5,6 +5,7 @@ const common_util_1 = require("../common-util");
 const utils_1 = require("../utils");
 const crypto = require("crypto");
 const common_service_1 = require("./common.service");
+const playlist_model_1 = require("../model/playlist.model");
 class UserService extends common_service_1.CommonService {
     constructor() {
         super();
@@ -42,12 +43,30 @@ class UserService extends common_service_1.CommonService {
                 user.password = md5.digest('hex');
                 user.nickName = `用户${Math.floor(Math.random() * 8999 + 1000)}_${common_util_1.CommonUtil.createUuid().substring(0, 6)}`;
                 let { userCode, password, nickName } = user;
-                user_model_1.User.create({ userCode, password, nickName }, (err, result) => {
+                user_model_1.User.create({ userCode, password, nickName }, (err, user) => {
                     if (err) {
                         reject(utils_1.ResultUtils.error(utils_1.ResultCode.WEAK_NET_WORK, err.message));
                     }
                     else {
-                        resolve(utils_1.ResultUtils.success(result));
+                        playlist_model_1.Playlist.create({
+                            name: '我喜欢的音乐',
+                            creator: user._id,
+                            createdtime: new Date()
+                        }, (err, pl) => {
+                            if (err) {
+                                reject(utils_1.ResultUtils.error(utils_1.ResultCode.WEAK_NET_WORK, err.message));
+                            }
+                            else {
+                                user_model_1.User.update({ _id: user._id }, { $push: { createdPls: pl._id } }, err => {
+                                    if (err) {
+                                        reject(utils_1.ResultUtils.error(utils_1.ResultCode.WEAK_NET_WORK, err.message));
+                                    }
+                                    else {
+                                        resolve(utils_1.ResultUtils.success(user));
+                                    }
+                                });
+                            }
+                        });
                     }
                 });
             }
@@ -188,6 +207,18 @@ class UserService extends common_service_1.CommonService {
                 else {
                     let { _id, fans } = result;
                     resolve(utils_1.ResultUtils.success({ _id, fans }));
+                }
+            });
+        });
+    }
+    getUserPls(id) {
+        return new Promise((resolve, reject) => {
+            user_model_1.User.findOne({ _id: id }).populate('createdPls storePls').exec((err, user) => {
+                if (err) {
+                    reject(utils_1.ResultUtils.error(utils_1.ResultCode.PARAMETER_ERROR));
+                }
+                else {
+                    resolve(utils_1.ResultUtils.success(user));
                 }
             });
         });

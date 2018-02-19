@@ -14,7 +14,8 @@ import songList from './shared/custom-module/songList.vue';
 import simpleUserProifo from './shared/custom-module/simpleUserProifo.vue';
 import commentArea from './shared/custom-module/commentArea.vue';
 import button from './shared/custom-module/button.vue';
-import services from './core/model-server/index'
+import services from './core/model-server/index';
+import tag from './shared/custom-module/tag.vue';
 
 Vue.use(vueSource);
 Vue.use(iView);
@@ -28,7 +29,8 @@ const rjComponents = {
     rjSongList: songList,
     rjSimpleProifo: simpleUserProifo,
     rjCommentArea: commentArea,
-    rjButton: button
+    rjButton: button,
+    rjTag: tag
 };
 Object.keys(rjComponents).forEach(key => {
     Vue.component(key, rjComponents[key]);

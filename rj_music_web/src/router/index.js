@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Router from 'vue-router';
 
 import userRouterConfig from '../components/user/router.js';
+import myRouterConfig from '../components/my/router.js';
 
 Vue.use(Router);
 
@@ -14,7 +15,7 @@ export default new Router({
         },
         {
             path: '/playlist',
-            component: resolve => import('../components/playlist/playlist.vue').then(resolve)
+            component: resolve => import('../components/playlist/pl.vue').then(resolve)
         },
         {
             path: '/song',
@@ -23,6 +24,11 @@ export default new Router({
         {
             path: '/upload',
             component: resolve => import('../components/upload/upload.vue').then(resolve)
+        },
+        {
+            path: '/my',
+            component: resolve => import('../components/my/my.vue').then(resolve),
+            children: [...myRouterConfig]
         }
     ]
 })

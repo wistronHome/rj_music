@@ -8,7 +8,7 @@
         <!--</Select>-->
 
         <div class="rj-login">
-            <dropdown v-if="loginUser"  @on-click="handleDropMenuClick">
+            <dropdown v-if="loginUser" style="text-align: left;"  @on-click="handleDropMenuClick">
                 <a href="javascript:void(0)">
                     <avatar src="https://i.loli.net/2017/08/21/599a521472424.jpg" />
                     <icon type="arrow-down-b"></icon>
@@ -16,6 +16,8 @@
                 <dropdown-menu slot="list">
                     <dropdown-item name="home"><Icon size="14" type="person"></Icon><span class="ava-menu-span">个人主页</span></dropdown-item>
                     <dropdown-item name="message"><Icon size="14" type="email"></Icon><span class="ava-menu-span">我的消息</span></dropdown-item>
+                    <dropdown-item name="musician"><Icon size="14" type="email"></Icon><span class="ava-menu-span">成为音乐人</span></dropdown-item>
+                    <dropdown-item name="upload"><Icon size="14" type="email"></Icon><span class="ava-menu-span">上传音乐</span></dropdown-item>
                     <dropdown-item name="setting"><Icon size="14" type="ios-gear"></Icon><span class="ava-menu-span">个人设置</span></dropdown-item>
                     <dropdown-item name="logout"><Icon size="14" type="log-out"></Icon><span class="ava-menu-span">退出</span></dropdown-item>
                 </dropdown-menu>
@@ -225,11 +227,11 @@
                 this.searchModel = null;
                 this.$router.push({ path: '/song', query: { id: param }});
             },
-            // changeFormStatus(type, name) {
-            //     this.$refs[name].resetFields();
-            //     this.errorMsg = '';
-            //     this.formStatus = type;
-            // },
+            changeFormStatus(type, name) {
+                this.$refs[name].resetFields();
+                this.errorMsg = '';
+                this.formStatus = type;
+            },
             /**
              * 关闭模态框
              */
@@ -246,6 +248,8 @@
                     this.$router.push({path: `/user/home`, query: { id: this.loginUser }});
                 } else if (type === 'setting') {
                     this.$router.push({path: '/user/setting', query: { id: this.loginUser }})
+                } else if (type === 'upload') {
+                    this.$router.push({path: `/upload`});
                 }
                 if (type === 'logout') {
                     CommonUtil.logout();
@@ -263,6 +267,7 @@
 <style lang="stylus" scoped>
     $radius = 4px
     .rj-header {
+        padding 0 30px
         h1 {
             float: left;
             width: 176px;
@@ -288,45 +293,23 @@
             }
         }
     }
-    .ivu-modal-header {
-        padding 0;
-        background #333
-        border-top-left-radius $radius
-        border-top-right-radius $radius
-        .model-header {
-            color #f3f3f3
-            margin 8px 10px
-        }
 
-    }
-    .ivu-modal-footer {
-        padding 0
-        .model-footer {
-            padding 12px 18px
-            background rgb(247, 247, 247)
-            border-bottom-left-radius $radius
-            border-bottom-right-radius $radius
-        }
-    }
-    .ivu-modal-close {
-        top 3px
-    }
     .err-tip {
         position: absolute;
         top: -28px;
         left: 8px;
         color: rgb(227, 50, 50);
     }
-    .ivu-select-dropdown {
-        background-color #242424
-        text-align left
-    }
-    .ivu-dropdown-item {
-        color #bbb6b6
-        &:hover {
-            background-color #3a3a3a
-        }
-    }
+    // .ivu-select-dropdown {
+    //     background-color #242424
+    //     text-align left
+    // }
+    // .ivu-dropdown-item {
+    //     color #bbb6b6
+    //     &:hover {
+    //         background-color #3a3a3a
+    //     }
+    // }
     .ava-menu-span {
         margin-left 5px
     }

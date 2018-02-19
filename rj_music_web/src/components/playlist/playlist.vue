@@ -1,5 +1,5 @@
 <template>
-    <div class="wrap pl-wrap">
+    <div class="pl-wrap">
         <div class="left-wrap">
             <div class="pl-main">
                 <div class="pl-photo">
@@ -7,7 +7,32 @@
                     <span class="msk"></span>
                 </div>
                 <div class="pl-detail">
-
+                    <div class="hd">
+                        <i class="type"></i>
+                        <h2 class="f-thide">【&nbsp;最霸气的人在爆炸后从不会回头看&nbsp;】</h2>
+                    </div>
+                    <div class="user">
+                        <a class="face"><img width="35" height="35" src="http://p1.music.126.net/SFdYH6rrTmDgBGAQqQ8n7g==/1365593447636194.jpg?param=200y200" alt=""></a>
+                        <a class="name">冷山集</a>
+                        <span class="time">2017-3-3 创建</span>
+                    </div>
+                    <div class="btns">
+                        <rj-button :btnType="'primary'" :icon="'plus'">播放</rj-button>
+                        <rj-button :icon="'store'" :disabled="true">(45678)</rj-button>
+                        <rj-button :icon="'share'">(123)</rj-button>
+                        <rj-button :icon="'load'">下载</rj-button>
+                        <rj-button :icon="'message'">(123)</rj-button>
+                    </div>
+                    <div class="tags">
+                        <b>标签：</b>
+                        <rj-tag>欧美</rj-tag>
+                        <rj-tag>感动</rj-tag>
+                        <rj-tag>兴奋</rj-tag>
+                    </div>
+                    <div class="intro">
+                        <b>介绍：</b>
+                        <span>其实一开始只是给自己做了个私人歌单，没想到这么多收藏，感谢大家的喜欢♡不定期更新，欢迎安利，不过还是以我个人喜好为参考标准，可能不会全部采纳，抱歉（封面是邪恶力量里的Dean）</span>
+                    </div>
                 </div>
             </div>
 
@@ -19,8 +44,8 @@
             <div style="margin-bottom: 20px" class="record-title">
                 <h3><span class="c-h3">评论</span> <span class="c-num" style="">共17460条评论</span></h3>
             </div>
-            <rj-comment-area></rj-comment-area>
-            <rj-comment-list :comments="comments"></rj-comment-list>
+            <rj-comment-area @commentEvent="commentEvent"></rj-comment-area>
+            <rj-comment-list @replyEvent="replyEvent" :comments="comments"></rj-comment-list>
         </div>
     </div>
 </template>
@@ -30,7 +55,7 @@
     export default {
         data() {
             return {
-                comments: [1, 2, 3, 4],
+                comments: [],
                 songs: [
                     { name: `<a class="song">张三</a>&nbsp;&nbsp;-&nbsp;&nbsp;<a class="singer">陈粒</a>`, singer: '刘德华', album: '假装', time: Date.now() },
                     { name: '<a class="song">张三</a>&nbsp;&nbsp;-&nbsp;&nbsp;<a class="singer">陈粒</a>', singer: '刘德华', album: '假装', time: Date.now() },
@@ -48,12 +73,21 @@
                     { label: '时间', key: 'time' }
                 ],
             }
+        },
+        methods: {
+            commentEvent() {
+
+            },
+            replyEvent() {
+
+            }
         }
     }
 </script>
 
 <style lang="stylus" scoped>
 $coverall = "../../assets/coverall.png";
+$icon = "../../assets/icon.png";
 .pl-wrap {
     padding 0
     .left-wrap {
@@ -79,7 +113,71 @@ $coverall = "../../assets/coverall.png";
             .pl-detail {
                 flex 1 1 auto
                 margin-left 25px
-                background #ccc
+                // background #ccc
+                .hd {
+                    position: relative;
+                    margin: 0 0 12px;
+                    line-height: 24px;
+                    display flex
+                    .type {
+                        position: relative;
+                        margin-top 3px
+                        flex 0 1 54px
+                        height 24px
+                        overflow: hidden;
+                        vertical-align: middle;
+                        background url($icon) no-repeat
+                        background-position: 0 -243px;
+                    }
+                    .f-thide {
+                        flex 1 1 auto
+                        line-height: 24px;
+                        font-size: 20px;
+                        font-weight: normal;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                        word-wrap: normal;
+                    }
+                }
+                .user {
+                    margin: 0 0 20px;
+                    line-height: 35px;
+                    display flex
+                    .face {
+                        margin-right 10px
+                        flex 0 1 35px
+                    }
+                    .name {
+                        flex 0 1 auto
+                        font-weight 600
+                    }
+                    .time {
+                        flex 1 1 auto
+                        text-align left
+                        padding-left 15px
+                        color #999
+                    }
+                }
+                .btns {
+                    margin-bottom 25px
+                }
+                .tags, .intro {
+                    margin-bottom 5px
+                    line-height: 22px;
+                    b {
+                        color #666
+                        font-weight 500
+                    }
+                    a {
+                        margin-right 8px
+                    }
+                    span {
+                        line-height: 18px;
+                        color: #666;
+                        font-weight 500
+                    }
+                }
             }
         }
 

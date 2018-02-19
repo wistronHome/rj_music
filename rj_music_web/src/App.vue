@@ -28,11 +28,15 @@ export default {
 </script>
 
 <style lang="stylus">
+    $radius = 4px
     #app {
         font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
         text-align: center;
         .rj-header {
-            position: relative;
+            position: fixed;
+            left 0
+            right 0
+            top 0
             z-index: 1000;
             box-sizing: border-box;
             background: #242424;
@@ -40,6 +44,7 @@ export default {
         }
         .rj-lay {
             position: absolute;
+            margin-top 64px
             background #f5f5f5
             left: 0;
             right: 0;
@@ -133,5 +138,43 @@ export default {
                 }
             }
         }
+    }
+
+    .ivu-menu-vertical, .ivu-menu-vertical  {
+        .ivu-menu-item,.ivu-menu-submenu-title {
+            padding 8px 24px;
+        }
+    }
+    .ivu-menu-vertical {
+        .ivu-menu-submenu {
+            .ivu-menu-item {
+                padding-left 24px
+            }
+        }
+    }
+
+    .ivu-modal-header {
+        padding 0;
+        background #333
+        border-top-left-radius $radius
+        border-top-right-radius $radius
+        .model-header {
+            color #f3f3f3
+            margin 8px 10px
+        }
+
+    }
+
+    .ivu-modal-footer {
+        padding 0
+        .model-footer {
+            padding 12px 18px
+            background rgb(247, 247, 247)
+            border-bottom-left-radius $radius
+            border-bottom-right-radius $radius
+        }
+    }
+    .ivu-modal-close {
+        top 3px
     }
 </style>

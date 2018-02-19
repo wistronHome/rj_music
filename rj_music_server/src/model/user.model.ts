@@ -54,9 +54,15 @@ export let User = Db.getInstance().getConnection().model('User', new mongoose.Sc
         default: new Date().setFullYear(1990, 0, 1)
     },
     follows: [
-        { type:  mongoose.Schema.Types.ObjectId, ref: 'User' }
+        { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
     ],
     fans: [
-        { type:  mongoose.Schema.Types.ObjectId, ref: 'User' }
+        { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+    ],
+    createdPls: [
+        { type: mongoose.Schema.Types.ObjectId, ref: 'Playlist' }
+    ],
+    storePls: [
+        { type: mongoose.Schema.Types.ObjectId, ref: 'Playlist' }
     ]
 }));
