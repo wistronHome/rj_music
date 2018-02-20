@@ -29,7 +29,7 @@
                     </div>
                     <div class="intro" v-if="data.description">
                         <b>介绍：</b>
-                        <span>{{data.description}}</span>
+                        <span v-html="data.description"></span>
                     </div>
                 </div>
             </div>

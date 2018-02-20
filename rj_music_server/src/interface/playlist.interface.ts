@@ -10,4 +10,17 @@ export interface PlaylistInterface extends CommonInterface<any> {
      * @returns {Promise<any>}
      */
     insertPl(param): Promise<any>;
+
+    /**
+     * 获取所有歌单类型
+     * @returns {Promise<any>}
+     */
+    getTypes(): Promise<any>;
+
+    /**
+     * 修改歌单
+     * @param params
+     * @returns {Promise<any>}
+     */
+    modifyPlaylist(params): Promise<any>;
 }

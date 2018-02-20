@@ -24,5 +24,26 @@ export default {
                 result.body.code === 0 ? resolve(result.body) : reject(result.body);
             }, error => { throw new Error(error) });
         });
+    },
+    /**
+     * 查询所有类型
+     */
+    getAllTypes() {
+        return new Promise((resolve, reject) => {
+            Vue.http.get(`${$prefix}/types`).then(result => {
+                result.body.code === 0 ? resolve(result.body) : reject(result.body);
+            }, error => { throw new Error(error) });
+        });
+    },
+    /**
+     * 修改歌单
+     * @param {any} params
+     */
+    modifyPlaylist(params) {
+        return new Promise((resolve, reject) => {
+            Vue.http.put(`${$prefix}`, params).then(result => {
+                result.body.code === 0 ? resolve(result.body) : reject(result.body);
+            }, error => { throw new Error(error) });
+        });
     }
 }

@@ -8,6 +8,7 @@ import { CommonService } from "./common.service";
 import { PlaylistInterface } from "../interface/playlist.interface";
 import { Playlist } from "../model/playlist.model";
 import { User } from "../model/user.model";
+import { PLAYLIST_TYPES } from "../db-config/playlist-types";
 
 export class PlaylistService extends CommonService implements PlaylistInterface {
 
@@ -51,6 +52,28 @@ export class PlaylistService extends CommonService implements PlaylistInterface 
                     }
                 }
             );
+        });
+    }
+
+    getTypes(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            resolve(ResultUtils.success(PLAYLIST_TYPES));
+        });
+    }
+
+    modifyPlaylist(params): Promise<any> {
+        return new Promise((resolve, reject) => {
+            Playlist.update(
+                { _id: params._id },
+                { $set: { name: params.name, types: params.types, description: params.description } },
+                err => {
+                    if (err) {
+                        reject(ResultUtils.error(ResultCode.PARAMETER_ERROR));
+                    } else {
+                        resolve(ResultUtils.success(''));
+                    }
+                }
+            )
         });
     }
 }

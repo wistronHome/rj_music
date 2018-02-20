@@ -7,6 +7,7 @@ const utils_1 = require("../utils");
 const common_service_1 = require("./common.service");
 const playlist_model_1 = require("../model/playlist.model");
 const user_model_1 = require("../model/user.model");
+const playlist_types_1 = require("../db-config/playlist-types");
 class PlaylistService extends common_service_1.CommonService {
     constructor() {
         super();
@@ -40,6 +41,23 @@ class PlaylistService extends common_service_1.CommonService {
                             resolve(utils_1.ResultUtils.success(''));
                         }
                     });
+                }
+            });
+        });
+    }
+    getTypes() {
+        return new Promise((resolve, reject) => {
+            resolve(utils_1.ResultUtils.success(playlist_types_1.PLAYLIST_TYPES));
+        });
+    }
+    modifyPlaylist(params) {
+        return new Promise((resolve, reject) => {
+            playlist_model_1.Playlist.update({ _id: params._id }, { $set: { name: params.name, types: params.types, description: params.description } }, err => {
+                if (err) {
+                    reject(utils_1.ResultUtils.error(utils_1.ResultCode.PARAMETER_ERROR));
+                }
+                else {
+                    resolve(utils_1.ResultUtils.success(''));
                 }
             });
         });

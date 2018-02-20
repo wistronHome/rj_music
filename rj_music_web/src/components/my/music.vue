@@ -13,7 +13,7 @@
                 </MenuItem>
                 <Submenu name="4" style="padding-left: 0">
                     <template class="m-item" slot="title">
-                        <span class="m-til">创建的歌单
+                        <span class="m-til">创建的歌单（{{createdPls.length}}）
                             <Button @click.stop="createPlaylist" :size="'small'">
                                 <Icon style="color: #c0321e" type="plus"></Icon>新增
                             </Button>
@@ -29,7 +29,7 @@
                                 <p class="num">{{pl.songs.length}}首</p>
                             </div>
                             <span v-if="!pl.favorite" class="oper">
-                                <a style="margin-right: 6px;" class="rj-icn rj-icn-modify"></a>
+                                <a style="margin-right: 6px;" class="rj-icn rj-icn-modify" @click.stop="routerToEdit(pl._id)"></a>
                                 <a class="rj-icn rj-icn-delete"></a>
                             </span>
                         </div>
@@ -123,6 +123,9 @@ export default {
                 let id = param.replace('pl-', '');
                 this.$router.push({ path: '/my/music/playlist', query: { id } });
             }
+        },
+        routerToEdit(id) {
+            this.$router.push({ path: '/my/music/edit', query: { id } });
         }
     }
 }

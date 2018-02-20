@@ -1,10 +1,11 @@
 <template>
     <button @click="handleClick" @mouseenter="mouseenter" @mouseleave="mouseleave" class="rj-btn" :title="title || $slots.default[0].text"
         :class="{ 'rj-btn-disabled': disabled, 'rj-btn-primary': btnType === 'primary', 'rj-btn-hide-icon': hideIcon }">
-        <span :class="clazz">
+        <span :style="fWidth" :class="clazz">
             <em v-if="isMouseEnter">{{focusContent}}</em>
             <slot v-if="!isMouseEnter"></slot>
         </span>
+        <i v-if="checked" class="rj-checked"></i>
     </button>
 </template>
 
@@ -20,9 +21,17 @@
                 type: String,
                 default: 'default'
             },
+            width: {
+                type: Number,
+                default: 0
+            },
             icon: {
                 type: String,
                 default: 'default'
+            },
+            checked: {
+                type: Boolean,
+                default: false
             },
             disabled: {
                 type: Boolean,
@@ -43,6 +52,13 @@
         computed: {
             clazz() {
                 return `icon-${this.icon}`;
+            },
+            fWidth() {
+                if (this.width) {
+                    return { width: this.width + 'px' };
+                } else {
+                    return { };
+                }
             }
         },
         methods: {
@@ -62,12 +78,14 @@
 </script>
 
 <style lang="stylus" scoped>
+$icon = "../../assets/icon.png";
 $btn = "../../assets/button.png"
 $btn2 = "../../assets/button2.png";
 * {
     user-select none
 }
 .rj-btn {
+    position relative
     background url($btn2) no-repeat
     background-position right -1020px
     &:hover {
@@ -196,5 +214,17 @@ $btn2 = "../../assets/button2.png";
         background-position: 0 -1149px;
         cursor: default;
     }
+}
+
+.rj-checked {
+    position: absolute;
+    right: -3px;
+    bottom: -3px;
+    width: 18px;
+    height: 18px;
+    overflow: hidden;
+    vertical-align: middle;
+    background: url($icon) no-repeat;
+    background-position: -25px -430px;
 }
 </style>
