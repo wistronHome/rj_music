@@ -40,6 +40,9 @@ router.post('/validateNickName', (req, res) => {
 router.post('/relationship', (req, res) => {
     userService.getRelationship(req.body).then(result => res.send(result), failed => res.send(failed));
 });
+router.post('/removePls', (req, res) => {
+    userService.removePls(req.body).then(result => res.send(result), failed => res.send(failed));
+});
 router.post('/follow', (req, res) => {
     userService.handleFollow(req.body).then(result => res.send(result), failed => res.send(failed));
 });

@@ -6,12 +6,14 @@ var ResultCode;
     ResultCode[ResultCode["WEAK_NET_WORK"] = -1] = "WEAK_NET_WORK";
     ResultCode[ResultCode["PARAMETER_ERROR"] = 10101] = "PARAMETER_ERROR";
     ResultCode[ResultCode["REGISTER_ERROR"] = 10102] = "REGISTER_ERROR";
+    ResultCode[ResultCode["SONG_DUPLICATE_ERROR"] = 10103] = "SONG_DUPLICATE_ERROR";
 })(ResultCode = exports.ResultCode || (exports.ResultCode = {}));
 const CM_LIST = [
     { code: ResultCode.SUCCESS, msg: '请求成功' },
     { code: ResultCode.WEAK_NET_WORK, msg: '网络异常' },
     { code: ResultCode.PARAMETER_ERROR, msg: '参数错误' },
-    { code: ResultCode.REGISTER_ERROR, msg: '用户名或者密码错误' }
+    { code: ResultCode.REGISTER_ERROR, msg: '用户名或者密码错误' },
+    { code: ResultCode.SONG_DUPLICATE_ERROR, msg: '歌曲已存在' }
 ];
 class ResultMsg {
     constructor(code) {

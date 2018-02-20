@@ -165,6 +165,11 @@ export default {
         }
 
     }
+    .rj-reset {
+        .ivu-modal-body {
+            padding 0
+        }
+    }
 
     .ivu-modal-footer {
         padding 0

@@ -62,5 +62,29 @@ class PlaylistService extends common_service_1.CommonService {
             });
         });
     }
+    addMusic(params) {
+        return new Promise((resolve, reject) => {
+            playlist_model_1.Playlist.findOne({ _id: params.plId }, (err, result) => {
+                if (err) {
+                    reject(utils_1.ResultUtils.error(utils_1.ResultCode.PARAMETER_ERROR));
+                }
+                else {
+                    if (result.songs.findIndex(item => item.toString() === params.songId) !== -1) {
+                        reject(utils_1.ResultUtils.error(utils_1.ResultCode.SONG_DUPLICATE_ERROR));
+                    }
+                    else {
+                        playlist_model_1.Playlist.update({ _id: params.plId }, { $push: { songs: params.songId } }, err => {
+                            if (err) {
+                                reject(utils_1.ResultUtils.error(utils_1.ResultCode.PARAMETER_ERROR));
+                            }
+                            else {
+                                resolve(utils_1.ResultUtils.success(''));
+                            }
+                        });
+                    }
+                }
+            });
+        });
+    }
 }
 exports.PlaylistService = PlaylistService;

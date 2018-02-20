@@ -30,7 +30,7 @@
                             </div>
                             <span v-if="!pl.favorite" class="oper">
                                 <a style="margin-right: 6px;" class="rj-icn rj-icn-modify" @click.stop="routerToEdit(pl._id)"></a>
-                                <a class="rj-icn rj-icn-delete"></a>
+                                <a class="rj-icn rj-icn-delete" @click.stop="deletePls(pl._id)"></a>
                             </span>
                         </div>
                     </MenuItem>
@@ -50,7 +50,6 @@
                                     <p class="num">{{pl.songs.length}}首</p>
                                 </div>
                                 <span class="oper">
-                                    <!-- <a class="rj-icn rj-icn-modify"></a> -->
                                     <a class="rj-icn rj-icn-delete"></a>
                                 </span>
                             </div>
@@ -63,7 +62,7 @@
              <router-view></router-view>
         </div>
 
-        <Modal v-model="modal2" width="500" :maskClosable="false">
+        <Modal v-model="createModal" width="500" :maskClosable="false">
             <p slot="header" class="model-header">
                 <span>新建歌单</span>
             </p>
@@ -80,6 +79,19 @@
                 <rj-button @click="cancleModal">取&nbsp;&nbsp;消&nbsp;</rj-button>
             </div>
         </Modal>
+
+        <Modal v-model="deleteModal" width="500" :maskClosable="false">
+            <p slot="header" class="model-header">
+                <span>提示</span>
+            </p>
+            <div style="text-align:center">
+                <p style="text-align: center;font-size: 14px;color: #000">确定删除歌单?</p>
+            </div>
+            <div slot="footer" class="model-footer" style="text-align: center;">
+                <rj-button :btnType="'primary'" :icon="'plus'" @click="handleDeleteModal">确&nbsp;&nbsp;认</rj-button>
+                <rj-button :width="60" @click="deleteModal=false">取&nbsp;&nbsp;消&nbsp;</rj-button>
+            </div>
+        </Modal>
     </div>
 </template>
 
@@ -90,7 +102,9 @@ export default {
         return {
             createdPls: [],
             storePls: [],
-            modal2: false,
+            createModal: false,
+            deleteModal: false,
+            checkedPllId: null,
             createPlaylistFormData: {
                 name: ''
             }
@@ -104,11 +118,15 @@ export default {
     },
     methods: {
         createPlaylist(event) {
-            this.modal2 = true;
+            this.createModal = true;
         },
         cancleModal() {
             this.$refs.createPlaylistFormData.resetFields();
-            this.modal2 = false;
+            this.createModal = false;
+        },
+        deletePls(plId) {
+            this.checkedPllId = plId;
+            this.deleteModal = true;
         },
         submitModal() {
             this.$playlistService.createPlaylist(CommonUtil.getLoginUser(), this.createPlaylistFormData.name).then(result => {
@@ -117,6 +135,12 @@ export default {
                     this.createdPls = u.data.createdPls;
                 });
             });
+        },
+        handleDeleteModal() {
+            this.$userService.removeCreatedPls(CommonUtil.getLoginUser(), this.checkedPllId).then(result => {
+
+            });
+            this.deleteModal = false;
         },
         menuSelect(param) {
             if (param.includes('pl')) {

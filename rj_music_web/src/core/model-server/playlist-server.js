@@ -45,5 +45,16 @@ export default {
                 result.body.code === 0 ? resolve(result.body) : reject(result.body);
             }, error => { throw new Error(error) });
         });
+    },
+    /**
+     * 将歌曲添加到歌单中
+     * @param {any} params
+     */
+    addMusic(params) {
+        return new Promise((resolve, reject) => {
+            Vue.http.put(`${$prefix}/song`, params).then(result => {
+                result.body.code === 0 ? resolve(result.body) : reject(result.body);
+            }, error => { throw new Error(error) });
+        });
     }
 }

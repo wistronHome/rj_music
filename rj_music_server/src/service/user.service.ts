@@ -245,5 +245,20 @@ export class UserService extends CommonService implements UserInterface {
         });
     }
 
+    removePls(params: any): Promise<any> {
+        return new Promise((resolve, reject) => {
+            User.update(
+                { _id: params.userId },
+                { $pull: { createdPls: params.plId } },
+                err => {
+                    if (err) {
+                        reject(ResultUtils.error(ResultCode.PARAMETER_ERROR));
+                    } else {
+                        resolve(ResultUtils.success(''));
+                    }
+                }
+            )
+        });
+    }
 }
 

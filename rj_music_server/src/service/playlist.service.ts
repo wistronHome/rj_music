@@ -76,5 +76,31 @@ export class PlaylistService extends CommonService implements PlaylistInterface 
             )
         });
     }
+
+    addMusic(params): Promise<any> {
+        return new Promise((resolve, reject) => {
+            Playlist.findOne({ _id: params.plId }, (err, result) => {
+                if (err) {
+                    reject(ResultUtils.error(ResultCode.PARAMETER_ERROR));
+                } else {
+                    if (result.songs.findIndex(item => item.toString() === params.songId) !== -1) {
+                        reject(ResultUtils.error(ResultCode.SONG_DUPLICATE_ERROR));
+                    } else {
+                        Playlist.update(
+                            { _id: params.plId },
+                            { $push: { songs: params.songId } },
+                            err => {
+                                if (err) {
+                                    reject(ResultUtils.error(ResultCode.PARAMETER_ERROR));
+                                } else {
+                                    resolve(ResultUtils.success(''));
+                                }
+                            }
+                        )
+                    }
+                }
+            });
+        });
+    }
 }
 

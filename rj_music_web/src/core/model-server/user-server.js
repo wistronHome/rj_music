@@ -125,5 +125,17 @@ export default {
                 result.body.code === 0 ? resolve(result.body) : reject(result.body);
             }, error => { throw new Error(error) });
         });
+    },
+    /**
+     * 删除用户歌单
+     * @param {String} userId
+     * @param {String} plId
+     */
+    removeCreatedPls(userId, plId) {
+        return new Promise((resolve, reject) => {
+            Vue.http.post(`${$prefix}/removePls`, { userId, plId }).then(result => {
+                result.body.code === 0 ? resolve(result.body) : reject(result.body);
+            }, error => { throw new Error(error) });
+        });
     }
 }

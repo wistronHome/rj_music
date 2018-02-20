@@ -57,4 +57,10 @@ export interface UserInterface extends CommonInterface<any> {
      * @returns {Promise<any>}
      */
     getUserPls(id: string): Promise<any>;
+
+    /**
+     * 删除用户的歌单
+     * @returns {Promise<any>}
+     */
+    removePls(params: any): Promise<any>;
 }

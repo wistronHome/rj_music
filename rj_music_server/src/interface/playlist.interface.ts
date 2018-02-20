@@ -23,4 +23,11 @@ export interface PlaylistInterface extends CommonInterface<any> {
      * @returns {Promise<any>}
      */
     modifyPlaylist(params): Promise<any>;
+
+    /**
+     * 歌曲收藏到歌单
+     * @param params
+     * @returns {Promise<any>}
+     */
+    addMusic(params): Promise<any>;
 }

@@ -16,7 +16,7 @@
                     <p class="des">所属专辑：<a>小梦大半</a></p>
                     <div class="s-btns">
                         <rj-button class="s-btn" @click="selectSong(song)" :btnType="'primary'" :icon="'plus'">播放</rj-button>
-                        <rj-button class="s-btn" :icon="'store'">收藏</rj-button>
+                        <rj-button class="s-btn" @click="storeToPl(song._id)" :icon="'store'">收藏</rj-button>
                         <rj-button class="s-btn" :icon="'share'">分享</rj-button>
                         <rj-button class="s-btn" :icon="'load'">下载</rj-button>
                         <rj-button class="s-btn" :icon="'message'" :title="'评论'">({{comments.length}})</rj-button>
@@ -30,6 +30,33 @@
         </div>
         <rj-comment-area @commentEvent="commentEvent"></rj-comment-area>
         <rj-comment-list @replyEvent="replyEvent" :comments="comments"></rj-comment-list>
+
+        <Modal v-model="storeModal" class="rj-reset" width="530px" :maskClosable="false">
+            <p slot="header" class="model-header">
+                <span>添加到歌单</span>
+            </p>
+            <div style="text-align:left">
+                <div class="rj-tit">
+                    <i class="rj-icn rj-icn-13"></i>新歌单
+                </div>
+                <div>
+                    <ul class="rj-pl-u">
+                        <li v-for="(item, index) in playlist" @click="addToPls(item._id)" :key="index">
+                            <div class="item">
+                                <div class="lef">
+                                    <a><img width="40" height="40" src="http://p1.music.126.net/HKdfZ1e_3W2YJzMDdys1Qg==/19168885719193456.jpg?param=40y40" alt=""></a>
+                                </div>
+                                <p class="name"><a>{{item.name}}</a></p>
+                                <p>{{item.songs.length}}首</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div slot="footer" class="model-footer" style="text-align: center;">
+                <!-- <rj-button :width="100">保存并关闭</rj-button> -->
+            </div>
+        </Modal>
     </div>
 </div>
 </template>
@@ -40,7 +67,9 @@ export default {
     data() {
         return {
             comments: [],
-            song: null
+            storeModal: false,
+            song: null,
+            playlist: []
         }
     },
     created() {
@@ -48,10 +77,24 @@ export default {
             this.song = result.data;
             this.comments = this.song.comments;
         });
+        this.$userService.getUserPls(CommonUtil.getLoginUser()).then(result => {
+            this.playlist = result.data.createdPls;
+        });
     },
     methods: {
         selectSong(m) {
             this.$store.commit('CURRENT_SONG', m);
+        },
+        storeToPl(id) {
+            this.storeModal = true;
+        },
+        addToPls(plId) {
+            this.$playlistService.addMusic({ plId: plId, songId: this.$route.query.id }).then(result => {
+                this.$Message.success('添加成功');
+                this.storeModal = false;
+            }, failed => {
+                this.$Message.error(failed.msg);
+            });
         },
         commentEvent(content) {
             this.$musicService.commitComment(this.song._id, CommonUtil.getLoginUser(), content).then(result => {
@@ -154,6 +197,63 @@ $icon = "../../assets/icon.png"
             color: #666;
             margin-left 20px
             font-weight normal
+        }
+    }
+}
+.rj-tit {
+    padding: 10px 0 10px 35px;
+    background: #e6e6e6;
+    cursor: pointer;
+    font-weight 600
+    .rj-icn-13 {
+        width: 35px;
+        height: 36px;
+        background-position: 0 -495px;
+        margin-right 10px
+    }
+}
+.rj-pl-u {
+    min-height 200px
+    li {
+        padding: 6px 0 6px 35px;
+        border-top: 1px solid #e0e0e0;
+        cursor pointer
+        list-style none
+        &:hover {
+            background: #f2f2f2;
+        }
+        .item {
+            padding-left 50px
+            .lef {
+                display: inline;
+                float: left;
+                margin-left: -50px;
+                overflow: hidden;
+                width: 40px;
+                a {
+                    position: relative;
+                    display: block;
+                    width: 40px;
+                    height: 40px;
+                    &:hover {
+                        text-decoration none
+                    }
+                }
+            }
+            .name {
+                margin-top: 2px;
+                margin-bottom: 5px;
+                word-wrap: break-word;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                a {
+                    color: #000;
+                    &:hover {
+                        text-decoration none
+                    }
+                }
+            }
         }
     }
 }

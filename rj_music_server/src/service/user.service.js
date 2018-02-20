@@ -224,5 +224,17 @@ class UserService extends common_service_1.CommonService {
             });
         });
     }
+    removePls(params) {
+        return new Promise((resolve, reject) => {
+            user_model_1.User.update({ _id: params.userId }, { $pull: { createdPls: params.plId } }, err => {
+                if (err) {
+                    reject(utils_1.ResultUtils.error(utils_1.ResultCode.PARAMETER_ERROR));
+                }
+                else {
+                    resolve(utils_1.ResultUtils.success(''));
+                }
+            });
+        });
+    }
 }
 exports.UserService = UserService;

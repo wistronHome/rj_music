@@ -27,5 +27,8 @@ router.post('/', (req, res) => {
 router.put('/', (req, res) => {
     plService.modifyPlaylist(req.body).then(s => res.send(s), r => res.send(r));
 });
+router.put('/song', (req, res) => {
+    plService.addMusic(req.body).then(s => res.send(s), r => res.send(r));
+});
 
 module.exports = router;

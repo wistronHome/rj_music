@@ -6,7 +6,7 @@
             <span class="play-icon" :class="{'play-on': naturalIndex === 0}"></span>
         </template>
         <template v-if="renderType === 'html'">
-            <span v-html="row[column.key]"></span>
+            <span v-html="row[column.key]" @click.stop="column.htmlEvent(row)"></span>
         </template>
         <template v-if="renderType === 'normal'"><span>{{row[column.key]}}</span></template>
     </div>

@@ -10,7 +10,7 @@
             <div class="cntwrap">
                 <div>
                     <div class="cnt f-brk">
-                        <a class="s-fc7">{{item.commenter.nickName}}</a>
+                        <a @click="$router.push({path:'/user/home',query:{id:item.commenter._id}})" class="s-fc7">{{item.commenter.nickName}}</a>
                         <span>：{{item.content}}</span>
                     </div>
                 </div>
@@ -19,7 +19,7 @@
                         <i class="bd">◆</i>
                         <i class="bg">◆</i>
                     </span>
-                    <a class="s-fc7">{{item.beCommenter.commenter.nickName}}</a>
+                    <a class="s-fc7" @click="$router.push({path:'/user/home',query:{id:item.beCommenter.commenter._id}})">{{item.beCommenter.commenter.nickName}}</a>
                     <span> ：{{item.beCommenter.content}}</span>
                 </div>
                 <div class="rp">

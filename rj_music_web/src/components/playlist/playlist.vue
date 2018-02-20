@@ -73,7 +73,11 @@
                 songList: [
                     { label: '序号', key: 'index', type: 'index', width: 50, align: 'center' },
                     { type: 'playIcon', width: 60, align: 'center' },
-                    { label: '歌名', key: 'name', type: 'html', width: 200, align: 'left' },
+                    { label: '歌名', key: 'name', type: 'html', width: 200, align: 'left',
+                        htmlEvent: (row) => {
+                            this.$router.push({ path: '/song', query: { id: row._id } });
+                        }
+                    },
                     { label: '歌手', key: 'singer', width: 100 },
                     { label: '专辑', key: 'album' },
                     { label: '时间', key: 'time' }
