@@ -1,9 +1,9 @@
 <template>
 <!-- 单个歌单组件 -->
-<div>
-    <div class="song-sheet-wrap">
+<div v-if="data">
+    <div @click="routerToPl(data._id)" class="song-sheet-wrap">
         <img src="http://p1.music.126.net/Kw6F4V4UpWxL3rC48-u0PA==/19038043835239510.jpg?param=140y140" alt="">
-        <a class="msk" title="把酒言初心_喜欢的音乐"></a>
+        <a class="msk" :title="data.name"></a>
         <div class="bottom">
             <a class="icon-play" title="播放"></a>
             <span class="icon-headest"></span>
@@ -12,7 +12,7 @@
     </div>
     <p class="desc">
         <a class="title ellipsis">
-            致郁纯音｜孤独的人 宁愿孤独也不将就。
+            {{data.name}}
         </a>
     </p>
 </div>
@@ -22,6 +22,14 @@
 export default {
     data() {
         return {}
+    },
+    props: {
+        data: null
+    },
+    methods: {
+        routerToPl(id) {
+            this.$router.push({ path: '/playlist',query: { id } })
+        }
     }
 }
 </script>

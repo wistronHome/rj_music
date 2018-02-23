@@ -12,16 +12,16 @@
         </div>
         <rj-song-list style="margin-bottom: 40px" :data="songs" :column="songList"></rj-song-list>
         <div style="margin-bottom: 20px" class="record-title">
-            <h3>把酒言初心_创建的歌单（23）</h3>
+            <h3>{{user.nickName}}创建的歌单（{{createdPls.length}}）</h3>
         </div>
         <div style="display: flex; flex-wrap: wrap">
-            <rj-song-sheet class="flex-item" v-for="(song, index) in sheets" :key="index"></rj-song-sheet>
+            <rj-song-sheet class="flex-item" v-for="(song, index) in createdPls" :key="index" :data="song"></rj-song-sheet>
         </div>
-        <div style="margin-bottom: 20px" class="record-title">
-            <h3>把酒言初心_收藏的歌单（23）</h3>
+        <div v-if="storePls.length !== 0" style="margin-bottom: 20px" class="record-title">
+            <h3>{{user.nickName}}收藏的歌单（{{storePls.length}}）</h3>
         </div>
         <div style="display: flex; flex-wrap: wrap">
-            <rj-song-sheet class="flex-item" v-for="(song, index) in sheets" :key="index"></rj-song-sheet>
+            <rj-song-sheet class="flex-item" v-for="(song, index) in storePls" :key="index"></rj-song-sheet>
         </div>
     </div>
 </template>
@@ -32,12 +32,7 @@ export default {
     data() {
         return {
             songs: [
-                { name: `<a class="song">张三</a>&nbsp;&nbsp;-&nbsp;&nbsp;<a class="singer">陈粒</a>`, singer: '刘德华', album: '假装', time: Date.now() },
-                { name: '<a class="song">张三</a>&nbsp;&nbsp;-&nbsp;&nbsp;<a class="singer">陈粒</a>', singer: '刘德华', album: '假装', time: Date.now() },
-                { name: '<a class="song">张三</a>&nbsp;&nbsp;-&nbsp;&nbsp;<a class="singer">陈粒</a>', singer: '刘德华', album: '假装', time: Date.now() },
-                { name: '<a class="song">张三</a>&nbsp;&nbsp;-&nbsp;&nbsp;<a class="singer">陈粒</a>', singer: '刘德华', album: '假装', time: Date.now() },
-                { name: '<a class="song">张三</a>&nbsp;&nbsp;-&nbsp;&nbsp;<a class="singer">陈粒</a>', singer: '刘德华', album: '假装', time: Date.now() },
-                { name: '<a class="song">张三</a>&nbsp;&nbsp;-&nbsp;&nbsp;<a class="singer">陈粒</a>', singer: '刘德华', album: '假装', time: Date.now() }
+                { name: `<a class="song">张三</a>&nbsp;&nbsp;-&nbsp;&nbsp;<a class="singer">陈粒</a>`, singer: '刘德华', album: '假装', time: Date.now() }
             ],
             songList: [
                 { label: '序号', key: 'index', type: 'index', width: 50, align: 'center' },
@@ -48,13 +43,18 @@ export default {
                 { label: '时间', key: 'time' }
             ],
             user: {},
+            createdPls: [],
+            storePls: [],
             sheets: [1, 2]
         }
     },
     created() {
-        // userServer.register()
-        this.$http.get(`/api/user/${this.$route.query.id}`).then(result => {
-            this.user = result.body.data;
+        this.$userService.getUserById(this.$route.query.id).then(result => {
+            this.user = result.data;
+        });
+        this.$userService.getUserPls(this.$route.query.id).then(result => {
+            this.createdPls = result.data.createdPls;
+            this.storePls = result.data.storePls;
         });
     },
     methods: {
@@ -63,8 +63,8 @@ export default {
         }
     },
     beforeRouteUpdate (to, from, next) {
-        this.$http.get(`/api/user/${to.query.id}`).then(result => {
-            this.user = result.body.data;
+        this.$userService.getUserById(this.$route.query.id).then(result => {
+            this.user = result.data;
         });
         next();
     }

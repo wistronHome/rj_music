@@ -3,9 +3,10 @@
         <h1>
             <a href="/#" hidefocus="true">网易云音乐</a>
         </h1>
-        <!--<Select style="width:200px" @on-change="changeRouter($event)">-->
-            <!--<Option v-for="item in routers" :value="item.value" :key="item.value">{{ item.label }}</Option>-->
-        <!--</Select>-->
+        <Menu class="c-mm" mode="horizontal" @on-select="menuSelect" :theme="'dark'">
+            <MenuItem name="find"><span>发现音乐</span></MenuItem>
+            <MenuItem name="my"><span>我的音乐</span></MenuItem>
+        </Menu>
 
         <div class="rj-login">
             <dropdown v-if="loginUser" style="text-align: left;"  @on-click="handleDropMenuClick">
@@ -48,6 +49,9 @@
             </div>
         </AutoComplete>
 
+        <div class="red-line">
+
+        </div>
         <Modal v-model="modal" width="500" :maskClosable="false" @onCancel="closeModel">
             <p slot="header" class="model-header">
                 <Icon type="information-circled"></Icon>
@@ -104,14 +108,17 @@
     export default {
         created() {
             this.loginUser = CommonUtil.getLoginUser();
-            setTimeout(() => {
-                this.$store.commit('CURRENT_SONG', null);
-            }, 1000);
+            if (this.loginUser) {
+                this.$userService.getUserPls(CommonUtil.getLoginUser()).then(result => {
+                    this.firstPlId = result.data.createdPls[0]._id;
+                });
+            }
         },
         components: {Dropdown, Avatar, DropdownMenu, DropdownItem},
         data() {
             return {
                 modal: false,
+                firstPlId: null,
                 searchModel: '',
                 searchList: null,
                 registerFormColumn: [
@@ -222,7 +229,11 @@
                     }
                 }, 500);
             },
-
+            menuSelect(name) {
+                if (name === 'my') {
+                    this.$router.push({ path: '/my/music/playlist', query: { id: this.firstPlId } });
+                }
+            },
             selectEvent(param) {
                 this.searchModel = null;
                 this.$router.push({ path: '/song', query: { id: param }});
@@ -292,6 +303,18 @@
                 }
             }
         }
+        .red-line {
+            position: absolute;
+            top: 65px;
+            left: 0;
+            right: 0;
+            z-index: 999;
+            height: 5px;
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+            background-color: #c20c0c;
+            border-bottom: 1px solid #a40011;
+        }
     }
 
     .err-tip {
@@ -353,5 +376,12 @@
                 }
             }
         }
+    }
+    .c-mm {
+        position absolute
+        margin-left 200px
+        line-height 64px
+        height 64px
+        background #242424
     }
 </style>
