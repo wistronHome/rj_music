@@ -6,8 +6,10 @@ import { CommonInterface } from "../interface/common.interface";
 import { Music } from "../model/music.model";
 import { ResultCode, ResultUtils } from "../utils";
 import { User } from "../model/user.model";
+import { CommonUtil } from "../common-util";
 
 export class CommonService implements CommonInterface<any> {
+
     getItemByPrimary(id: string) {
     }
 
@@ -56,6 +58,12 @@ export class CommonService implements CommonInterface<any> {
                     }
                 }
             );
+        });
+    }
+
+    getAddressIp() {
+        return new Promise((resolve, reject) => {
+            resolve(ResultUtils.success(CommonUtil.getIPAdress()))
         });
     }
 }

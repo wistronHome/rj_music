@@ -31,4 +31,9 @@ export interface CommonInterface<T> {
      * @param param
      */
     commonSearch(param);
+
+    /**
+     * 获取本机IP
+     */
+    getAddressIp();
 }

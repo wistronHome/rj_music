@@ -3,7 +3,7 @@
  */
 import * as mongoose from 'mongoose';
 
-const mongoConfig = "mongodb://localhost/rj_music";
+const mongoConfig = "mongodb://10.5.112.57/rj_music";
 
 export class Db {
     private static _instance: Db = null;

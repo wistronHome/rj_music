@@ -1,3 +1,5 @@
+import * as os from 'os';
+
 export class CommonUtil {
     /**
      * 生成uuid
@@ -14,5 +16,21 @@ export class CommonUtil {
         return uuid.join("").replace(/-/g, '');
     }
 
+    /**
+     * 获取本机IP
+     * @returns {HTMLElement | {type: StringConstructor}}
+     */
+    public static getIPAdress(){
+        let interfaces = os.networkInterfaces();
+        for(let devName in interfaces){
+            let iface = interfaces[devName];
+            for(let i = 0; i < iface.length; i++){
+                let alias = iface[i];
+                if(alias.family === 'IPv4' && alias.address !== '127.0.0.1' && !alias.internal){
+                    return alias.address;
+                }
+            }
+        }
+    }
 
 }

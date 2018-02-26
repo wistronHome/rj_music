@@ -80,6 +80,7 @@ export default {
                 duration: 0,
                 circleStyle: 0
             },
+            addressIp: null,
             music: {},
             progress: 0,
             paused: true,
@@ -95,7 +96,9 @@ export default {
         'rj-player': player
     },
     created() {
-        // this.musicSrc = "..";
+        this.$userService.getAddressIp().then(result => {
+            this.addressIp = result.data;
+        });
 
     },
     mounted() {
@@ -111,7 +114,7 @@ export default {
                 this.$refs.audio.load();
                 this.playBtnClick();
             }, 100);
-            return _cs ? 'http://localhost:3000/' + _cs.src.replace('public/', '') : null;
+            return _cs ? `http://${this.addressIp}:3000/${_cs.src.replace('public/', '')}` : null;
         },
         playBtnClass() {
             return this.paused ? 'pause' : 'play';

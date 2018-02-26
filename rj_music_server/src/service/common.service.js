@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const music_model_1 = require("../model/music.model");
 const utils_1 = require("../utils");
 const user_model_1 = require("../model/user.model");
+const common_util_1 = require("../common-util");
 class CommonService {
     getItemByPrimary(id) {
     }
@@ -49,6 +50,11 @@ class CommonService {
                     });
                 }
             });
+        });
+    }
+    getAddressIp() {
+        return new Promise((resolve, reject) => {
+            resolve(utils_1.ResultUtils.success(common_util_1.CommonUtil.getIPAdress()));
         });
     }
 }

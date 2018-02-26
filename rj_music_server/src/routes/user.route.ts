@@ -12,6 +12,10 @@ router.get('/', (req, res, next) => {
     res.send('this is userItem');
 });
 
+router.get('/address/ip', (req, res) => {
+    userService.getAddressIp().then(s => res.send(s), r => res.send(r));
+});
+
 router.get('/:id', (req, res, next) => {
     userService.getItemByPrimary(req.params.id).then(result => res.send(result), failed => res.send(failed));
 });

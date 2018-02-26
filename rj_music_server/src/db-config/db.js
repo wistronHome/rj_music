@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * Created by GyjLoveLh on  2018/2/9
  */
 const mongoose = require("mongoose");
-const mongoConfig = "mongodb://localhost/rj_music";
+const mongoConfig = "mongodb://10.5.112.57/rj_music";
 class Db {
     constructor() {
         this._conn = null;
