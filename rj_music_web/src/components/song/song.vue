@@ -3,7 +3,7 @@
     <div class="left-wrap">
         <div class="song-title">
             <div class="song-cover">
-                <img src="http://p1.music.126.net/HQxTggMCB7AHUXN-ZFEtmA==/1371091013186741.jpg?param=130y130" class="j-img">
+                <img :src="song.cover" class="j-img">
                 <span class="song-msk"></span>
             </div>
             <div class="cnt">
@@ -44,7 +44,7 @@
                         <li v-for="(item, index) in playlist" @click="addToPls(item._id)" :key="index">
                             <div class="item">
                                 <div class="lef">
-                                    <a><img width="40" height="40" src="http://p1.music.126.net/HKdfZ1e_3W2YJzMDdys1Qg==/19168885719193456.jpg?param=40y40" alt=""></a>
+                                    <a><img width="40" height="40" :src="item.cover || defaultCover" alt=""></a>
                                 </div>
                                 <p class="name"><a>{{item.name}}</a></p>
                                 <p>{{item.songs.length}}首</p>
@@ -66,6 +66,7 @@ import { CommonUtil } from '../../core/utils/common-util';
 export default {
     data() {
         return {
+            defaultCover: CommonUtil.getDefaultImage('song_cover'),
             comments: [],
             storeModal: false,
             song: null,

@@ -6,7 +6,8 @@
             <a class="next" title="下一首(ctrl+→)">下一首</a>
         </div>
         <div class="head">
-            <img width="34" height="34" src="http://p1.music.126.net/FZ0nOEQnG7IpyVD53gvWtQ==/7884597883552529.jpg?param=34y34">
+            <img width="34" height="34" v-if="music" :src="music.cover">
+            <img width="34" height="34" v-else :src="defaultCover">
             <a class="mask"></a>
         </div>
         <div class="play-area">
@@ -72,6 +73,7 @@ let _clientY = 0,
 export default {
     data() {
         return {
+            defaultCover: 'http://s4.music.126.net/style/web2/img/default/default_album.jpg',
             emit: new Vue(),
             playerInfo: {
                 paused: true,
@@ -114,7 +116,7 @@ export default {
                 this.$refs.audio.load();
                 this.playBtnClick();
             }, 100);
-            return _cs ? `http://${this.addressIp}:3000/${_cs.src.replace('public/', '')}` : null;
+            return _cs ? _cs.src : null;
         },
         playBtnClass() {
             return this.paused ? 'pause' : 'play';

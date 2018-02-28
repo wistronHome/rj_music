@@ -63,4 +63,11 @@ export interface UserInterface extends CommonInterface<any> {
      * @returns {Promise<any>}
      */
     removePls(params: any): Promise<any>;
+
+    /**
+     * 上传头像
+     * @param params
+     * @returns {Promise<any>}
+     */
+    uploadPhoto(params: any): Promise<any>;
 }

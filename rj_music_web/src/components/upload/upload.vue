@@ -35,8 +35,9 @@
                 </FormItem>
             </Form>
             <div class="p-wrap" v-if="music">
-                <img width="140" height="140" :src="music.cover || defaultPhoto" alt="">
-                <a @click="routerToPhoto">上传封面</a>
+                <img width="140" height="140" :src="coverUploadSource || music.cover || defaultPhoto" alt="">
+                <a @click="handleCoverClick">上传封面</a>
+                <input style="display: none;" type="file" id="coverInp" @change="beforeCoverUpload">
             </div>
         </div>
     </div>
@@ -52,6 +53,8 @@ export default {
             user: null,
             music: null,
             singers: [],
+            coverUploadFile: null,
+            coverUploadSource: null,
             formRules: {
                 name: [
                     {
@@ -69,7 +72,7 @@ export default {
                     }
                 ]
             },
-            defaultPhoto: "http://p1.music.126.net/VnZiScyynLG7atLIZ2YPkw==/18686200114669622.jpg?param=180y180",
+            defaultPhoto: CommonUtil.getDefaultImage('user_photo'),
         }
     },
     created() {
@@ -92,7 +95,7 @@ export default {
                     formData.append('uploader', this.cUserId);
                     formData.append('singer', this.music.singer);
                     formData.append('types', this.music.types);
-                    formData.append('cover', this.music.cover);
+                    formData.append('cover', this.coverUploadFile);
                     formData.append('src', this.music.src);
                     this.$musicService.upload(formData).then(result => {
                         console.log(result);
@@ -102,8 +105,27 @@ export default {
                 }
             });
         },
-        routerToPhoto() {
-            this.$router.push({path: '/user/photo', query: { id: this.cUserId }});
+        handleCoverClick() {
+            document.getElementById('coverInp').click();
+        },
+        beforeCoverUpload() {
+            this.coverUploadFile = event.target.files[0];
+            if (!['image/png', 'image/jpeg', 'image/gif', 'image/jpg'].includes(this.coverUploadFile.type)) {
+                this.$Message.error('请选择正确格式的文件');
+                this.coverUploadFile = null;
+                return;
+            }
+            if (this.coverUploadFile.size >= 1024 * 1024 * 2) {
+                this.$Message.error('请选择小于2M的文件');
+                this.coverUploadFile = null;
+                return;
+            }
+            let reader = new FileReader();
+            reader.readAsDataURL(this.coverUploadFile);
+            let $$this = this;
+            reader.onload = ev => {
+                $$this.coverUploadSource = ev.target.result;
+            };
         },
         filterMethod (value, option) {
             return option.toUpperCase().indexOf(value.toUpperCase()) !== -1;

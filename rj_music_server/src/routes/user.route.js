@@ -49,4 +49,7 @@ router.post('/removePls', (req, res) => {
 router.post('/follow', (req, res) => {
     userService.handleFollow(req.body).then(result => res.send(result), failed => res.send(failed));
 });
+router.post('/photo', (req, res) => {
+    userService.uploadPhoto(req).then(s => res.send(s), r => res.send(r));
+});
 module.exports = router;

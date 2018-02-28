@@ -11,7 +11,7 @@
         <div class="rj-login">
             <dropdown v-if="loginUser" style="text-align: left;"  @on-click="handleDropMenuClick">
                 <a href="javascript:void(0)">
-                    <avatar src="https://i.loli.net/2017/08/21/599a521472424.jpg" />
+                    <avatar v-if="user" :src="user.photo || defaultPhoto"/>
                     <icon type="arrow-down-b"></icon>
                 </a>
                 <dropdown-menu slot="list">
@@ -112,13 +112,18 @@
                 this.$userService.getUserPls(CommonUtil.getLoginUser()).then(result => {
                     this.firstPlId = result.data.createdPls[0]._id;
                 });
+                this.$userService.getUserById(CommonUtil.getLoginUser()).then(result => {
+                    this.user = result.data;
+                });
             }
         },
         components: {Dropdown, Avatar, DropdownMenu, DropdownItem},
         data() {
             return {
+                defaultPhoto: 'http://p1.music.126.net/VnZiScyynLG7atLIZ2YPkw==/18686200114669622.jpg?param=30y30',
                 modal: false,
                 firstPlId: null,
+                user: null,
                 searchModel: '',
                 searchList: null,
                 registerFormColumn: [

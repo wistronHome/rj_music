@@ -60,7 +60,7 @@ export default {
         return {
             // paramId: '',
             cUserId: CommonUtil.getLoginUser(),
-            defaultPhoto: "http://p1.music.126.net/VnZiScyynLG7atLIZ2YPkw==/18686200114669622.jpg?param=180y180"
+            defaultPhoto: CommonUtil.getDefaultImage('user_photo')
         }
     },
     created() {

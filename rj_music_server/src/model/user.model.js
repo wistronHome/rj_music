@@ -5,8 +5,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 const mongoose = require("mongoose");
 const db_1 = require("../db-config/db");
-//
-exports.User = db_1.Db.getInstance().getConnection().model('User', new mongoose.Schema({
+let userSchema = new mongoose.Schema({
     userCode: {
         type: String,
         unique: true
@@ -66,4 +65,5 @@ exports.User = db_1.Db.getInstance().getConnection().model('User', new mongoose.
     storePls: [
         { type: mongoose.Schema.Types.ObjectId, ref: 'Playlist' }
     ]
-}));
+});
+exports.User = db_1.Db.getInstance().getConnection().model('User', userSchema);

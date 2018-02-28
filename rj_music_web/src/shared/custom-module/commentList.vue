@@ -4,7 +4,7 @@
         <div class="itm" v-for="(item, index) in comments" :key="index">
             <div class="head">
                 <a>
-                    <img width="50" height="50" src="http://p1.music.126.net/P_BCFKCNwyjM1rd_hyECkA==/19102915021516948.jpg?param=50y50">
+                    <img width="50" height="50" :src="item.commenter.photo">
                 </a>
             </div>
             <div class="cntwrap">

@@ -6,6 +6,10 @@ import { User } from '../model/user.model'
 import { CommonUtil } from '../common-util'
 import { ResultUtils, ResultCode } from "../utils";
 import * as crypto from 'crypto';
+import * as Jimp from 'jimp';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as formidable from 'formidable'
 import { CommonService } from "./common.service";
 import { Playlist } from "../model/playlist.model";
 
@@ -17,9 +21,13 @@ export class UserService extends CommonService implements UserInterface {
 
     getItemByPrimary(id) {
         return new Promise((resolve, reject) => {
-            User.findOne({_id: id}).select('sex birthday follows fans').exec((err, result) => {
-                err ? reject(ResultUtils.error(ResultCode.WEAK_NET_WORK, err.message)) 
-                    : resolve(ResultUtils.success(result));        
+            User.findById(id).select('sex birthday follows fans photo').exec((err, result) => {
+                if (err) {
+                    reject(ResultUtils.error(ResultCode.WEAK_NET_WORK, err.message))
+                } else {
+                    result.photo = CommonUtil.getSrcRealPath(result.photo);
+                    resolve(ResultUtils.success(result));
+                }
             });
         })
     }
@@ -74,6 +82,7 @@ export class UserService extends CommonService implements UserInterface {
                                         if (err) {
                                             reject(ResultUtils.error(ResultCode.WEAK_NET_WORK, err.message));
                                         } else {
+                                            user.photo = CommonUtil.getSrcRealPath(user.photo);
                                             resolve(ResultUtils.success(user));
                                         }
                                     }
@@ -213,6 +222,9 @@ export class UserService extends CommonService implements UserInterface {
                 if (err) {
                     reject(ResultUtils.error(ResultCode.PARAMETER_ERROR));
                 } else {
+                    result.follows.forEach(item => {
+                        item.photo = CommonUtil.getSrcRealPath(item.photo);
+                    });
                     let { _id, follows } = result;
                     resolve(ResultUtils.success({ _id, follows } ));
                 }
@@ -226,6 +238,9 @@ export class UserService extends CommonService implements UserInterface {
                 if (err) {
                     reject(ResultUtils.error(ResultCode.PARAMETER_ERROR));
                 } else {
+                    result.fans.forEach(item => {
+                        item.photo = CommonUtil.getSrcRealPath(item.photo);
+                    });
                     let { _id, fans } = result;
                     resolve(ResultUtils.success({ _id, fans }));
                 }
@@ -235,10 +250,18 @@ export class UserService extends CommonService implements UserInterface {
 
     getUserPls(id: string): Promise<any> {
         return new Promise((resolve, reject) => {
-            User.findOne({ _id: id }).populate('createdPls storePls').exec((err, user) => {
+            User.findById(id)
+                .populate('createdPls storePls')
+                .exec((err, user) => {
                 if (err) {
                     reject(ResultUtils.error(ResultCode.PARAMETER_ERROR));
                 } else {
+                    user.createdPls.forEach(item => {
+                        item.cover = CommonUtil.getSrcRealPath(item.cover);
+                    });
+                    user.storePls.forEach(item => {
+                        item.cover = CommonUtil.getSrcRealPath(item.cover);
+                    });
                     resolve(ResultUtils.success(user));
                 }
             });
@@ -258,6 +281,53 @@ export class UserService extends CommonService implements UserInterface {
                     }
                 }
             )
+        });
+    }
+
+    uploadPhoto(req: any): Promise<any> {
+        return new Promise((resolve, reject) => {
+            let form = new formidable.IncomingForm();
+            form.uploadDir = 'public/resource/tmp';
+            form.parse(req, (err, fields, files) => {
+                if (err) {
+                    reject(ResultUtils.error(ResultCode.PARAMETER_ERROR));
+                } else {
+                    let _cover = files.photo;
+                    let _coverExtName = path.extname(_cover.name);
+                    let _coverNewName = (_cover.path.split('upload_')[0] + _cover.path.split('upload_')[1] + _coverExtName).replace('/tmp/', '/' + _coverExtName.replace('.', '') + '/');
+                    let _coverOldPath = __dirname.replace('/src/service','') + '/' + _cover.path;
+                    let _coverNewPath = __dirname.replace('/src/service', '') + '/' + _coverNewName;
+
+                    let _coverDir = __dirname.replace('/src/service', '') + '/public/resource/' + _coverExtName.replace('.', '');
+                    try{
+                        fs.statSync(_coverDir);
+                    } catch (error) {
+                        fs.mkdirSync(_coverDir);
+                    }
+                    Jimp.read(_coverOldPath).then(image => {
+                        image.resize(parseInt(fields.photoWidth), parseInt(fields.photoHeight));
+                        image.crop(parseInt(fields.left), parseInt(fields.top), parseInt(fields.width), parseInt(fields.height));
+                        image.resize(180, 180);
+                        image.write(_coverNewPath, result => {
+                            fs.unlink(_coverOldPath, err => {
+                                if (err) throw err;
+                            });
+                            User.update(
+                                { _id: fields.userId },
+                                { $set: { photo: _coverNewName } },
+                                err => {
+                                    if (err) {
+                                        reject(ResultUtils.error(ResultCode.PARAMETER_ERROR));
+                                    } else {
+                                        resolve(ResultUtils.success(''));
+                                    }
+                                }
+                            )
+                        });
+
+                    }).catch(err => reject(ResultUtils.error(ResultCode.PARAMETER_ERROR, err)));
+                }
+            });
         });
     }
 }

@@ -22,7 +22,7 @@
                     <MenuItem v-for="(pl, index) in createdPls" :key="index" :name="'pl-' + pl._id">
                         <div class="g-item">
                             <div class="left">
-                                <a><img width="40" height="40" src="http://p1.music.126.net/tGHU62DTszbFQ37W9qPHcg==/2002210674180197.jpg?param=40y40" alt=""></a>
+                                <a><img width="40" height="40" :src="pl.cover || defaultCover" alt=""></a>
                             </div>
                             <div class="right">
                                 <p class="name">{{pl.name}}</p>
@@ -100,6 +100,7 @@ import { CommonUtil } from '../../core/utils/common-util';
 export default {
     data() {
         return {
+            defaultCover: CommonUtil.getDefaultImage('song_cover'),
             createdPls: [],
             storePls: [],
             createModal: false,

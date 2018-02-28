@@ -4,6 +4,10 @@ const user_model_1 = require("../model/user.model");
 const common_util_1 = require("../common-util");
 const utils_1 = require("../utils");
 const crypto = require("crypto");
+const Jimp = require("jimp");
+const fs = require("fs");
+const path = require("path");
+const formidable = require("formidable");
 const common_service_1 = require("./common.service");
 const playlist_model_1 = require("../model/playlist.model");
 class UserService extends common_service_1.CommonService {
@@ -12,9 +16,14 @@ class UserService extends common_service_1.CommonService {
     }
     getItemByPrimary(id) {
         return new Promise((resolve, reject) => {
-            user_model_1.User.findOne({ _id: id }).select('sex birthday follows fans').exec((err, result) => {
-                err ? reject(utils_1.ResultUtils.error(utils_1.ResultCode.WEAK_NET_WORK, err.message))
-                    : resolve(utils_1.ResultUtils.success(result));
+            user_model_1.User.findById(id).select('sex birthday follows fans photo').exec((err, result) => {
+                if (err) {
+                    reject(utils_1.ResultUtils.error(utils_1.ResultCode.WEAK_NET_WORK, err.message));
+                }
+                else {
+                    result.photo = common_util_1.CommonUtil.getSrcRealPath(result.photo);
+                    resolve(utils_1.ResultUtils.success(result));
+                }
             });
         });
     }
@@ -63,6 +72,7 @@ class UserService extends common_service_1.CommonService {
                                         reject(utils_1.ResultUtils.error(utils_1.ResultCode.WEAK_NET_WORK, err.message));
                                     }
                                     else {
+                                        user.photo = common_util_1.CommonUtil.getSrcRealPath(user.photo);
                                         resolve(utils_1.ResultUtils.success(user));
                                     }
                                 });
@@ -193,6 +203,9 @@ class UserService extends common_service_1.CommonService {
                     reject(utils_1.ResultUtils.error(utils_1.ResultCode.PARAMETER_ERROR));
                 }
                 else {
+                    result.follows.forEach(item => {
+                        item.photo = common_util_1.CommonUtil.getSrcRealPath(item.photo);
+                    });
                     let { _id, follows } = result;
                     resolve(utils_1.ResultUtils.success({ _id, follows }));
                 }
@@ -206,6 +219,9 @@ class UserService extends common_service_1.CommonService {
                     reject(utils_1.ResultUtils.error(utils_1.ResultCode.PARAMETER_ERROR));
                 }
                 else {
+                    result.fans.forEach(item => {
+                        item.photo = common_util_1.CommonUtil.getSrcRealPath(item.photo);
+                    });
                     let { _id, fans } = result;
                     resolve(utils_1.ResultUtils.success({ _id, fans }));
                 }
@@ -214,11 +230,19 @@ class UserService extends common_service_1.CommonService {
     }
     getUserPls(id) {
         return new Promise((resolve, reject) => {
-            user_model_1.User.findOne({ _id: id }).populate('createdPls storePls').exec((err, user) => {
+            user_model_1.User.findById(id)
+                .populate('createdPls storePls')
+                .exec((err, user) => {
                 if (err) {
                     reject(utils_1.ResultUtils.error(utils_1.ResultCode.PARAMETER_ERROR));
                 }
                 else {
+                    user.createdPls.forEach(item => {
+                        item.cover = common_util_1.CommonUtil.getSrcRealPath(item.cover);
+                    });
+                    user.storePls.forEach(item => {
+                        item.cover = common_util_1.CommonUtil.getSrcRealPath(item.cover);
+                    });
                     resolve(utils_1.ResultUtils.success(user));
                 }
             });
@@ -232,6 +256,50 @@ class UserService extends common_service_1.CommonService {
                 }
                 else {
                     resolve(utils_1.ResultUtils.success(''));
+                }
+            });
+        });
+    }
+    uploadPhoto(req) {
+        return new Promise((resolve, reject) => {
+            let form = new formidable.IncomingForm();
+            form.uploadDir = 'public/resource/tmp';
+            form.parse(req, (err, fields, files) => {
+                if (err) {
+                    reject(utils_1.ResultUtils.error(utils_1.ResultCode.PARAMETER_ERROR));
+                }
+                else {
+                    let _cover = files.photo;
+                    let _coverExtName = path.extname(_cover.name);
+                    let _coverNewName = (_cover.path.split('upload_')[0] + _cover.path.split('upload_')[1] + _coverExtName).replace('/tmp/', '/' + _coverExtName.replace('.', '') + '/');
+                    let _coverOldPath = __dirname.replace('/src/service', '') + '/' + _cover.path;
+                    let _coverNewPath = __dirname.replace('/src/service', '') + '/' + _coverNewName;
+                    let _coverDir = __dirname.replace('/src/service', '') + '/public/resource/' + _coverExtName.replace('.', '');
+                    try {
+                        fs.statSync(_coverDir);
+                    }
+                    catch (error) {
+                        fs.mkdirSync(_coverDir);
+                    }
+                    Jimp.read(_coverOldPath).then(image => {
+                        image.resize(parseInt(fields.photoWidth), parseInt(fields.photoHeight));
+                        image.crop(parseInt(fields.left), parseInt(fields.top), parseInt(fields.width), parseInt(fields.height));
+                        image.resize(180, 180);
+                        image.write(_coverNewPath, result => {
+                            fs.unlink(_coverOldPath, err => {
+                                if (err)
+                                    throw err;
+                            });
+                            user_model_1.User.update({ _id: fields.userId }, { $set: { photo: _coverNewName } }, err => {
+                                if (err) {
+                                    reject(utils_1.ResultUtils.error(utils_1.ResultCode.PARAMETER_ERROR));
+                                }
+                                else {
+                                    resolve(utils_1.ResultUtils.success(''));
+                                }
+                            });
+                        });
+                    }).catch(err => reject(utils_1.ResultUtils.error(utils_1.ResultCode.PARAMETER_ERROR, err)));
                 }
             });
         });

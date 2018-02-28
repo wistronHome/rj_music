@@ -147,5 +147,15 @@ export default {
                 result.body.code === 0 ? resolve(result.body) : reject(result.body);
             }, error => { throw new Error(error) });
         });
+    },
+    /**
+     * 上传头像
+     */
+    uploadPhoto(data) {
+        return new Promise((resolve, reject) => {
+            Vue.http.post(`${$prefix}/photo`, data).then(result => {
+                result.body.code === 0 ? resolve(result.body) : reject(result.body);
+            }, error => { throw new Error(error) })
+        })
     }
 }

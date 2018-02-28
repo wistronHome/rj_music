@@ -3,6 +3,7 @@
  */
 import * as mongoose from 'mongoose';
 import { Db } from "../db-config/db";
+import { CommonUtil } from "../common-util";
 
 let MusicSchema = new mongoose.Schema({
     name: {
@@ -20,6 +21,7 @@ let MusicSchema = new mongoose.Schema({
     types: [ String ],
     cover: {
         type: String,
+        select: true,
         default: ''
     },
     src: {

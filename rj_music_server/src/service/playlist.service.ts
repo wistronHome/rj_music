@@ -9,6 +9,8 @@ import { PlaylistInterface } from "../interface/playlist.interface";
 import { Playlist } from "../model/playlist.model";
 import { User } from "../model/user.model";
 import { PLAYLIST_TYPES } from "../db-config/playlist-types";
+import {CommonUtil} from "../common-util";
+import {Music} from "../model/music.model";
 
 export class PlaylistService extends CommonService implements PlaylistInterface {
 
@@ -22,8 +24,12 @@ export class PlaylistService extends CommonService implements PlaylistInterface 
                 .populate('creator songs')
                 .exec((err, result) => {
                     if (err) {
-                        reject(ResultUtils.error(ResultCode.PARAMETER_ERROR));
+                        reject(ResultUtils.error(ResultCode.PARAMETER_ERROR, err));
                     } else {
+                        result.cover = CommonUtil.getSrcRealPath(result.cover);
+                        result.songs.forEach(item => {
+                            item.cover = CommonUtil.getSrcRealPath(item.cover);
+                        });
                         resolve(ResultUtils.success(result));
                     }
                 });
@@ -86,6 +92,25 @@ export class PlaylistService extends CommonService implements PlaylistInterface 
                     if (result.songs.findIndex(item => item.toString() === params.songId) !== -1) {
                         reject(ResultUtils.error(ResultCode.SONG_DUPLICATE_ERROR));
                     } else {
+                        if (result.songs.length === 0) {
+                            Music.findById(params.songId)
+                                .select('cover')
+                                .exec((err, result) => {
+                                    if (err) {
+                                        reject(ResultUtils.error(ResultCode.SONG_DUPLICATE_ERROR));
+                                    } else {
+                                        Playlist.update(
+                                            { _id: params.plId },
+                                            { $set: { cover: result.cover } },
+                                            err => {
+                                                if (err) {
+                                                    reject(ResultUtils.error(ResultCode.SONG_DUPLICATE_ERROR));
+                                                }
+                                            }
+                                        )
+                                    }
+                                });
+                        }
                         Playlist.update(
                             { _id: params.plId },
                             { $push: { songs: params.songId } },

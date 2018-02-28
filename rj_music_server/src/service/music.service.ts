@@ -5,10 +5,13 @@ import { Music } from '../model/music.model'
 import { ResultUtils, ResultCode } from "../utils";
 import * as fs from 'fs';
 import * as path from 'path';
+import * as Jimp from 'jimp';
 import * as formidable from 'formidable'
 import { MusicInterface } from "../interface/music.interface";
 import { CommonService } from "./common.service";
 import { Comment } from "../model/comment.model";
+import { CommonUtil } from "../common-util";
+import {User} from "../model/user.model";
 
 export class MusicService extends CommonService implements MusicInterface {
 
@@ -27,13 +30,13 @@ export class MusicService extends CommonService implements MusicInterface {
                     populate: [
                         {
                             path: 'commenter',
-                            select: 'nickName '
+                            select: 'nickName photo'
                         },
                         {
                             path: 'beCommenter',
                             populate: {
                                 path: 'commenter',
-                                select: 'nickName '
+                                select: 'nickName'
                             }
                         }
                     ],
@@ -42,6 +45,13 @@ export class MusicService extends CommonService implements MusicInterface {
                 if (err) {
                     reject(ResultUtils.error(err));
                 } else {
+                    result.cover = CommonUtil.getSrcRealPath(result.cover);
+                    result.src = CommonUtil.getSrcRealPath(result.src);
+                    result.comments.forEach(item => {
+                        if (item.commenter) {
+                            item.commenter.photo = CommonUtil.getSrcRealPath(item.commenter.photo);
+                        }
+                    });
                     resolve(ResultUtils.success(result));
                 }
             });
@@ -62,11 +72,11 @@ export class MusicService extends CommonService implements MusicInterface {
             let form = new formidable.IncomingForm();
             form.uploadDir = 'public/resource/tmp';
             form.parse(req, (err, fields, files) => {
-                // let _cover = files.cover;
-                // let _coverExtName = path.extname(_cover.name);
-                // let _coverNewName = (_cover.path.split('upload_')[0] + _cover.path.split('upload_')[1] + _coverExtName).replace('/tmp/', '/' + _coverExtName.replace('.', '') + '/');
-                // let _coverOldPath = __dirname.replace('/routes','') + '/' + _cover.path;
-                // let _coverNewPath = __dirname.replace('/routes', '') + '/' + _coverNewName;
+                let _cover = files.cover;
+                let _coverExtName = path.extname(_cover.name);
+                let _coverNewName = (_cover.path.split('upload_')[0] + _cover.path.split('upload_')[1] + _coverExtName).replace('/tmp/', '/' + _coverExtName.replace('.', '') + '/');
+                let _coverOldPath = __dirname.replace('/src/service','') + '/' + _cover.path;
+                let _coverNewPath = __dirname.replace('/src/service', '') + '/' + _coverNewName;
 
                 let _src = files.src;
                 let _srcExtName = path.extname(_src.name);
@@ -74,28 +84,26 @@ export class MusicService extends CommonService implements MusicInterface {
                 let _srcOldPath = __dirname.replace('/src/service','') + '/' + _src.path;
                 let _srcNewPath = __dirname.replace('/src/service','') + '/' + _srcNewName;
 
-                // let _coverDir = __dirname.replace('/routes', '') + '/public/resource/' + _coverExtName.replace('.', '');
+                let _coverDir = __dirname.replace('/src/service', '') + '/public/resource/' + _coverExtName.replace('.', '');
                 let _srcDir = __dirname.replace('/src/service', '') + '/public/resource/' + _srcExtName.replace('.', '');
-                // try{
-                //     fs.statSync(_coverDir);
-                // } catch (error) {
-                //     fs.mkdirSync(_coverDir);
-                // }
+                try{
+                    fs.statSync(_coverDir);
+                } catch (error) {
+                    fs.mkdirSync(_coverDir);
+                }
                 try {
                     fs.statSync(_srcDir);
                 } catch (error) {
                     fs.mkdirSync(_srcDir);
                 }
-
-                // fs.readFile(_coverOldPath, (err, data) => {
-                //     if (err) throw err;
-                //     fs.writeFile(_coverNewPath, data, err => {
-                //         if (err) throw err;
-                //         fs.unlink(_coverOldPath, err => {
-                //             if (err) throw err;
-                //         });
-                //     });
-                // });
+                Jimp.read(_coverOldPath).then(image => {
+                    image.resize(200, 200);
+                    image.write(_coverNewPath, _ => {
+                        fs.unlink(_coverOldPath, err => {
+                            if (err) throw err;
+                        });
+                    });
+                });
                 fs.readFile(_srcOldPath, (err, data) => {
                     if (err) throw err;
                     fs.writeFile(_srcNewPath, data, err => {
@@ -112,7 +120,7 @@ export class MusicService extends CommonService implements MusicInterface {
                     uploader: fields.uploader,
                     singer: fields.singer,
                     // types: JSON.parse(fields.types),
-                    // cover: _coverNewName,
+                    cover: _coverNewName,
                     src: _srcNewName
                 };
                 Music.create(_data, err => {

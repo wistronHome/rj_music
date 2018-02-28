@@ -57,4 +57,27 @@ export class CommonUtil {
         }
         return new Date(date).format(format);
     }
+    /**
+     * 获取默认图片
+     * @param {String} type
+     */
+    static getDefaultImage(type) {
+        let image = '';
+        switch (type.toUpperCase()) {
+            case 'USER_PHOTO':
+                image = 'http://p1.music.126.net/VnZiScyynLG7atLIZ2YPkw==/18686200114669622.jpg?param=180y180';
+                break;
+            case 'PL_COVER':
+                image = 'http://p1.music.126.net/EWC8bPR8WW9KvhaftdmsXQ==/3397490930543093.jpg?param=200y200';
+                break;
+            case 'SONG_COVER':
+                image = 'http://p1.music.126.net/EWC8bPR8WW9KvhaftdmsXQ==/3397490930543093.jpg?param=200y200';
+                break;
+            case 'UPLOAD':
+                image = 'http://p1.music.126.net/VnZiScyynLG7atLIZ2YPkw==/18686200114669622.jpg?param=180y180';
+                break;
+        }
+        return image;
+    }
 }
+

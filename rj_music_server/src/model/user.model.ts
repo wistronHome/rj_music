@@ -3,9 +3,8 @@
  */
 import * as mongoose from 'mongoose';
 import { Db } from "../db-config/db";
-//
 
-export let User = Db.getInstance().getConnection().model('User', new mongoose.Schema({
+let userSchema = new mongoose.Schema({
     userCode: {
         type: String,
         unique: true
@@ -65,4 +64,6 @@ export let User = Db.getInstance().getConnection().model('User', new mongoose.Sc
     storePls: [
         { type: mongoose.Schema.Types.ObjectId, ref: 'Playlist' }
     ]
-}));
+});
+
+export let User = Db.getInstance().getConnection().model('User', userSchema);

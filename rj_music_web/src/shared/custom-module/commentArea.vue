@@ -2,7 +2,8 @@
     <!-- 评论textarea组件 -->
     <div class="comment-wrap">
         <div class="c-photo">
-            <img src="http://p4.music.126.net/Z-uuiFpLamYHJJb37dIS8A==/18867619533087863.jpg?param=50y50">
+            <img v-if="user" width="50" height="50" :src="user.photo">
+            <img v-else :src="defaultUserPhoto" alt="">
         </div>
         <div class="c-body">
             <div class="u-txtwrap">
@@ -23,11 +24,19 @@
 </template>
 
 <script>
+import { CommonUtil } from '../../core/utils/common-util';
 export default {
     data() {
         return {
-            content: ''
+            defaultUserPhoto: CommonUtil.getDefaultImage('user_photo'),
+            content: '',
+            user: null
         }
+    },
+    created() {
+        this.$userService.getUserById(CommonUtil.getLoginUser()).then(result => {
+            this.user = result.data;
+        });
     },
     computed: {
         contentLen() {

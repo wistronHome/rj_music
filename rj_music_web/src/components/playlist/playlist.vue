@@ -3,7 +3,7 @@
         <div class="left-wrap">
             <div class="pl-main">
                 <div class="pl-photo">
-                    <img width="200" height="200" src="http://p4.music.126.net/vdbw22CK1MHbYWC3OSGfKg==/19199672044731044.jpg?param=200y200" class="j-img">
+                    <img width="200" height="200" :src="plCover" class="j-img">
                     <span class="msk"></span>
                 </div>
                 <div class="pl-detail">
@@ -12,7 +12,9 @@
                         <h2 class="f-thide">{{data.name}}</h2>
                     </div>
                     <div class="user">
-                        <a @click="routerToUserDetail(data.creator._id)" class="face"><img width="35" height="35" src="http://p1.music.126.net/SFdYH6rrTmDgBGAQqQ8n7g==/1365593447636194.jpg?param=200y200" alt=""></a>
+                        <a @click="routerToUserDetail(data.creator._id)" class="face">
+                            <img width="35" height="35" :src="data.creator.cover || defaultUserCover" alt="">
+                        </a>
                         <a @click="routerToUserDetail(data.creator._id)" class="name">{{data.creator.nickName}}</a>
                         <span class="time">{{data.createdtime | formatTime}} 创建</span>
                     </div>
@@ -70,6 +72,8 @@
         data() {
             return {
                 cUserId: CommonUtil.getLoginUser(),
+                defaultUserCover: CommonUtil.getDefaultImage('user_cover'),
+                defaultCover: CommonUtil.getDefaultImage('pl_cover'),
                 songList: [
                     { label: '序号', key: 'index', type: 'index', width: 50, align: 'center' },
                     { type: 'playIcon', width: 60, align: 'center' },
@@ -82,6 +86,17 @@
                     { label: '专辑', key: 'album' },
                     { label: '时间', key: 'time' }
                 ],
+            }
+        },
+        computed: {
+            plCover() {
+                if (this.data.cover) {
+                    return this.data.cover;
+                }
+                if (this.data.songs.length > 0) {
+                    return this.data.songs[0].cover;
+                }
+                return this.defaultCover;
             }
         },
         methods: {

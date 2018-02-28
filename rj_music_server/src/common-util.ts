@@ -33,4 +33,19 @@ export class CommonUtil {
         }
     }
 
+    /**
+     * 拼接资源路径
+     * @param src
+     * @returns {string}
+     */
+    public static getSrcRealPath(src) {
+        if (!src) {
+            return src;
+        }
+        if (src.includes('http://')) {
+            return src;
+        }
+        return `http://${CommonUtil.getIPAdress()}:3000${src.replace('public', '')}`;
+    }
+
 }
