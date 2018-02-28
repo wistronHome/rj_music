@@ -21,7 +21,16 @@ export class PlaylistService extends CommonService implements PlaylistInterface 
     getItemByPrimary(id): Promise<any> {
         return new Promise((resolve, reject) => {
             Playlist.findOne({ _id: id })
-                .populate('creator songs')
+                .populate('creator')
+                .populate({
+                    path: 'songs',
+                    populate: [
+                        {
+                            path: 'uploader',
+                            select: 'nickName'
+                        }
+                    ]
+                })
                 .exec((err, result) => {
                     if (err) {
                         reject(ResultUtils.error(ResultCode.PARAMETER_ERROR, err));
@@ -30,6 +39,7 @@ export class PlaylistService extends CommonService implements PlaylistInterface 
                         result.songs.forEach(item => {
                             item.cover = CommonUtil.getSrcRealPath(item.cover);
                         });
+                        result.creator.photo = CommonUtil.getSrcRealPath(result.creator.photo);
                         resolve(ResultUtils.success(result));
                     }
                 });

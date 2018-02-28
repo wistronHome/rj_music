@@ -96,6 +96,9 @@ $icon = "../../assets/icon.png";
         p {
             margin-bottom 6px
             text-align left
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
             .name {
                 display: inline-block;
                 zoom: 1;

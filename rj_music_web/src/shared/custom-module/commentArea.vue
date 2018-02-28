@@ -2,7 +2,7 @@
     <!-- 评论textarea组件 -->
     <div class="comment-wrap">
         <div class="c-photo">
-            <img v-if="user" width="50" height="50" :src="user.photo">
+            <img v-if="user" width="50" height="50" :src="user.photo || defaultUserPhoto">
             <img v-else :src="defaultUserPhoto" alt="">
         </div>
         <div class="c-body">

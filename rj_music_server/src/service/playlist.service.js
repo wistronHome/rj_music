@@ -17,7 +17,16 @@ class PlaylistService extends common_service_1.CommonService {
     getItemByPrimary(id) {
         return new Promise((resolve, reject) => {
             playlist_model_1.Playlist.findOne({ _id: id })
-                .populate('creator songs')
+                .populate('creator')
+                .populate({
+                path: 'songs',
+                populate: [
+                    {
+                        path: 'uploader',
+                        select: 'nickName'
+                    }
+                ]
+            })
                 .exec((err, result) => {
                 if (err) {
                     reject(utils_1.ResultUtils.error(utils_1.ResultCode.PARAMETER_ERROR, err));
@@ -27,6 +36,7 @@ class PlaylistService extends common_service_1.CommonService {
                     result.songs.forEach(item => {
                         item.cover = common_util_1.CommonUtil.getSrcRealPath(item.cover);
                     });
+                    result.creator.photo = common_util_1.CommonUtil.getSrcRealPath(result.creator.photo);
                     resolve(utils_1.ResultUtils.success(result));
                 }
             });

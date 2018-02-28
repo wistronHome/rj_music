@@ -4,7 +4,7 @@
         <div class="itm" v-for="(item, index) in comments" :key="index">
             <div class="head">
                 <a>
-                    <img width="50" height="50" :src="item.commenter.photo">
+                    <img width="50" height="50" :src="item.commenter.photo || defaultUserPhoto">
                 </a>
             </div>
             <div class="cntwrap">
@@ -24,7 +24,7 @@
                 </div>
                 <div class="rp">
                     <div class="time">{{item.createdtime | formatTime}}</div>
-                    <a>
+                    <a @click="handleZan(item)">
                         <i class="zan"></i>
                     </a>
                     <span class="sep">|</span>
@@ -61,6 +61,7 @@ import { CommonUtil } from '../../core/utils/common-util';
 export default {
     data() {
         return {
+            defaultUserPhoto: CommonUtil.getDefaultImage('user_photo'),
             content: '',
             replyOpen: false,
             replyOpenItem: ''
@@ -90,6 +91,12 @@ export default {
             } else {
                 this.replyOpenItem = item._id;
             }
+        },
+        handleZan(param) {
+            this.$Notice.warning({
+                title: '😞😞😞😞',
+                desc: '正在火速进行中(๑•̀ㅂ•́)و✧加油'
+            });
         },
         commentEvent(param) {
             if (!this.content.trim()) {

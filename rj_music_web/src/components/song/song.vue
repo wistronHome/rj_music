@@ -17,8 +17,8 @@
                     <div class="s-btns">
                         <rj-button class="s-btn" @click="selectSong(song)" :btnType="'primary'" :icon="'plus'">播放</rj-button>
                         <rj-button class="s-btn" @click="storeToPl(song._id)" :icon="'store'">收藏</rj-button>
-                        <rj-button class="s-btn" :icon="'share'">分享</rj-button>
-                        <rj-button class="s-btn" :icon="'load'">下载</rj-button>
+                        <rj-button class="s-btn" @click="handleError" :icon="'share'">分享</rj-button>
+                        <rj-button class="s-btn" @click="handleError" :icon="'load'">下载</rj-button>
                         <rj-button class="s-btn" :icon="'message'" :title="'评论'">({{comments.length}})</rj-button>
                     </div>
                 </div>
@@ -88,6 +88,12 @@ export default {
         },
         storeToPl(id) {
             this.storeModal = true;
+        },
+        handleError() {
+            this.$Notice.warning({
+                title: '😞😞😞😞',
+                desc: '正在火速进行中(๑•̀ㅂ•́)و✧加油'
+            });
         },
         addToPls(plId) {
             this.$playlistService.addMusic({ plId: plId, songId: this.$route.query.id }).then(result => {

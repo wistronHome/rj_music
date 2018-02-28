@@ -13,7 +13,7 @@
                     </div>
                     <div class="user">
                         <a @click="routerToUserDetail(data.creator._id)" class="face">
-                            <img width="35" height="35" :src="data.creator.cover || defaultUserCover" alt="">
+                            <img width="35" height="35" :src="data.creator.photo || defaultUserCover" alt="">
                         </a>
                         <a @click="routerToUserDetail(data.creator._id)" class="name">{{data.creator.nickName}}</a>
                         <span class="time">{{data.createdtime | formatTime}} 创建</span>
@@ -83,8 +83,8 @@
                         }
                     },
                     { label: '歌手', key: 'singer', width: 100 },
-                    { label: '专辑', key: 'album' },
-                    { label: '时间', key: 'time' }
+                    { label: '上传者', key: 'uploader' }
+                    // { label: '时间', key: 'time' }
                 ],
             }
         },
