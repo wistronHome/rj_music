@@ -37,20 +37,20 @@
                 </Submenu>
                 <Submenu v-if="storePls.length > 0" name="5">
                     <template class="m-item" slot="title">
-                        <span class="m-til">收藏的歌单</span>
+                        <span class="m-til">收藏的歌单（{{storePls.length}}）</span>
                     </template>
                     <MenuItem v-for="(pl, index) in storePls" :key="index" :name="'pl-' + pl._id">
                         <div>
                             <div class="g-item">
                                 <div class="left">
-                                    <a><img width="40" height="40" src="http://p1.music.126.net/tGHU62DTszbFQ37W9qPHcg==/2002210674180197.jpg?param=40y40" alt=""></a>
+                                    <a><img width="40" height="40" :src="pl.cover || defaultCover" alt=""></a>
                                 </div>
                                 <div class="right">
                                     <p class="name">{{pl.name}}</p>
                                     <p class="num">{{pl.songs.length}}首</p>
                                 </div>
                                 <span class="oper">
-                                    <a class="rj-icn rj-icn-delete"></a>
+                                    <a @click.stop="cancelStorePlaylist(pl._id)" class="rj-icn rj-icn-delete"></a>
                                 </span>
                             </div>
                         </div>
@@ -135,6 +135,11 @@ export default {
                     this.cancleModal();
                     this.createdPls = u.data.createdPls;
                 });
+            });
+        },
+        cancelStorePlaylist(plId) {
+            this.$playlistService.cancelStorePlaylist(CommonUtil.getLoginUser(), plId).then(result => {
+                this.$Message.success('取消收藏')
             });
         },
         handleDeleteModal() {

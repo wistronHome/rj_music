@@ -10,6 +10,7 @@ const user_model_1 = require("../model/user.model");
 const playlist_types_1 = require("../db-config/playlist-types");
 const common_util_1 = require("../common-util");
 const music_model_1 = require("../model/music.model");
+const comment_model_1 = require("../model/comment.model");
 class PlaylistService extends common_service_1.CommonService {
     constructor() {
         super();
@@ -27,6 +28,25 @@ class PlaylistService extends common_service_1.CommonService {
                     }
                 ]
             })
+                .populate({
+                path: 'comments',
+                options: {
+                    sort: { createdtime: -1 }
+                },
+                populate: [
+                    {
+                        path: 'commenter',
+                        select: 'nickName photo'
+                    },
+                    {
+                        path: 'beCommenter',
+                        populate: {
+                            path: 'commenter',
+                            select: 'nickName'
+                        }
+                    }
+                ]
+            })
                 .exec((err, result) => {
                 if (err) {
                     reject(utils_1.ResultUtils.error(utils_1.ResultCode.PARAMETER_ERROR, err));
@@ -37,6 +57,9 @@ class PlaylistService extends common_service_1.CommonService {
                         item.cover = common_util_1.CommonUtil.getSrcRealPath(item.cover);
                     });
                     result.creator.photo = common_util_1.CommonUtil.getSrcRealPath(result.creator.photo);
+                    result.comments.forEach(item => {
+                        item.commenter.photo = common_util_1.CommonUtil.getSrcRealPath(item.commenter.photo);
+                    });
                     resolve(utils_1.ResultUtils.success(result));
                 }
             });
@@ -114,6 +137,91 @@ class PlaylistService extends common_service_1.CommonService {
                             }
                         });
                     }
+                }
+            });
+        });
+    }
+    commitComment(params) {
+        return new Promise((resolve, reject) => {
+            if (params.beCommenter) {
+                comment_model_1.Comment.create({
+                    commenter: params.userId,
+                    content: params.content,
+                    beCommenter: params.beCommenter,
+                    createdtime: new Date()
+                }, (err, result) => {
+                    if (err) {
+                        reject(utils_1.ResultUtils.error(utils_1.ResultCode.PARAMETER_ERROR, err));
+                    }
+                    else {
+                        playlist_model_1.Playlist.update({ _id: params.plId }, { $push: { comments: result._id } }, err => {
+                            if (err) {
+                                reject(utils_1.ResultUtils.error(utils_1.ResultCode.PARAMETER_ERROR, err));
+                            }
+                            else {
+                                resolve(utils_1.ResultUtils.success(''));
+                            }
+                        });
+                    }
+                });
+            }
+            else {
+                comment_model_1.Comment.create({
+                    commenter: params.userId,
+                    content: params.content,
+                    createdtime: new Date()
+                }, (err, result) => {
+                    if (err) {
+                        reject(utils_1.ResultUtils.error(utils_1.ResultCode.PARAMETER_ERROR, err));
+                    }
+                    else {
+                        playlist_model_1.Playlist.update({ _id: params.plId }, { $push: { comments: result._id } }, err => {
+                            if (err) {
+                                reject(utils_1.ResultUtils.error(utils_1.ResultCode.PARAMETER_ERROR, err));
+                            }
+                            else {
+                                resolve(utils_1.ResultUtils.success(''));
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    }
+    storePlaylist(params) {
+        return new Promise((resolve, reject) => {
+            playlist_model_1.Playlist.update({ _id: params.plId }, { $push: { stores: params.userId } }, err => {
+                if (err) {
+                    reject(utils_1.ResultUtils.error(utils_1.ResultCode.PARAMETER_ERROR, err));
+                }
+                else {
+                    user_model_1.User.update({ _id: params.userId }, { $push: { storePls: params.plId } }, err => {
+                        if (err) {
+                            reject(utils_1.ResultUtils.error(utils_1.ResultCode.PARAMETER_ERROR, err));
+                        }
+                        else {
+                            resolve(utils_1.ResultUtils.success(''));
+                        }
+                    });
+                }
+            });
+        });
+    }
+    cancelStorePlaylist(params) {
+        return new Promise((resolve, reject) => {
+            playlist_model_1.Playlist.update({ _id: params.plId }, { $pull: { stores: params.userId } }, err => {
+                if (err) {
+                    reject(utils_1.ResultUtils.error(utils_1.ResultCode.PARAMETER_ERROR, err));
+                }
+                else {
+                    user_model_1.User.update({ _id: params.userId }, { $pull: { storePls: params.plId } }, err => {
+                        if (err) {
+                            reject(utils_1.ResultUtils.error(utils_1.ResultCode.PARAMETER_ERROR, err));
+                        }
+                        else {
+                            resolve(utils_1.ResultUtils.success(''));
+                        }
+                    });
                 }
             });
         });

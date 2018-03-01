@@ -21,7 +21,7 @@
             <h3>{{user.nickName}}收藏的歌单（{{storePls.length}}）</h3>
         </div>
         <div style="display: flex; flex-wrap: wrap">
-            <rj-song-sheet class="flex-item" v-for="(song, index) in storePls" :key="index"></rj-song-sheet>
+            <rj-song-sheet class="flex-item" v-for="(song, index) in storePls" :key="index" :data="song"></rj-song-sheet>
         </div>
     </div>
 </template>

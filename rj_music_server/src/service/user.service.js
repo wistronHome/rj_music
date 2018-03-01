@@ -231,7 +231,10 @@ class UserService extends common_service_1.CommonService {
     getUserPls(id) {
         return new Promise((resolve, reject) => {
             user_model_1.User.findById(id)
-                .populate('createdPls storePls')
+                .populate({
+                path: 'createdPls'
+            })
+                .populate('storePls')
                 .exec((err, user) => {
                 if (err) {
                     reject(utils_1.ResultUtils.error(utils_1.ResultCode.PARAMETER_ERROR));

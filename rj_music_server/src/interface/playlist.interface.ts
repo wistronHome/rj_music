@@ -30,4 +30,25 @@ export interface PlaylistInterface extends CommonInterface<any> {
      * @returns {Promise<any>}
      */
     addMusic(params): Promise<any>;
+
+    /**
+     * 提交评论
+     * @param params
+     * @returns {Promise<any>}
+     */
+    commitComment(params): Promise<any>;
+
+    /**
+     * 收藏歌单
+     * @param params
+     * @returns {Promise<any>}
+     */
+    storePlaylist(params): Promise<any>;
+
+    /**
+     * 取消歌单收藏
+     * @param params
+     * @returns {Promise<any>}
+     */
+    cancelStorePlaylist(params): Promise<any>;
 }

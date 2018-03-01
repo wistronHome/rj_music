@@ -23,12 +23,21 @@ router.get('/:id', (req, res) => {
 router.post('/', (req, res) => {
     plService.insertPl(req.body).then(s => res.send(s), r => res.send(r));
 });
+router.post('/comment', (req, res) => {
+    plService.commitComment(req.body).then(s => res.send(s), r => res.send(r));
+});
 
 router.put('/', (req, res) => {
     plService.modifyPlaylist(req.body).then(s => res.send(s), r => res.send(r));
 });
 router.put('/song', (req, res) => {
     plService.addMusic(req.body).then(s => res.send(s), r => res.send(r));
+});
+router.put('/store', (req, res) => {
+    plService.storePlaylist(req.body).then(s => res.send(s), r => res.send(r));
+});
+router.put('/unstore', (req, res) => {
+    plService.cancelStorePlaylist(req.body).then(s => res.send(s), r => res.send(r));
 });
 
 module.exports = router;

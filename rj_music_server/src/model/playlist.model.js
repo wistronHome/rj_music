@@ -21,6 +21,7 @@ let PlaylistSchema = new mongoose.Schema({
     types: [String],
     cover: {
         type: String,
+        select: true,
         default: ''
     },
     comments: [

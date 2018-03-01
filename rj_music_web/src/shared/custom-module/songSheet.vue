@@ -2,7 +2,7 @@
 <!-- 单个歌单组件 -->
 <div v-if="data">
     <div @click="routerToPl(data._id)" class="song-sheet-wrap">
-        <img src="http://p1.music.126.net/Kw6F4V4UpWxL3rC48-u0PA==/19038043835239510.jpg?param=140y140" alt="">
+        <img :src="data.cover || defaultPlCover" alt="">
         <a class="msk" :title="data.name"></a>
         <div class="bottom">
             <a class="icon-play" title="播放"></a>
@@ -11,7 +11,7 @@
         </div>
     </div>
     <p class="desc">
-        <a class="title ellipsis">
+        <a class="title ellipsis" @click="routerToPl(data._id)">
             {{data.name}}
         </a>
     </p>
@@ -19,9 +19,12 @@
 </template>
 
 <script type="text/ecmascript-6">
+import { CommonUtil } from '../../core/utils/common-util';
 export default {
     data() {
-        return {}
+        return {
+            defaultPlCover: CommonUtil.getDefaultImage('pl_cover')
+        }
     },
     props: {
         data: null
@@ -95,6 +98,7 @@ $iconall = "../../assets/iconall.png";
 .desc {
     margin 8px 0 3px;
     font-size: 14px;
+    text-align left
     .title {
         display: inline-block;
         max-width: 140px;

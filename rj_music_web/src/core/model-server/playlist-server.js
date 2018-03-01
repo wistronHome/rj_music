@@ -56,5 +56,42 @@ export default {
                 result.body.code === 0 ? resolve(result.body) : reject(result.body);
             }, error => { throw new Error(error) });
         });
+    },
+    /**
+     * 提交评论回复
+     * @param {any} params
+     */
+    commitComment(params) {
+        return new Promise((resolve, reject) => {
+            Vue.http.post(`${$prefix}/comment`, params).then(result => {
+                result.body.code === 0 ? resolve(result.body) : reject(result.body);
+            }, error => { throw new Error(error) });
+        });
+    },
+    /**
+     * 收藏歌单
+     * @param {String} userId
+     * @param {String} plId
+     */
+    storePlaylist(userId, plId) {
+        return new Promise((resolve, reject) => {
+            Vue.http.put(`${$prefix}/store`, { userId, plId }).then(result => {
+                result.body.code === 0 ? resolve(result.body) : reject(result.body);
+            }, error => { throw new Error(error) });
+        });
+    },
+    /**
+     * 取消收藏歌单
+     * @param {String} userId
+     * @param {String} plId
+     */
+    cancelStorePlaylist(userId, plId) {
+        return new Promise((resolve, reject) => {
+            Vue.http.put(`${$prefix}/unstore`, { userId, plId }).then(result => {
+                result.body.code === 0 ? resolve(result.body) : reject(result.body);
+            }, error => { throw new Error(error) });
+        });
     }
 }
+
+

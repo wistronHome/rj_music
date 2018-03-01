@@ -200,6 +200,7 @@ $btn2 = "../../assets/button2.png";
 }
 .rj-btn-disabled {
     cursor: default;
+    pointer-events: none;
     background-position: right -1192px;
     &:hover {
         background-position: right -1192px;

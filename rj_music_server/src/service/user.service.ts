@@ -251,7 +251,10 @@ export class UserService extends CommonService implements UserInterface {
     getUserPls(id: string): Promise<any> {
         return new Promise((resolve, reject) => {
             User.findById(id)
-                .populate('createdPls storePls')
+                .populate({
+                    path: 'createdPls'
+                })
+                .populate('storePls')
                 .exec((err, user) => {
                 if (err) {
                     reject(ResultUtils.error(ResultCode.PARAMETER_ERROR));

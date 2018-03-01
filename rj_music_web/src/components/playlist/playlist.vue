@@ -13,14 +13,18 @@
                     </div>
                     <div class="user">
                         <a @click="routerToUserDetail(data.creator._id)" class="face">
-                            <img width="35" height="35" :src="data.creator.photo || defaultUserCover" alt="">
+                            <img width="35" height="35" :src="data.creator.photo || defaultUserCover">
                         </a>
                         <a @click="routerToUserDetail(data.creator._id)" class="name">{{data.creator.nickName}}</a>
                         <span class="time">{{data.createdtime | formatTime}} 创建</span>
                     </div>
                     <div class="btns">
                         <rj-button :btnType="'primary'" :icon="'plus'">播放</rj-button>
-                        <rj-button :icon="'store'" :disabled="true">({{data.stores.length}})</rj-button>
+                        <rj-button :icon="'store'"
+                            :disabled="data.creator._id === cUserId || data.stores.includes(cUserId)"
+                            @click="storePlaylist">
+                            {{data.stores.length === 0 ? '收藏' : '(' + data.stores.length + ')'}}
+                        </rj-button>
                         <rj-button @click="sharePl" :icon="'share'">(-)</rj-button>
                         <rj-button :icon="'load'">下载</rj-button>
                         <rj-button :icon="'message'">({{data.comments.length}})</rj-button>
@@ -72,7 +76,7 @@
         data() {
             return {
                 cUserId: CommonUtil.getLoginUser(),
-                defaultUserCover: CommonUtil.getDefaultImage('user_cover'),
+                defaultUserCover: CommonUtil.getDefaultImage('user_photo'),
                 defaultCover: CommonUtil.getDefaultImage('pl_cover'),
                 songList: [
                     { label: '序号', key: 'index', type: 'index', width: 50, align: 'center' },
@@ -100,14 +104,48 @@
             }
         },
         methods: {
-            commentEvent() {
-
+            commentEvent(content) {
+                let data = {
+                    userId: this.cUserId,
+                    plId: this.$route.query.id,
+                    content: content
+                };
+                this.$playlistService.commitComment(data).then(result => {
+                    this.$Message.success('success');
+                    this.$playlistService.getPlaylistDetail(this.$route.query.id).then(result => {
+                        result.data.songs.forEach(item => {
+                            item.name = `<a>${item.name}</a>`;
+                            item.uploader = item.uploader.nickName;
+                        });
+                        this.data = result.data;
+                    });
+                });
             },
-            replyEvent() {
-
+            replyEvent(params) {
+                let data = {
+                    userId: this.cUserId,
+                    plId: this.$route.query.id,
+                    content: params.content,
+                    beCommenter: params.commentId
+                };
+                this.$playlistService.commitComment(data).then(result => {
+                    this.$Message.success('success');
+                    this.$playlistService.getPlaylistDetail(this.$route.query.id).then(result => {
+                        result.data.songs.forEach(item => {
+                            item.name = `<a>${item.name}</a>`;
+                            item.uploader = item.uploader.nickName;
+                        });
+                        this.data = result.data;
+                    });
+                });
             },
             routerToUserDetail(id) {
                 this.$router.push({path: '/user/home', query: { id }});
+            },
+            storePlaylist() {
+                this.$playlistService.storePlaylist(CommonUtil.getLoginUser(), this.$route.query.id).then(result => {
+                    this.$Message.success('收藏成功');
+                });
             },
             sharePl() {
                 this.$Notice.warning({

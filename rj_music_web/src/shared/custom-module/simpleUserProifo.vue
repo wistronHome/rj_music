@@ -53,10 +53,10 @@ export default {
             return `icn-${this.user.userSex === 1 ? 'male' : 'female'}`
         },
         isFollow() {
-            return this.user.fans.findIndex(item => item === this.$route.query.id) !== -1;
+            return this.user.fans.findIndex(item => item === this.cUserId) !== -1;
         },
         isFan() {
-            return this.user.follows.findIndex(item => item === this.$route.query.id) !== -1;
+            return this.user.follows.findIndex(item => item === this.cUserId) !== -1;
         }
     },
     methods: {

@@ -9,8 +9,9 @@ import { PlaylistInterface } from "../interface/playlist.interface";
 import { Playlist } from "../model/playlist.model";
 import { User } from "../model/user.model";
 import { PLAYLIST_TYPES } from "../db-config/playlist-types";
-import {CommonUtil} from "../common-util";
-import {Music} from "../model/music.model";
+import { CommonUtil } from "../common-util";
+import { Music } from "../model/music.model";
+import { Comment } from "../model/comment.model";
 
 export class PlaylistService extends CommonService implements PlaylistInterface {
 
@@ -31,6 +32,25 @@ export class PlaylistService extends CommonService implements PlaylistInterface 
                         }
                     ]
                 })
+                .populate({
+                    path: 'comments',
+                    options: {
+                        sort: { createdtime: -1 }
+                    },
+                    populate: [
+                        {
+                            path: 'commenter',
+                            select: 'nickName photo'
+                        },
+                        {
+                            path: 'beCommenter',
+                            populate: {
+                                path: 'commenter',
+                                select: 'nickName'
+                            }
+                        }
+                    ]
+                })
                 .exec((err, result) => {
                     if (err) {
                         reject(ResultUtils.error(ResultCode.PARAMETER_ERROR, err));
@@ -40,6 +60,9 @@ export class PlaylistService extends CommonService implements PlaylistInterface 
                             item.cover = CommonUtil.getSrcRealPath(item.cover);
                         });
                         result.creator.photo = CommonUtil.getSrcRealPath(result.creator.photo);
+                        result.comments.forEach(item => {
+                            item.commenter.photo = CommonUtil.getSrcRealPath(item.commenter.photo);
+                        });
                         resolve(ResultUtils.success(result));
                     }
                 });
@@ -135,6 +158,109 @@ export class PlaylistService extends CommonService implements PlaylistInterface 
                     }
                 }
             });
+        });
+    }
+
+    commitComment(params): Promise<any> {
+        return new Promise((resolve, reject) => {
+            if (params.beCommenter) {
+                Comment.create({
+                    commenter: params.userId,
+                    content: params.content,
+                    beCommenter: params.beCommenter,
+                    createdtime: new Date()
+                }, (err, result) => {
+                    if (err) {
+                        reject(ResultUtils.error(ResultCode.PARAMETER_ERROR, err));
+                    } else {
+                        Playlist.update(
+                            { _id: params.plId },
+                            { $push: { comments: result._id } },
+                            err => {
+                                if (err) {
+                                    reject(ResultUtils.error(ResultCode.PARAMETER_ERROR, err));
+                                } else {
+                                    resolve(ResultUtils.success(''));
+                                }
+                            }
+                        )
+                    }
+                });
+            } else {
+                Comment.create({
+                    commenter: params.userId,
+                    content: params.content,
+                    createdtime: new Date()
+                }, (err, result) => {
+                    if (err) {
+                        reject(ResultUtils.error(ResultCode.PARAMETER_ERROR, err));
+                    } else {
+                        Playlist.update(
+                            { _id: params.plId },
+                            { $push: { comments: result._id } },
+                            err => {
+                                if (err) {
+                                    reject(ResultUtils.error(ResultCode.PARAMETER_ERROR, err));
+                                } else {
+                                    resolve(ResultUtils.success(''));
+                                }
+                            }
+                        )
+                    }
+                });
+            }
+        });
+    }
+
+    storePlaylist(params): Promise<any> {
+        return new Promise((resolve, reject) => {
+            Playlist.update(
+                { _id: params.plId },
+                { $push: { stores: params.userId } },
+                err => {
+                    if (err) {
+                        reject(ResultUtils.error(ResultCode.PARAMETER_ERROR, err));
+                    } else {
+                        User.update(
+                            { _id: params.userId },
+                            { $push: { storePls: params.plId } },
+                            err => {
+                                if (err) {
+                                    reject(ResultUtils.error(ResultCode.PARAMETER_ERROR, err));
+                                } else {
+                                    resolve(ResultUtils.success(''));
+                                }
+                            }
+                        )
+                    }
+                }
+            )
+        });
+    }
+
+    cancelStorePlaylist(params): Promise<any> {
+        return new Promise((resolve, reject) => {
+            Playlist.update(
+                { _id: params.plId },
+                { $pull: { stores: params.userId }},
+                err => {
+                    if (err) {
+                        reject(ResultUtils.error(ResultCode.PARAMETER_ERROR, err));
+                    } else {
+                        User.update(
+                            { _id: params.userId },
+                            { $pull: { storePls: params.plId } },
+                            err => {
+                                if (err) {
+                                    reject(ResultUtils.error(ResultCode.PARAMETER_ERROR, err));
+                                } else {
+                                    resolve(ResultUtils.success(''));
+                                }
+                            }
+                        )
+                    }
+                }
+            )
         });
     }
 }

@@ -23,7 +23,7 @@
                     <span> ：{{item.beCommenter.content}}</span>
                 </div>
                 <div class="rp">
-                    <div class="time">{{item.createdtime | formatTime}}</div>
+                    <div class="time">{{item.createdtime | formatTime('MM月dd日 hh:mm')}}</div>
                     <a @click="handleZan(item)">
                         <i class="zan"></i>
                     </a>
@@ -133,6 +133,12 @@ $icon = "../../assets/icon.png";
             flex 1 1 auto
             text-align left
             margin-left 10px
+            .cnt, .que {
+                span {
+                    color #333333
+                    white-space pre-wrap
+                }
+            }
             .cnt {
                 line-height 20px
                 word-break break-word
@@ -143,10 +149,6 @@ $icon = "../../assets/icon.png";
                     &:hover {
                         text-decoration underline
                     }
-                }
-                span {
-                    color #333333
-                    white-space normal
                 }
             }
             .que {
